@@ -1,0 +1,72 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider & VS Code
+.idea/
+.vscode/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Visual Studio
+.vs/
+*.ncb
+*.log
+*.tlog
+
+# Package directories
+packages/
+*.nupkg
+
+# Auto-generated files
+Generated_Code/
+
+# Publish output
+publish/
+*.publish.xml
+
+# Configuration files
+appsettings.*.json
+secrets.json
+
+# ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+# Backup & temp files
+*.bak
+*.tmp
+*.old
+
+# NuGet
+project.lock.json
+project.fragment.lock.json
+
+# dotnet CLI
+*.dbmdl
+*.pidb
+
+# Windows crash dump
+*.mdmp
+
+# Local test results
+TestResults/
+*.trx
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml
+
+# Logs
+logs/
+*.log
