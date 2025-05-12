@@ -9,11 +9,11 @@
 
     <Grid Margin="10">
         <DataGrid ItemsSource="{Binding Tasks}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="False"
-                  CanUserAddRows="False"
-                  HeadersVisibility="Column"
-                  GridLinesVisibility="All">
+          AutoGenerateColumns="False"
+          IsReadOnly="False"
+          CanUserAddRows="False"
+          HeadersVisibility="Column"
+          GridLinesVisibility="All">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Mã CV" Binding="{Binding Id}" Width="*" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Tên công việc" Binding="{Binding Title}" Width="*"/>
@@ -28,12 +28,16 @@
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
                             <ComboBox ItemsSource="{Binding DataContext.AvailableAssignees, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                      SelectedItem="{Binding Assignee, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                              SelectedItem="{Binding Assignee, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
                 <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="*"/>
+                <DataGridTextColumn Header="Ngày đến hạn" Binding="{Binding DueDate}" Width="*" />
+                <DataGridTextColumn Header="Ưu tiên" Binding="{Binding Priority}" Width="*" />
+                <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedAt}" Width="*" />
+                <DataGridTextColumn Header="Ngày cập nhật" Binding="{Binding UpdatedAt}" Width="*" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
