@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using TaskManager.Models;
+using TaskManager.Data;
 
 namespace TaskManager.ViewModels
 {
@@ -8,19 +9,24 @@ namespace TaskManager.ViewModels
         public ObservableCollection<TaskModel> Tasks { get; set; }
         public ObservableCollection<string> AvailableAssignees { get; set; }
 
+        private TaskRepository _repository;
+
         public MainViewModel()
         {
-            AvailableAssignees = new ObservableCollection<string>
-            {
-                "Nguyễn Văn A", "Trần Thị B", "Lê Văn C", "Phạm Văn D"
-            };
+            string connectionString = @"Server=localhost;Database=TaskManagerDB;Trusted_Connection=True;";
+            _repository = new TaskRepository(connectionString);
 
-            Tasks = new ObservableCollection<TaskModel>
+            // Load from DB
+            var taskList = _repository.GetAllTasks();
+            Tasks = new ObservableCollection<TaskModel>(taskList);
+
+            // Lấy danh sách người phụ trách từ các công việc
+            AvailableAssignees = new ObservableCollection<string>();
+            foreach (var task in taskList)
             {
-                new TaskModel { Id = "CV001", Title = "Viết tài liệu", Description = "Soạn tài liệu sử dụng", Assignee = "Nguyễn Văn A", Status = "Chưa thực hiện" },
-                new TaskModel { Id = "CV002", Title = "Kiểm thử", Description = "Test module đăng nhập", Assignee = "Trần Thị B", Status = "Đang thực hiện" },
-                new TaskModel { Id = "CV003", Title = "Triển khai", Description = "Cài đặt server", Assignee = "Lê Văn C", Status = "Hoàn thành" }
-            };
+                if (!AvailableAssignees.Contains(task.Assignee))
+                    AvailableAssignees.Add(task.Assignee);
+            }
         }
     }
 }
