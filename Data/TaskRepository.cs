@@ -52,10 +52,10 @@ namespace TaskManager.Data
         {
             return status switch
             {
-                0 => "Chưa thực hiện",
-                1 => "Đang thực hiện",
-                2 => "Hoàn thành",
-                _ => "Không xác định"
+                0 => "Not Started",
+                1 => "In Progress",
+                2 => "Completed",
+                _ => "Unknown"
             };
         }
     }
