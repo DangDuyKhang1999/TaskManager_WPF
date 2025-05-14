@@ -6,7 +6,6 @@ namespace TaskManager
 {
     public partial class LoginWindow : Window
     {
-        // Chuỗi kết nối cơ sở dữ liệu
         private readonly string _connectionString = @"Server=localhost;Database=TaskManagerDB;Trusted_Connection=True;";
 
         public LoginWindow()
@@ -20,35 +19,31 @@ namespace TaskManager
             string username = UsernameTextBox.Text.Trim();
             string password = PasswordBox.Password.Trim();
 
-            // Kiểm tra nếu username và password không rỗng
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
                 ErrorMessage.Text = "Username or password cannot be empty!";
                 return;
             }
 
-            // Kiểm tra thông tin đăng nhập
             if (AuthenticateUser(username, password))
             {
+                SaveLoginHistory(username);
                 this.DialogResult = true;
                 this.Close();
             }
             else
             {
-                // Nếu thông tin không đúng, hiển thị thông báo lỗi
                 ErrorMessage.Text = "Invalid username or password.";
             }
         }
 
-        // Hàm xác thực người dùng
         private bool AuthenticateUser(string username, string password)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                // Lấy thông tin người dùng từ cơ sở dữ liệu
-                string query = "SELECT PasswordHash FROM Users WHERE Email = @Username AND IsActive = 1";
+                string query = "SELECT PasswordHash, IsAdmin FROM Users WHERE Email = @Username AND IsActive = 1";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Username", username);
@@ -58,14 +53,50 @@ namespace TaskManager
                         if (reader.Read())
                         {
                             string storedPasswordHash = reader["PasswordHash"].ToString();
+                            bool isAdmin = Convert.ToBoolean(reader["IsAdmin"]);
 
-                            // So sánh trực tiếp mật khẩu nhập vào và mật khẩu lưu trong cơ sở dữ liệu
-                            return password == storedPasswordHash; // So sánh mật khẩu nhập vào và mật khẩu lưu
+                            if (password == storedPasswordHash)
+                            {
+                                return true;
+                            }
                         }
                     }
                 }
             }
-            return false; // Trả về false nếu không tìm thấy người dùng hoặc mật khẩu sai
+            return false;
+        }
+
+        private void SaveLoginHistory(string email)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    connection.Open();
+
+                    // Xóa toàn bộ bản ghi trong bảng UserLoginHistory
+                    string deleteQuery = "DELETE FROM UserLoginHistory";
+                    using (var deleteCommand = new SqlCommand(deleteQuery, connection))
+                    {
+                        deleteCommand.ExecuteNonQuery();
+                    }
+
+                    // Thêm bản ghi mới
+                    string insertQuery = @"
+                INSERT INTO UserLoginHistory (Id, Email, IsAdmin)
+                SELECT 1, @Email, IsAdmin FROM Users WHERE Email = @Email
+            ";
+                    using (var insertCommand = new SqlCommand(insertQuery, connection))
+                    {
+                        insertCommand.Parameters.AddWithValue("@Email", email);
+                        insertCommand.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Lỗi khi lưu UserLoginHistory: {ex.Message}");
+                }
+            }
         }
     }
 }
