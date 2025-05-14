@@ -43,7 +43,7 @@ namespace TaskManager
             {
                 connection.Open();
 
-                string query = "SELECT PasswordHash, IsAdmin FROM Users WHERE Email = @Username AND IsActive = 1";
+                string query = "SELECT PasswordHash, IsAdmin FROM Users WHERE Username = @Username AND IsActive = 1";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Username", username);
@@ -65,8 +65,7 @@ namespace TaskManager
             }
             return false;
         }
-
-        private void SaveLoginHistory(string email)
+        private void SaveLoginHistory(string username)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -81,14 +80,30 @@ namespace TaskManager
                         deleteCommand.ExecuteNonQuery();
                     }
 
-                    // Thêm bản ghi mới
+                    // Lấy IsAdmin từ bảng Users
+                    string isAdminQuery = "SELECT IsAdmin FROM Users WHERE Username = @Username";
+                    bool isAdmin = false; // Default to false if no record is found
+                    using (var isAdminCommand = new SqlCommand(isAdminQuery, connection))
+                    {
+                        isAdminCommand.Parameters.AddWithValue("@Username", username);
+
+                        using (var reader = isAdminCommand.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                isAdmin = Convert.ToBoolean(reader["IsAdmin"]);
+                            }
+                        }
+                    }
+
+                    // Thêm bản ghi mới vào bảng UserLoginHistory
                     string insertQuery = @"
-                INSERT INTO UserLoginHistory (Id, Email, IsAdmin)
-                SELECT 1, @Email, IsAdmin FROM Users WHERE Email = @Email
-            ";
+            INSERT INTO UserLoginHistory (Id, Username, IsAdmin)
+            VALUES (1, @Username, @IsAdmin)"; // Thêm IsAdmin vào câu lệnh SQL
                     using (var insertCommand = new SqlCommand(insertQuery, connection))
                     {
-                        insertCommand.Parameters.AddWithValue("@Email", email);
+                        insertCommand.Parameters.AddWithValue("@Username", username);
+                        insertCommand.Parameters.AddWithValue("@IsAdmin", isAdmin); // Chuyển IsAdmin vào câu lệnh SQL
                         insertCommand.ExecuteNonQuery();
                     }
                 }
