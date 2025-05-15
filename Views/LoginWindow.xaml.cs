@@ -56,7 +56,7 @@ namespace TaskManager.Views
                     {
                         if (reader.Read())
                         {
-                            string storedPasswordHash = reader["PasswordHash"].ToString();
+                            string storedPasswordHash = reader["PasswordHash"] as string ?? string.Empty;
                             bool isAdmin = Convert.ToBoolean(reader["IsAdmin"]);
 
                             if (string.Equals(password, storedPasswordHash, StringComparison.Ordinal))

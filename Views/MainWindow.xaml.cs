@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using TaskManager.Services;
 
 namespace TaskManager.Views
 {
@@ -7,6 +8,13 @@ namespace TaskManager.Views
         public MainWindow()
         {
             InitializeComponent();
+            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            this.Closed += MainWindow_Closed;
+        }
+
+        private void MainWindow_Closed(object? sender, System.EventArgs e)
+        {
+            Logger.Instance.Info("***** Task Manager end *****");
         }
     }
 }
