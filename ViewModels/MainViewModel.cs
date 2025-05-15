@@ -10,24 +10,22 @@ namespace TaskManager.ViewModels
         public ObservableCollection<TaskModel> Tasks { get; set; }
         public ObservableCollection<string> AvailableAssignees { get; set; }
 
-        private TaskRepository _repository;
+        private readonly TaskRepository _repository;
 
         public MainViewModel()
         {
             string connectionString = @"Server=localhost;Database=TaskManagerDB;Trusted_Connection=True;";
             _repository = new TaskRepository(connectionString);
 
-            // Load from DB
+            // Load tasks from DB
             var taskList = _repository.GetAllTasks();
             Tasks = new ObservableCollection<TaskModel>(taskList);
 
-            // Lấy danh sách người phụ trách từ các công việc
-            AvailableAssignees = new ObservableCollection<string>();
-            foreach (var task in taskList)
-            {
-                if (!AvailableAssignees.Contains(task.Assignee))
-                    AvailableAssignees.Add(task.Assignee);
-            }
+            // Load all usernames into shared DatabaseContext
+            var allUsernames = _repository.GetAllUsernamesFromDb();
+            DatabaseContext.Instance.LoadUserNames(allUsernames);
+            // Use loaded usernames for AvailableAssignees
+            AvailableAssignees = new ObservableCollection<string>(DatabaseContext.Instance.UserNames);
         }
     }
 }

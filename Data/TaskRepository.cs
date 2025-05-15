@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using TaskManager.Models;
-using TaskManager.Services; // Dùng UserSession
+using TaskManager.Services;
 
 namespace TaskManager.Data
 {
@@ -18,47 +18,88 @@ namespace TaskManager.Data
         public List<TaskModel> GetAllTasks()
         {
             var tasks = new List<TaskModel>();
-            using var connection = new SqlConnection(_connectionString);
-            connection.Open();
 
-            string query = @"
-                SELECT T.Code, T.Title, T.Description, 
-                       ISNULL(U.DisplayName, '(Unassigned)') AS Assignee, 
-                       T.Status, T.DueDate, T.Priority, T.CreatedAt, T.UpdatedAt
-                FROM Tasks T
-                LEFT JOIN Users U ON T.AssigneeId = U.Id";
-
-            // Nếu không phải Admin thì lọc theo người dùng hiện tại
-            if (!UserSession.Instance.IsAdmin)
+            try
             {
-                query += " WHERE U.UserName = @UserName";
-            }
+                using var connection = new SqlConnection(_connectionString);
+                connection.Open();
 
-            using var command = new SqlCommand(query, connection);
+                string query = @"
+                    SELECT T.Code, T.Title, T.Description, 
+                           ISNULL(U.DisplayName, '(Unassigned)') AS Assignee, 
+                           T.Status, T.DueDate, T.Priority, T.CreatedAt, T.UpdatedAt
+                    FROM Tasks T
+                    LEFT JOIN Users U ON T.AssigneeId = U.Id";
 
-            if (!UserSession.Instance.IsAdmin)
-            {
-                command.Parameters.AddWithValue("@UserName", UserSession.Instance.UserName);
-            }
-
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                tasks.Add(new TaskModel
+                if (!UserSession.Instance.IsAdmin)
                 {
-                    Id = reader["Code"].ToString(),
-                    Title = reader["Title"].ToString(),
-                    Description = reader["Description"].ToString(),
-                    Assignee = reader["Assignee"].ToString(),
-                    Status = GetStatusString(Convert.ToInt32(reader["Status"])),
-                    DueDate = reader["DueDate"] != DBNull.Value ? Convert.ToDateTime(reader["DueDate"]) : DateTime.MinValue,
-                    Priority = Convert.ToInt32(reader["Priority"]),
-                    CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
-                    UpdatedAt = Convert.ToDateTime(reader["UpdatedAt"])
-                });
+                    query += " WHERE U.UserName = @UserName";
+                }
+
+                using var command = new SqlCommand(query, connection);
+
+                if (!UserSession.Instance.IsAdmin)
+                {
+                    command.Parameters.AddWithValue("@UserName", UserSession.Instance.UserName);
+                }
+
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    tasks.Add(new TaskModel
+                    {
+                        Id = reader["Code"]?.ToString() ?? string.Empty,
+                        Title = reader["Title"]?.ToString() ?? string.Empty,
+                        Description = reader["Description"]?.ToString() ?? string.Empty,
+                        Assignee = reader["Assignee"]?.ToString() ?? "(Unassigned)",
+                        Status = GetStatusString(Convert.ToInt32(reader["Status"])),
+                        DueDate = reader["DueDate"] != DBNull.Value ? Convert.ToDateTime(reader["DueDate"]) : DateTime.MinValue,
+                        Priority = Convert.ToInt32(reader["Priority"]),
+                        CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
+                        UpdatedAt = Convert.ToDateTime(reader["UpdatedAt"])
+                    });
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"[SQL ERROR] {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] {ex.Message}");
             }
 
             return tasks;
+        }
+
+        public List<string> GetAllUsernamesFromDb()
+        {
+            var usernames = new List<string>();
+
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                connection.Open();
+
+                string query = "SELECT UserName FROM Users WHERE IsActive = 1";
+                using var command = new SqlCommand(query, connection);
+                using var reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    usernames.Add(reader["UserName"]?.ToString() ?? string.Empty);
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"[SQL ERROR] {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] {ex.Message}");
+            }
+
+            return usernames;
         }
 
         private string GetStatusString(int status)
