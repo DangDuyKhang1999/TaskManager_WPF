@@ -2,7 +2,7 @@
 using System.Data.SqlClient;
 using System.Windows;
 
-namespace TaskManager
+namespace TaskManager.Views
 {
     public partial class LoginWindow : Window
     {

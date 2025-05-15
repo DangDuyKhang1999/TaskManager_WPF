@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using TaskManager.Views;
 
 namespace TaskManager
 {
