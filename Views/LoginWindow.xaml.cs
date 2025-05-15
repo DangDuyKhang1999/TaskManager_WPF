@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Windows;
+using TaskManager.Services;
 
 namespace TaskManager.Views
 {
@@ -35,14 +36,18 @@ namespace TaskManager.Views
                 ErrorMessage.Text = "Invalid username or password.";
             }
         }
-
         private bool AuthenticateUser(string username, string password)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                string query = "SELECT PasswordHash, IsAdmin FROM Users WHERE Username = @Username AND IsActive = 1";
+                string query = @"
+            SELECT PasswordHash, IsAdmin 
+            FROM Users 
+            WHERE Username = @Username COLLATE Latin1_General_BIN
+            AND IsActive = 1";
+
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Username", username);
@@ -54,8 +59,9 @@ namespace TaskManager.Views
                             string storedPasswordHash = reader["PasswordHash"].ToString();
                             bool isAdmin = Convert.ToBoolean(reader["IsAdmin"]);
 
-                            if (password == storedPasswordHash)
+                            if (string.Equals(password, storedPasswordHash, StringComparison.Ordinal))
                             {
+                                UserSession.Instance.Initialize(username, isAdmin);
                                 return true;
                             }
                         }

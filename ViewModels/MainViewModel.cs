@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using TaskManager.Models;
 using TaskManager.Data;
+using TaskManager.Services;
 
 namespace TaskManager.ViewModels
 {

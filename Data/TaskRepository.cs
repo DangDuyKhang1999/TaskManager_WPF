@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using TaskManager.Models;
+using TaskManager.Services; // Dùng UserSession
 
 namespace TaskManager.Data
 {
@@ -21,13 +22,25 @@ namespace TaskManager.Data
             connection.Open();
 
             string query = @"
-        SELECT T.Code, T.Title, T.Description, 
-               ISNULL(U.DisplayName, N'(Chưa phân công)') AS Assignee, 
-               T.Status, T.DueDate, T.Priority, T.CreatedAt, T.UpdatedAt
-        FROM Tasks T
-        LEFT JOIN Users U ON T.AssigneeId = U.Id";
+                SELECT T.Code, T.Title, T.Description, 
+                       ISNULL(U.DisplayName, '(Unassigned)') AS Assignee, 
+                       T.Status, T.DueDate, T.Priority, T.CreatedAt, T.UpdatedAt
+                FROM Tasks T
+                LEFT JOIN Users U ON T.AssigneeId = U.Id";
+
+            // Nếu không phải Admin thì lọc theo người dùng hiện tại
+            if (!UserSession.Instance.IsAdmin)
+            {
+                query += " WHERE U.UserName = @UserName";
+            }
 
             using var command = new SqlCommand(query, connection);
+
+            if (!UserSession.Instance.IsAdmin)
+            {
+                command.Parameters.AddWithValue("@UserName", UserSession.Instance.UserName);
+            }
+
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
