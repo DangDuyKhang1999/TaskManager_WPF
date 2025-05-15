@@ -27,7 +27,6 @@ namespace TaskManager
 
             if (AuthenticateUser(username, password))
             {
-                SaveLoginHistory(username);
                 this.DialogResult = true;
                 this.Close();
             }
@@ -64,54 +63,6 @@ namespace TaskManager
                 }
             }
             return false;
-        }
-        private void SaveLoginHistory(string username)
-        {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    connection.Open();
-
-                    // Xóa toàn bộ bản ghi trong bảng UserLoginHistory
-                    string deleteQuery = "DELETE FROM UserLoginHistory";
-                    using (var deleteCommand = new SqlCommand(deleteQuery, connection))
-                    {
-                        deleteCommand.ExecuteNonQuery();
-                    }
-
-                    // Lấy IsAdmin từ bảng Users
-                    string isAdminQuery = "SELECT IsAdmin FROM Users WHERE Username = @Username";
-                    bool isAdmin = false; // Default to false if no record is found
-                    using (var isAdminCommand = new SqlCommand(isAdminQuery, connection))
-                    {
-                        isAdminCommand.Parameters.AddWithValue("@Username", username);
-
-                        using (var reader = isAdminCommand.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                isAdmin = Convert.ToBoolean(reader["IsAdmin"]);
-                            }
-                        }
-                    }
-
-                    // Thêm bản ghi mới vào bảng UserLoginHistory
-                    string insertQuery = @"
-            INSERT INTO UserLoginHistory (Id, Username, IsAdmin)
-            VALUES (1, @Username, @IsAdmin)"; // Thêm IsAdmin vào câu lệnh SQL
-                    using (var insertCommand = new SqlCommand(insertQuery, connection))
-                    {
-                        insertCommand.Parameters.AddWithValue("@Username", username);
-                        insertCommand.Parameters.AddWithValue("@IsAdmin", isAdmin); // Chuyển IsAdmin vào câu lệnh SQL
-                        insertCommand.ExecuteNonQuery();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Lỗi khi lưu UserLoginHistory: {ex.Message}");
-                }
-            }
         }
     }
 }
