@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows;
 using TaskManager.Views; // For Login Screen
-using TaskManager.Services;  // For Logger
+using TaskManager.Services;
+using TaskManager.Contexts;  // For Logger
 
 namespace TaskManager
 {

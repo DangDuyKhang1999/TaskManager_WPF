@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TaskManager.Services
+namespace TaskManager.Contexts
 {
     public class DatabaseContext
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Windows;
-using TaskManager.Services;
+using TaskManager.Contexts;
 
 namespace TaskManager.Views
 {
