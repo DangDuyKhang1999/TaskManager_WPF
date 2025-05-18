@@ -14,24 +14,7 @@ public class TaskRepository
     public TaskRepository(string connectionString)
     {
         _connectionString = connectionString;
-    }
-
-    /// <summary>
-    /// Retrieves the employee code associated with a given username.
-    /// </summary>
-    /// <param name="username">The username to search for.</param>
-    /// <returns>The employee code if found; otherwise, an empty string.</returns>
-    private string GetEmployeeCodeByUsername(string username)
-    {
-        using var connection = new SqlConnection(_connectionString);
-        connection.Open();
-
-        const string query = "SELECT EmployeeCode FROM Users WHERE Username = @Username";
-        using var command = new SqlCommand(query, connection);
-        command.Parameters.AddWithValue("@Username", username);
-
-        var result = command.ExecuteScalar();
-        return result?.ToString() ?? string.Empty;
+        Logger.Instance.Info("TaskRepository initialized with connection string.");
     }
 
     /// <summary>
@@ -46,6 +29,7 @@ public class TaskRepository
 
         try
         {
+            Logger.Instance.Info("Opening database connection to load tasks.");
             using var connection = new SqlConnection(_connectionString);
             connection.Open();
 
@@ -72,12 +56,12 @@ public class TaskRepository
 
             if (UserSession.Instance.IsAdmin)
             {
-                // Admin users see tasks where they are reporter or assignee
+                Logger.Instance.Info($"User {employeeCode} is admin, loading tasks as reporter and assignee.");
                 whereCondition = "WHERE t.ReporterId = @EmployeeCode OR t.AssigneeId = @EmployeeCode";
             }
             else
             {
-                // Non-admin users see tasks assigned to them only
+                Logger.Instance.Info($"User {employeeCode} is not admin, loading tasks assigned to user.");
                 whereCondition = "WHERE t.AssigneeId = @EmployeeCode";
             }
 
@@ -86,16 +70,19 @@ public class TaskRepository
             using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@EmployeeCode", employeeCode);
 
+            Logger.Instance.Info("Executing task query.");
             using var reader = command.ExecuteReader();
 
             while (reader.Read())
             {
                 tasks.Add(MapReaderToTask(reader));
             }
+
+            Logger.Instance.Info($"Successfully loaded tasks for user {employeeCode}. Total tasks: {tasks.Count}.");
         }
         catch (Exception ex)
         {
-            Logger.Instance.Error(ex.Message);
+            Logger.Instance.Error($"Failed to load tasks: {ex.Message}");
         }
 
         return tasks;

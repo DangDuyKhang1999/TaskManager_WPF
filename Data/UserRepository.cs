@@ -11,12 +11,13 @@ namespace TaskManager.Data
         private readonly string _connectionString;
 
         /// <summary>
-        /// Initializes a new instance of UserRepository with the specified connection string.
+        /// Initializes a new instance of <see cref="UserRepository"/> with the specified connection string.
         /// </summary>
         /// <param name="connectionString">Database connection string.</param>
         public UserRepository(string connectionString)
         {
             _connectionString = connectionString;
+            Logger.Instance.Info("UserRepository initialized with connection string.");
         }
 
         /// <summary>
@@ -31,13 +32,14 @@ namespace TaskManager.Data
 
             try
             {
+                Logger.Instance.Info("Opening database connection to load user list and admin list.");
                 using var connection = new SqlConnection(_connectionString);
                 connection.Open();
 
-                // Query to select usernames and their admin status for all active users
-                string query = "SELECT UserName, IsAdmin FROM Users WHERE IsActive = 1";
+                const string query = "SELECT UserName, IsAdmin FROM Users WHERE IsActive = 1";
 
                 using var command = new SqlCommand(query, connection);
+
                 using var reader = command.ExecuteReader();
 
                 // Read each record and classify user as admin or normal user
@@ -47,20 +49,23 @@ namespace TaskManager.Data
                     bool isAdmin = reader["IsAdmin"] != DBNull.Value && (bool)reader["IsAdmin"];
 
                     if (isAdmin)
+                    {
                         admins.Add(username);
+                    }
                     else
+                    {
                         users.Add(username);
+                    }
                 }
+                Logger.Instance.Info("Successfully retrieved list of users and admins.");
             }
             catch (SqlException ex)
             {
-                // Log SQL-specific errors
                 Logger.Instance.Error($"[SQL] {ex.Message}");
             }
             catch (Exception ex)
             {
-                // Log any other unexpected errors
-                Logger.Instance.Error($" {ex.Message}");
+                Logger.Instance.Error($"Unexpected error: {ex.Message}");
             }
         }
     }
