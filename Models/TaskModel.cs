@@ -65,7 +65,7 @@ namespace TaskManager.Models
         /// <summary>
         /// Gets or sets the priority of the task.
         /// </summary>
-        public int Priority { get; set; }
+        public string? Priority { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time when the task was created.

@@ -12,10 +12,31 @@
                   HeadersVisibility="Column"
                   GridLinesVisibility="All">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Task Code" Binding="{Binding Id}" Width="*" IsReadOnly="True"/>
+                <!-- Task Code -->
+                <DataGridTextColumn Header="Task Code" Binding="{Binding Code}" Width="*" IsReadOnly="True"/>
+
+                <!-- Task Name -->
                 <DataGridTextColumn Header="Task Name" Binding="{Binding Title}" Width="*"/>
+
+                <!-- Description -->
                 <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
 
+                <!-- Reporter -->
+                <DataGridTemplateColumn Header="Reporter" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Reporter}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding DataContext.AvailableReporters, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                      SelectedItem="{Binding Reporter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+
+                <!-- Assignee -->
                 <DataGridTemplateColumn Header="Assignee" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -30,11 +51,20 @@
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
+                <!-- Status -->
                 <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*"/>
-                <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate}" Width="*" />
+
+                <!-- Due Date -->
+                <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate, StringFormat={}{0:yyyy-MM-dd}}" Width="*" />
+
+                <!-- Priority -->
                 <DataGridTextColumn Header="Priority" Binding="{Binding Priority}" Width="*" />
-                <DataGridTextColumn Header="Created Date" Binding="{Binding CreatedAt}" Width="*" />
-                <DataGridTextColumn Header="Updated Date" Binding="{Binding UpdatedAt}" Width="*" />
+
+                <!-- Created Date -->
+                <DataGridTextColumn Header="Created Date" Binding="{Binding CreatedAt, StringFormat={}{0:yyyy-MM-dd HH:mm}}" Width="*" />
+
+                <!-- Updated Date -->
+                <DataGridTextColumn Header="Updated Date" Binding="{Binding UpdatedAt, StringFormat={}{0:yyyy-MM-dd HH:mm}}" Width="*" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

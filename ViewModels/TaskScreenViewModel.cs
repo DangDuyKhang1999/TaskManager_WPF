@@ -6,10 +6,10 @@ using TaskManager.Contexts;
 namespace TaskManager.ViewModels
 {
     /// <summary>
-    /// MainViewModel provides data binding for the main UI,
+    /// TaskScreenViewModel provides data binding for the main UI,
     /// including task list and available assignees (users/admins).
     /// </summary>
-    public class MainViewModel
+    public class TaskScreenViewModel
     {
         /// <summary>
         /// Collection of tasks to display in the UI.
@@ -34,7 +34,7 @@ namespace TaskManager.ViewModels
         /// loads tasks, users, and admins from the database,
         /// and initializes collections for UI binding.
         /// </summary>
-        public MainViewModel()
+        public TaskScreenViewModel()
         {
             string connectionString = @"Server=localhost;Database=TaskManagerDB;Trusted_Connection=True;";
 

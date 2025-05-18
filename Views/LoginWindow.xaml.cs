@@ -47,11 +47,15 @@ namespace TaskManager.Views
         }
 
         /// <summary>
-        /// Authenticates user credentials against the database.
+        /// Authenticates the user by verifying the provided username and password
+        /// against the stored credentials in the database.
         /// </summary>
-        /// <param name="username">Username input</param>
-        /// <param name="password">Password input</param>
-        /// <returns>True if authentication succeeds, otherwise false</returns>
+        /// <param name="username">The username entered by the user.</param>
+        /// <param name="password">The password entered by the user (in plain text).</param>
+        /// <returns>
+        /// True if the username exists, the password matches, and the user is active; 
+        /// otherwise, false.
+        /// </returns>
         private bool AuthenticateUser(string username, string password)
         {
             try
@@ -60,10 +64,10 @@ namespace TaskManager.Views
                 connection.Open();
 
                 string query = @"
-                    SELECT PasswordHash, IsAdmin 
-                    FROM Users 
-                    WHERE Username = @Username COLLATE Latin1_General_BIN
-                    AND IsActive = 1";
+            SELECT PasswordHash, IsAdmin, EmployeeCode 
+            FROM Users 
+            WHERE Username = @Username COLLATE Latin1_General_BIN
+            AND IsActive = 1";
 
                 using var command = new SqlCommand(query, connection);
                 command.Parameters.Add("@Username", System.Data.SqlDbType.NVarChar).Value = username;
@@ -73,16 +77,18 @@ namespace TaskManager.Views
                 {
                     var passwordHashObj = reader["PasswordHash"];
                     var isAdminObj = reader["IsAdmin"];
+                    var employeeCodeObj = reader["EmployeeCode"];
 
-                    if (passwordHashObj != DBNull.Value && isAdminObj != DBNull.Value)
+                    if (passwordHashObj != DBNull.Value && isAdminObj != DBNull.Value && employeeCodeObj != DBNull.Value)
                     {
                         string storedPasswordHash = (string)passwordHashObj;
                         bool isAdmin = (bool)isAdminObj;
+                        string employeeCode = (string)employeeCodeObj;
 
                         // Compare password directly - consider replacing with secure hash check
                         if (string.Equals(password, storedPasswordHash, StringComparison.Ordinal))
                         {
-                            UserSession.Instance.Initialize(username, isAdmin);
+                            UserSession.Instance.Initialize(username, employeeCode, isAdmin);
                             return true;
                         }
                     }
