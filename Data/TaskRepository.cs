@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using TaskManager.Contexts;
 using TaskManager.Models;
+using TaskManager.Services;
 
 namespace TaskManager.Data
 {
@@ -62,11 +63,11 @@ namespace TaskManager.Data
             }
             catch (SqlException ex)
             {
-                Console.WriteLine($"[SQL ERROR] {ex.Message}");
+                Logger.Instance.Error($" [SQL] {ex.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] {ex.Message}");
+                Logger.Instance.Error($" {ex.Message}");
             }
 
             return tasks;
@@ -92,11 +93,11 @@ namespace TaskManager.Data
             }
             catch (SqlException ex)
             {
-                Console.WriteLine($"[SQL ERROR] {ex.Message}");
+                Logger.Instance.Error($"[SQL] {ex.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] {ex.Message}");
+                Logger.Instance.Error($" {ex.Message}");
             }
 
             return usernames;

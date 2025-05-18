@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows;
 using TaskManager.Views; // For Login Screen
-using TaskManager.Services;
-using TaskManager.Contexts;  // For Logger
+using TaskManager.Services; // For Logger
+using TaskManager.Contexts;
 
 namespace TaskManager
 {
@@ -29,7 +29,7 @@ namespace TaskManager
             if (loginResult == true)
             {
                 Logger.Instance.Success($"Logged in successfully!!!");
-                Logger.Instance.Info($"User: '{UserSession.Instance.UserName}', Admin: {UserSession.Instance.IsAdmin}");
+                Logger.Instance.Info($"User = '{UserSession.Instance.UserName}', Admin = {UserSession.Instance.IsAdmin}");
                 var mainWindow = new MainWindow();
                 Application.Current.MainWindow = mainWindow;
                 mainWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;

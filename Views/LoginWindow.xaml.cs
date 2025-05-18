@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Windows;
 using TaskManager.Contexts;
+using TaskManager.Services;
 
 namespace TaskManager.Views
 {
@@ -23,6 +24,7 @@ namespace TaskManager.Views
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
                 ErrorMessage.Text = "Username or password cannot be empty!";
+                Logger.Instance.Warning("Username or password cannot be empty!");
                 return;
             }
 
@@ -34,39 +36,54 @@ namespace TaskManager.Views
             else
             {
                 ErrorMessage.Text = "Invalid username or password.";
+                Logger.Instance.Warning("Invalid username or password.");
             }
         }
         private bool AuthenticateUser(string username, string password)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                connection.Open();
-
-                string query = @"
-            SELECT PasswordHash, IsAdmin 
-            FROM Users 
-            WHERE Username = @Username COLLATE Latin1_General_BIN
-            AND IsActive = 1";
-
-                using (var command = new SqlCommand(query, connection))
+                using (var connection = new SqlConnection(_connectionString))
                 {
-                    command.Parameters.AddWithValue("@Username", username);
+                    connection.Open();
 
-                    using (var reader = command.ExecuteReader())
+                    string query = @"
+                SELECT PasswordHash, IsAdmin 
+                FROM Users 
+                WHERE Username = @Username COLLATE Latin1_General_BIN
+                AND IsActive = 1";
+
+                    using (var command = new SqlCommand(query, connection))
                     {
-                        if (reader.Read())
-                        {
-                            string storedPasswordHash = reader["PasswordHash"] as string ?? string.Empty;
-                            bool isAdmin = Convert.ToBoolean(reader["IsAdmin"]);
+                        command.Parameters.Add("@Username", System.Data.SqlDbType.NVarChar).Value = username;
 
-                            if (string.Equals(password, storedPasswordHash, StringComparison.Ordinal))
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
                             {
-                                UserSession.Instance.Initialize(username, isAdmin);
-                                return true;
+                                var passwordHashObj = reader["PasswordHash"];
+                                var isAdminObj = reader["IsAdmin"];
+
+                                if (passwordHashObj != DBNull.Value && isAdminObj != DBNull.Value)
+                                {
+                                    string storedPasswordHash = (string)passwordHashObj;
+                                    bool isAdmin = (bool)isAdminObj;
+
+                                    if (string.Equals(password, storedPasswordHash, StringComparison.Ordinal))
+                                    {
+                                        UserSession.Instance?.Initialize(username, isAdmin);
+                                        return true;
+                                    }
+                                }
                             }
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error("Authentication failed: " + ex.Message);
+                ErrorMessage.Text = "An error occurred during login. Please contact admin.";
             }
             return false;
         }
