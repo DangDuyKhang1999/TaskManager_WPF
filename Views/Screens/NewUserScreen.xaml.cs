@@ -1,25 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows.Controls;
+using TaskManager.Services;
 
 namespace TaskManager.Views.Screens
 {
     /// <summary>
     /// Interaction logic for NewUserScreen.xaml
+    /// This screen allows admin users to create a new user and save it to the database.
     /// </summary>
     public partial class NewUserScreen : UserControl
     {
+        /// <summary>
+        /// Constructor initializes the UI components of the NewUserScreen.
+        /// </summary>
         public NewUserScreen()
         {
             InitializeComponent();
