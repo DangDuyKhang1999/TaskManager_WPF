@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using TaskManager.Contexts;
 using TaskManager.Services;
+using TaskManager.ViewModels;
 
 namespace TaskManager.Views
 {
@@ -9,7 +10,7 @@ namespace TaskManager.Views
         public MainWindow()
         {
             InitializeComponent();
-
+            DataContext = new TaskScreenViewModel();
             // Show the "New User" tab only if the current user is an admin
             if (UserSession.Instance.IsAdmin)
             {
