@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using TaskManager.Contexts;
 using TaskManager.Services;
 
 namespace TaskManager.Views
@@ -8,6 +9,10 @@ namespace TaskManager.Views
         public MainWindow()
         {
             InitializeComponent();
+            if (UserSession.Instance.IsAdmin)
+            {
+                NewUserTab.Visibility = Visibility.Visible;
+            }
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             this.Closed += MainWindow_Closed;
         }
