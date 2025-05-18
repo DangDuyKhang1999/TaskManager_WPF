@@ -21,7 +21,7 @@ namespace TaskManager.Data
         }
 
         /// <summary>
-        /// Retrieves all active usernames from the database, separated by user type (normal users and admins).
+        /// Retrieves all active users from the database, separated by user type (normal users and admins).
         /// </summary>
         /// <param name="users">Output list of usernames who are normal users (IsAdmin = 0).</param>
         /// <param name="admins">Output list of usernames who are admins (IsAdmin = 1).</param>
@@ -37,23 +37,23 @@ namespace TaskManager.Data
                 connection.Open();
 
                 Logger.Instance.Info("Executing query to retrieve active users and admins.");
-                const string query = "SELECT UserName, IsAdmin FROM Users WHERE IsActive = 1";
+                const string query = "SELECT DisplayName, IsAdmin FROM Users WHERE IsActive = 1";
                 using var command = new SqlCommand(query, connection);
                 using var reader = command.ExecuteReader();
 
                 // Read each record and classify user as admin or normal user
                 while (reader.Read())
                 {
-                    string username = reader["UserName"]?.ToString() ?? string.Empty;
+                    string displayName = reader["DisplayName"]?.ToString() ?? string.Empty;
                     bool isAdmin = reader["IsAdmin"] != DBNull.Value && (bool)reader["IsAdmin"];
 
                     if (isAdmin)
                     {
-                        admins.Add(username);
+                        admins.Add(displayName);
                     }
                     else
                     {
-                        users.Add(username);
+                        users.Add(displayName);
                     }
                 }
                 Logger.Instance.Info("Successfully retrieved list of users and admins.");

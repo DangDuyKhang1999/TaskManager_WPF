@@ -97,49 +97,49 @@ public class TaskRepository
     {
         return new TaskModel
         {
-            Id = reader["Id"]?.ToString(),
+            Id = Convert.ToInt32(reader["Id"]),
             Code = reader["Code"]?.ToString() ?? string.Empty,
             Title = reader["Title"]?.ToString() ?? string.Empty,
             Description = reader["Description"]?.ToString() ?? string.Empty,
-            Status = GetStatusString(Convert.ToInt32(reader["Status"])),
+            Status = Convert.ToInt32(reader["Status"]),
             DueDate = reader["DueDate"] != DBNull.Value ? Convert.ToDateTime(reader["DueDate"]) : DateTime.MinValue,
-            Priority = GetPriorityString(Convert.ToInt32(reader["Priority"])),
-            Reporter = reader["ReporterName"]?.ToString() ?? "(Unknown)",
-            Assignee = reader["AssigneeName"]?.ToString() ?? "(Unassigned)",
+            Priority = Convert.ToInt32(reader["Priority"]),
+            ReporterId = reader["ReporterName"]?.ToString() ?? "(Unknown)",
+            AssigneeId = reader["AssigneeName"]?.ToString() ?? "(Unassigned)",
             CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
             UpdatedAt = Convert.ToDateTime(reader["UpdatedAt"])
         };
     }
-
-    /// <summary>
-    /// Converts an integer status code from the database into a user-friendly string representation for the UI.
-    /// </summary>
-    /// <param name="status">The status code stored as an integer in the database.</param>
-    /// <returns>The corresponding status string to display in the UI.</returns>
-    private string GetStatusString(int status)
+    public void InsertTask(TaskModel task)
     {
-        return status switch
+        try
         {
-            0 => "Not Started",
-            1 => "In Progress",
-            2 => "Completed",
-            _ => "Unknown"
-        };
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
+
+            var query = @"
+            INSERT INTO Tasks
+                (Code, Title, Description, Status, DueDate, Priority, ReporterId, AssigneeId, CreatedAt, UpdatedAt)
+            VALUES
+                (@Code, @Title, @Description, @Status, @DueDate, @Priority, @ReporterId, @AssigneeId, GETDATE(), GETDATE())";
+
+            using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Code", task.Code ?? string.Empty);
+            command.Parameters.AddWithValue("@Title", task.Title ?? string.Empty);
+            command.Parameters.AddWithValue("@Description", task.Description ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@Status", task.Status);
+            command.Parameters.AddWithValue("@DueDate", task.DueDate != DateTime.MinValue ? (object)task.DueDate : DBNull.Value);
+            command.Parameters.AddWithValue("@Priority", task.Priority);
+            command.Parameters.AddWithValue("@ReporterId", task.ReporterId ?? string.Empty);
+            command.Parameters.AddWithValue("@AssigneeId", task.AssigneeId ?? string.Empty);
+
+            command.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            Logger.Instance.Error($"Failed to insert task: {ex.Message}");
+            throw; 
+        }
     }
 
-    /// <summary>
-    /// Converts an integer priority code from the database into a user-friendly string representation for the UI.
-    /// </summary>
-    /// <param name="priority">The priority code stored as an integer in the database.</param>
-    /// <returns>The corresponding priority string to display in the UI.</returns>
-    private string GetPriorityString(int priority)
-    {
-        return priority switch
-        {
-            0 => "High",
-            1 => "Medium",
-            2 => "Low",
-            _ => "Unknown"
-        };
-    }
 }

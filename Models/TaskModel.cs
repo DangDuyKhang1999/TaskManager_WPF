@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 
 namespace TaskManager.Models
 {
@@ -9,11 +10,13 @@ namespace TaskManager.Models
     public class TaskModel : INotifyPropertyChanged
     {
         private string _assignee = string.Empty;
+        private int _status;
+        private int _priority;
 
         /// <summary>
         /// Gets or sets the unique identifier of the task.
         /// </summary>
-        public string? Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Gets or sets the task code.
@@ -31,20 +34,43 @@ namespace TaskManager.Models
         public string? Description { get; set; }
 
         /// <summary>
-        /// Gets or sets the current status of the task (e.g., "In Progress", "Completed").
+        /// Gets or sets the current status of the task (0=Not Started, 1=In Progress, 2=Completed).
         /// </summary>
-        public string? Status { get; set; }
+        public int Status
+        {
+            get => _status;
+            set
+            {
+                if (_status != value)
+                {
+                    _status = value;
+                    OnPropertyChanged(nameof(Status));
+                    OnPropertyChanged(nameof(StatusString));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the string representation of the task status for UI display.
+        /// </summary>
+        public string StatusString => _status switch
+        {
+            0 => "Not Started",
+            1 => "In Progress",
+            2 => "Completed",
+            _ => "Unknown"
+        };
 
         /// <summary>
         /// Gets or sets the reporter (creator) of the task.
         /// </summary>
-        public string? Reporter { get; set; }
+        public string? ReporterId { get; set; }
 
         /// <summary>
         /// Gets or sets the assignee of the task.
         /// Raises PropertyChanged event when the value changes.
         /// </summary>
-        public string Assignee
+        public string AssigneeId
         {
             get => _assignee;
             set
@@ -52,7 +78,7 @@ namespace TaskManager.Models
                 if (_assignee != value)
                 {
                     _assignee = value;
-                    OnPropertyChanged(nameof(Assignee));
+                    OnPropertyChanged(nameof(AssigneeId));
                 }
             }
         }
@@ -65,7 +91,30 @@ namespace TaskManager.Models
         /// <summary>
         /// Gets or sets the priority of the task.
         /// </summary>
-        public string? Priority { get; set; }
+        public int Priority
+        {
+            get => _priority;
+            set
+            {
+                if (_priority != value)
+                {
+                    _priority = value;
+                    OnPropertyChanged(nameof(Priority));
+                    OnPropertyChanged(nameof(PriorityString));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the string representation of the priority for UI display.
+        /// </summary>
+        public string PriorityString => _priority switch
+        {
+            0 => "High",
+            1 => "Medium",
+            2 => "Low",
+            _ => "Unknown"
+        };
 
         /// <summary>
         /// Gets or sets the date and time when the task was created.

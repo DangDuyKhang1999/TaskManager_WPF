@@ -3,10 +3,55 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TaskManager.Views.Screens"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <TextBlock Text="New Task UI here..." HorizontalAlignment="Center" VerticalAlignment="Center"/>
+             d:DesignHeight="600" d:DesignWidth="800">
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Create New Task" FontSize="24" FontWeight="Bold" Margin="0 0 0 20"/>
+
+        <StackPanel Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Width="400">
+            <TextBlock Text="Code"/>
+            <TextBox x:Name="CodeTextBox" Margin="0 5"/>
+
+            <TextBlock Text="Title"/>
+            <TextBox x:Name="TitleTextBox" Margin="0 5"/>
+
+            <TextBlock Text="Description"/>
+            <TextBox x:Name="DescriptionTextBox" AcceptsReturn="True" Height="80" TextWrapping="Wrap" Margin="0 5"/>
+
+            <TextBlock Text="Status"/>
+            <ComboBox x:Name="StatusComboBox" SelectedIndex="0" Margin="0 5">
+                <ComboBoxItem Content="Not Started" Tag="0"/>
+                <ComboBoxItem Content="In Progress" Tag="1"/>
+                <ComboBoxItem Content="Completed" Tag="2"/>
+            </ComboBox>
+
+            <TextBlock Text="Due Date"/>
+            <DatePicker x:Name="DueDatePicker" Margin="0 5"/>
+
+            <TextBlock Text="Priority"/>
+            <ComboBox x:Name="PriorityComboBox" SelectedIndex="0" Margin="0 5">
+                <ComboBoxItem Content="Low" Tag="1"/>
+                <ComboBoxItem Content="Medium" Tag="2"/>
+                <ComboBoxItem Content="High" Tag="3"/>
+            </ComboBox>
+
+            <TextBlock Text="Reporter Id"/>
+            <ComboBox x:Name="ReporterIdComboBox" Margin="0 5" IsEditable="True" IsTextSearchEnabled="False"/>
+
+            <TextBlock Text="Assignee Id"/>
+            <ComboBox x:Name="AssigneeIdComboBox" Margin="0 5" IsEditable="True" IsTextSearchEnabled="False"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 20 0 0">
+            <Button Content="Save" Width="100" Margin="10 0" Click="SaveButton_Click"/>
+            <Button Content="Cancel" Width="100" Click="CancelButton_Click"/>
+        </StackPanel>
     </Grid>
 </UserControl>
