@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace TaskManager.Views.Screens
 {
     /// <summary>
-    /// Interaction logic for NewTaskTab.xaml
+    /// Interaction logic for NewUserScreen.xaml
     /// </summary>
-    public partial class NewTaskTab : UserControl
+    public partial class NewUserScreen : UserControl
     {
-        public NewTaskTab()
+        public NewUserScreen()
         {
             InitializeComponent();
         }

@@ -12,16 +12,16 @@
     <Grid Margin="10">
         <TabControl>
             <TabItem Header="Task">
-                <screens:TaskTab />
+                <screens:TaskScreen />
             </TabItem>
             <TabItem Header="New Task">
-                <screens:NewTaskTab />
+                <screens:NewTaskScreen />
             </TabItem>
             <TabItem Header="New User" x:Name="NewUserTab" Visibility="Collapsed">
-                <screens:NewUserTab />
+                <screens:NewUserScreen />
             </TabItem>
             <TabItem Header="Setting">
-                <screens:SettingTab />
+                <screens:SettingScreen />
             </TabItem>
         </TabControl>
     </Grid>
