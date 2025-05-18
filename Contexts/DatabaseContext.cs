@@ -1,13 +1,12 @@
-﻿
-namespace TaskManager.Contexts
+﻿namespace TaskManager.Contexts
 {
     /// <summary>
-    /// Singleton class that represents the application's database context.
-    /// It holds shared data such as the list of usernames loaded from the database.
+    /// Singleton class representing shared database context.
+    /// Holds cached lists of users separated by role (normal users and admins).
     /// </summary>
     public class DatabaseContext
     {
-        // Lazy initialization to ensure thread-safe singleton instance.
+        // Lazy initialization ensures thread-safe, single instance creation.
         private static readonly Lazy<DatabaseContext> _instance = new(() => new DatabaseContext());
 
         /// <summary>
@@ -17,26 +16,42 @@ namespace TaskManager.Contexts
 
         /// <summary>
         /// Private constructor to prevent external instantiation.
-        /// Initializes the UserNames list.
+        /// Initializes lists for normal users and admins.
         /// </summary>
         private DatabaseContext()
         {
-            UserNames = new List<string>();
+            NormalUsers = new List<string>();
+            AdminUsers = new List<string>();
         }
 
         /// <summary>
-        /// Gets the list of usernames loaded in memory.
+        /// List of normal (non-admin) users cached in memory.
         /// </summary>
-        public List<string> UserNames { get; private set; }
+        public List<string> NormalUsers { get; private set; }
 
         /// <summary>
-        /// Loads the list of usernames into the context by clearing the current list and adding the new usernames.
+        /// List of admin users cached in memory.
         /// </summary>
-        /// <param name="userNames">The list of usernames to load.</param>
-        public void LoadUserNames(List<string> userNames)
+        public List<string> AdminUsers { get; private set; }
+
+        /// <summary>
+        /// Loads the list of normal users by clearing the current list and adding new items.
+        /// </summary>
+        /// <param name="users">List of normal usernames to load.</param>
+        public void LoadNormalUsers(List<string> users)
         {
-            UserNames.Clear();
-            UserNames.AddRange(userNames);
+            NormalUsers.Clear();
+            NormalUsers.AddRange(users);
+        }
+
+        /// <summary>
+        /// Loads the list of admin users by clearing the current list and adding new items.
+        /// </summary>
+        /// <param name="admins">List of admin usernames to load.</param>
+        public void LoadAdminUsers(List<string> admins)
+        {
+            AdminUsers.Clear();
+            AdminUsers.AddRange(admins);
         }
     }
 }

@@ -90,42 +90,6 @@ namespace TaskManager.Data
         }
 
         /// <summary>
-        /// Retrieves all active usernames from the database.
-        /// </summary>
-        /// <returns>A list of usernames as strings.</returns>
-        public List<string> GetAllUsernamesFromDb()
-        {
-            var usernames = new List<string>();
-
-            try
-            {
-                using var connection = new SqlConnection(_connectionString);
-                connection.Open();
-
-                string query = "SELECT UserName FROM Users WHERE IsActive = 1";
-
-                using var command = new SqlCommand(query, connection);
-                using var reader = command.ExecuteReader();
-
-                // Read usernames from the result set.
-                while (reader.Read())
-                {
-                    usernames.Add(reader["UserName"]?.ToString() ?? string.Empty);
-                }
-            }
-            catch (SqlException ex)
-            {
-                Logger.Instance.Error($"[SQL] {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error($" {ex.Message}");
-            }
-
-            return usernames;
-        }
-
-        /// <summary>
         /// Converts an integer status code to its descriptive string representation.
         /// </summary>
         /// <param name="status">The numeric status code.</param>

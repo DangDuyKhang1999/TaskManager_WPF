@@ -6,46 +6,54 @@ using TaskManager.Contexts;
 namespace TaskManager.ViewModels
 {
     /// <summary>
-    /// Main ViewModel class that provides data binding for the main UI.
-    /// It exposes task collection and available assignees for UI binding.
+    /// MainViewModel provides data binding for the main UI,
+    /// including task list and available assignees (users/admins).
     /// </summary>
     public class MainViewModel
     {
         /// <summary>
-        /// Collection of tasks displayed in the UI.
-        /// ObservableCollection supports automatic UI updates when the collection changes.
+        /// Collection of tasks to display in the UI.
+        /// ObservableCollection notifies UI when items change.
         /// </summary>
         public ObservableCollection<TaskModel> Tasks { get; set; }
 
         /// <summary>
-        /// List of available usernames for assigning tasks.
-        /// Also ObservableCollection to update UI if the list changes.
+        /// Collection of assignees available for task assignment.
+        /// This example does not set it here, but you can use users/admins separately.
         /// </summary>
         public ObservableCollection<string> AvailableAssignees { get; set; }
 
-        // Repository instance to fetch data from database
-        private readonly TaskRepository _repository;
+        // Repository for tasks data access
+        private readonly TaskRepository _taskRepository;
+
+        // Repository for user data access
+        private readonly UserRepository _userRepository;
 
         /// <summary>
-        /// Constructor initializes the repository, loads tasks and assignees from the database,
-        /// and populates the observable collections for data binding.
+        /// Constructor initializes repositories,
+        /// loads tasks, users, and admins from the database,
+        /// and initializes collections for UI binding.
         /// </summary>
         public MainViewModel()
         {
-            // Database connection string - adjust as needed
             string connectionString = @"Server=localhost;Database=TaskManagerDB;Trusted_Connection=True;";
-            _repository = new TaskRepository(connectionString);
 
-            // Load all tasks from the database
-            var taskList = _repository.GetAllTasks();
+            _taskRepository = new TaskRepository(connectionString);
+            _userRepository = new UserRepository(connectionString);
+
+            // Load tasks from database
+            var taskList = _taskRepository.GetAllTasks();
             Tasks = new ObservableCollection<TaskModel>(taskList);
 
-            // Load all active usernames into shared DatabaseContext singleton
-            var allUsernames = _repository.GetAllUsernamesFromDb();
-            DatabaseContext.Instance.LoadUserNames(allUsernames);
+            // Load users and admins from database
+            _userRepository.GetUsersAndAdmins(out var users, out var admins);
 
-            // Use the loaded usernames as AvailableAssignees for UI binding
-            AvailableAssignees = new ObservableCollection<string>(DatabaseContext.Instance.UserNames);
+            // Store users/admins in singleton context
+            DatabaseContext.Instance.LoadNormalUsers(users);
+            DatabaseContext.Instance.LoadAdminUsers(admins);
+
+            // Initialize AvailableAssignees collection (to avoid CS8618 warning)
+            AvailableAssignees = new ObservableCollection<string>();
         }
     }
 }
