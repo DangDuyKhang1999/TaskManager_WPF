@@ -36,10 +36,9 @@ namespace TaskManager.Data
                 using var connection = new SqlConnection(_connectionString);
                 connection.Open();
 
+                Logger.Instance.Info("Executing query to retrieve active users and admins.");
                 const string query = "SELECT UserName, IsAdmin FROM Users WHERE IsActive = 1";
-
                 using var command = new SqlCommand(query, connection);
-
                 using var reader = command.ExecuteReader();
 
                 // Read each record and classify user as admin or normal user
