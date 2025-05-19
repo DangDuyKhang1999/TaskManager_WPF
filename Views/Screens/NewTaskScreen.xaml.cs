@@ -8,7 +8,6 @@ namespace TaskManager.Views.Screens
         public NewTaskScreen()
         {
             InitializeComponent();
-            DataContext = new NewTaskScreenViewModel();
         }
     }
 }

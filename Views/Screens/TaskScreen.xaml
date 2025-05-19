@@ -4,6 +4,10 @@
              xmlns:vm="clr-namespace:TaskManager.ViewModels"
              Height="Auto" Width="Auto">
 
+    <UserControl.DataContext>
+        <vm:TaskScreenViewModel />
+    </UserControl.DataContext>
+
     <Grid Margin="10">
         <DataGrid ItemsSource="{Binding Tasks}"
                   AutoGenerateColumns="False"
@@ -28,12 +32,6 @@
                             <TextBlock Text="{Binding Reporter}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
-                    <DataGridTemplateColumn.CellEditingTemplate>
-                        <DataTemplate>
-                            <ComboBox ItemsSource="{Binding DataContext.AvailableReporters, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                      SelectedItem="{Binding Reporter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
                 <!-- Assignee -->
@@ -43,12 +41,6 @@
                             <TextBlock Text="{Binding Assignee}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
-                    <DataGridTemplateColumn.CellEditingTemplate>
-                        <DataTemplate>
-                            <ComboBox ItemsSource="{Binding DataContext.AvailableAssignees, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                      SelectedItem="{Binding Assignee, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
                 <!-- Status -->
