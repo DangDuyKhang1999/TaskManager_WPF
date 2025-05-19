@@ -29,8 +29,8 @@ namespace TaskManager.Views
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
-                ErrorMessage.Text = "Username or password cannot be empty!";
-                Logger.Instance.Warning("Username or password cannot be empty!");
+                ErrorMessage.Text = AppConstants.AppText.Message_LoginEmptyFields;
+                Logger.Instance.Warning(AppConstants.AppText.Message_LoginEmptyFields);
                 return;
             }
 
@@ -41,8 +41,8 @@ namespace TaskManager.Views
             }
             else
             {
-                ErrorMessage.Text = "Invalid username or password.";
-                Logger.Instance.Warning("Invalid username or password.");
+                ErrorMessage.Text = AppConstants.AppText.Message_LoginInvalidCredentials;
+                Logger.Instance.Warning(AppConstants.AppText.Message_LoginInvalidCredentials);
             }
         }
 
@@ -96,8 +96,8 @@ namespace TaskManager.Views
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error("Authentication failed: " + ex.Message);
-                ErrorMessage.Text = "An error occurred during login. Please contact admin.";
+                Logger.Instance.Error($"{AppConstants.Logging.Message_LoginAuthFailed} {ex.Message}");
+                ErrorMessage.Text = AppConstants.Logging.Message_LoginFailed;
             }
 
             return false;

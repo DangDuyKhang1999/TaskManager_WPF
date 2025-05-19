@@ -68,25 +68,25 @@ namespace TaskManager.Services
         /// <summary>
         /// Logs an informational message.
         /// </summary>
-        public void Info(string message, [CallerFilePath] string callerFilePath = string.Empty)
+        public void Info(string message, [CallerFilePath] string callerFilePath = "")
             => LogInternal(AppConstants.Logging.Level_Info, message, GetClassName(callerFilePath));
 
         /// <summary>
         /// Logs a success message.
         /// </summary>
-        public void Success(string message, [CallerFilePath] string callerFilePath = string.Empty)
+        public void Success(string message, [CallerFilePath] string callerFilePath = "")
             => LogInternal(AppConstants.Logging.Level_Success, message, GetClassName(callerFilePath));
 
         /// <summary>
         /// Logs a warning message.
         /// </summary>
-        public void Warning(string message, [CallerFilePath] string callerFilePath = string.Empty)
+        public void Warning(string message, [CallerFilePath] string callerFilePath = "")
             => LogInternal(AppConstants.Logging.Level_Warning, message, GetClassName(callerFilePath));
 
         /// <summary>
         /// Logs an error message with optional caller method name.
         /// </summary>
-        public void Error(string message, [CallerFilePath] string callerFilePath = string.Empty, [CallerMemberName] string callerMemberName = string.Empty)
+        public void Error(string message, [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
         {
             string className = GetClassName(callerFilePath);
             if (!string.IsNullOrWhiteSpace(callerMemberName))
@@ -98,7 +98,7 @@ namespace TaskManager.Services
         /// <summary>
         /// Logs an exception's message and stack trace with optional caller method name.
         /// </summary>
-        public void Error(Exception ex, [CallerFilePath] string callerFilePath = string.Empty, [CallerMemberName] string callerMemberName = string.Empty)
+        public void Error(Exception ex, [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
         {
             string className = GetClassName(callerFilePath);
             if (!string.IsNullOrWhiteSpace(callerMemberName))

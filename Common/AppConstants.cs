@@ -7,6 +7,10 @@
             public const string MainWindowTitle = "Task Manager";
             // Folder
             public const string FolderLog = "AppLogs";
+
+            //Messsage for UI
+            public const string Message_LoginEmptyFields = "Username or password cannot be empty!";
+            public const string Message_LoginInvalidCredentials = "Invalid username or password.";
         }
         public static class Database
         {
@@ -36,8 +40,6 @@
             public const string Message_UnexpectedError = "Unexpected error";
 
             // Login-related Warnings/Errors
-            public const string Message_LoginEmptyFields = "Username or password cannot be empty!";
-            public const string Message_LoginInvalidCredentials = "Invalid username or password.";
             public const string Message_LoginFailed = "An error occurred during login. Please contact admin.";
             public const string Message_LoginAuthFailed = "Authentication failed:";
         }
