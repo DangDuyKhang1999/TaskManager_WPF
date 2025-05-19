@@ -14,17 +14,17 @@ namespace TaskManager.Models
         /// <summary>
         /// Gets or sets the unique employee code for the user.
         /// </summary>
-        public string EmployeeCode { get; set; } = "";
+        public string EmployeeCode { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the username used for login (unique).
         /// </summary>
-        public string Username { get; set; } = "";
+        public string Username { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the hashed password of the user.
         /// </summary>
-        public string PasswordHash { get; set; } = "";
+        public string PasswordHash { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the display name of the user (optional).

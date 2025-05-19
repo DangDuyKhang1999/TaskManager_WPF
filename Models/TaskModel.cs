@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using TaskManager.Common;
 
 namespace TaskManager.Models
 {
@@ -55,10 +56,10 @@ namespace TaskManager.Models
         /// </summary>
         public string StatusString => _status switch
         {
-            0 => "Not Started",
-            1 => "In Progress",
-            2 => "Completed",
-            _ => "Unknown"
+            0 => AppConstants.StatusValues.NotStarted,
+            1 => AppConstants.StatusValues.InProgress,
+            2 => AppConstants.StatusValues.Completed,
+            _ => AppConstants.StatusValues.Unknown
         };
 
         /// <summary>
@@ -110,10 +111,10 @@ namespace TaskManager.Models
         /// </summary>
         public string PriorityString => _priority switch
         {
-            0 => "High",
-            1 => "Medium",
-            2 => "Low",
-            _ => "Unknown"
+            0 => AppConstants.PriorityLevels.High,
+            1 => AppConstants.PriorityLevels.Medium,
+            2 => AppConstants.PriorityLevels.Low,
+            _ => AppConstants.PriorityLevels.Unknown
         };
 
         /// <summary>

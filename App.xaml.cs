@@ -3,6 +3,7 @@ using System.Windows;
 using TaskManager.Views;      // For LoginWindow
 using TaskManager.Services;   // For Logger
 using TaskManager.Contexts;   // For UserSession
+using TaskManager.Common;   // For Common Value
 
 namespace TaskManager
 {
@@ -17,12 +18,12 @@ namespace TaskManager
 
             // Initialize Logger - this creates a new log file and starts logging
             var logger = Logger.Instance;
-            logger.Info("***** Task Manager start *****");
+            logger.Info(AppConstants.Logging.Message_TaskManagerStart);
 
             // Create a dummy window so the app doesn't shut down when LoginWindow closes
             var dummyWindow = new Window
             {
-                Title = "Task Manager",
+                Title = AppConstants.AppText.MainWindowTitle,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             dummyWindow.Show();

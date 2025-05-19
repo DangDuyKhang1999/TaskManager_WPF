@@ -1,5 +1,7 @@
 ﻿using System.Data.SqlClient;
+using TaskManager.Common;
 using TaskManager.Services;
+using static TaskManager.Common.AppConstants;
 
 namespace TaskManager.Data
 {
@@ -64,7 +66,7 @@ namespace TaskManager.Data
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error($"Unexpected error: {ex.Message}");
+                Logger.Instance.Error($"{AppConstants.Logging.Message_UnexpectedError}: {ex.Message}");
             }
         }
     }

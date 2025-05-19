@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Windows;
+using TaskManager.Common;
 using TaskManager.Contexts;
 using TaskManager.Services;
 
@@ -9,7 +10,6 @@ namespace TaskManager.Views
     public partial class LoginWindow : Window
     {
         // Connection string to the database
-        private readonly string _connectionString = @"Server=localhost;Database=TaskManagerDB;Trusted_Connection=True;";
 
         public LoginWindow()
         {
@@ -60,7 +60,7 @@ namespace TaskManager.Views
         {
             try
             {
-                using var connection = new SqlConnection(_connectionString);
+                using var connection = new SqlConnection(AppConstants.Database.ConnectionString);
                 connection.Open();
 
                 string query = @"

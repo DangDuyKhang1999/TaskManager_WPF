@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using TaskManager.Common;
 using TaskManager.Contexts;
 using TaskManager.Services;
 using TaskManager.ViewModels;
@@ -30,7 +31,7 @@ namespace TaskManager.Views
         /// </summary>
         private void MainWindow_Closed(object? sender, System.EventArgs e)
         {
-            Logger.Instance.Info("***** Task Manager end *****");
+            Logger.Instance.Info(AppConstants.Logging.Message_TaskManagerEnd);
         }
     }
 }

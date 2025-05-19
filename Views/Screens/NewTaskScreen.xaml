@@ -17,41 +17,45 @@
 
         <StackPanel Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Width="400">
             <TextBlock Text="Code"/>
-            <TextBox x:Name="CodeTextBox" Margin="0 5"/>
+            <TextBox Text="{Binding Code, UpdateSourceTrigger=PropertyChanged}" Margin="0 5"/>
 
             <TextBlock Text="Title"/>
-            <TextBox x:Name="TitleTextBox" Margin="0 5"/>
+            <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Margin="0 5"/>
 
             <TextBlock Text="Description"/>
-            <TextBox x:Name="DescriptionTextBox" AcceptsReturn="True" Height="80" TextWrapping="Wrap" Margin="0 5"/>
+            <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="80" TextWrapping="Wrap" Margin="0 5"/>
 
             <TextBlock Text="Status"/>
-            <ComboBox x:Name="StatusComboBox" SelectedIndex="0" Margin="0 5">
+            <ComboBox SelectedValue="{Binding Status, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Tag" Margin="0 5">
                 <ComboBoxItem Content="Not Started" Tag="0"/>
                 <ComboBoxItem Content="In Progress" Tag="1"/>
                 <ComboBoxItem Content="Completed" Tag="2"/>
             </ComboBox>
 
             <TextBlock Text="Due Date"/>
-            <DatePicker x:Name="DueDatePicker" Margin="0 5"/>
+            <DatePicker SelectedDate="{Binding DueDate, UpdateSourceTrigger=PropertyChanged}" Margin="0 5"/>
 
             <TextBlock Text="Priority"/>
-            <ComboBox x:Name="PriorityComboBox" SelectedIndex="0" Margin="0 5">
-                <ComboBoxItem Content="Low" Tag="1"/>
-                <ComboBoxItem Content="Medium" Tag="2"/>
-                <ComboBoxItem Content="High" Tag="3"/>
+            <ComboBox SelectedValue="{Binding Priority, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Tag" Margin="0 5">
+                <ComboBoxItem Content="Low" Tag="2"/>
+                <ComboBoxItem Content="Medium" Tag="1"/>
+                <ComboBoxItem Content="High" Tag="0"/>
             </ComboBox>
 
             <TextBlock Text="Reporter Id"/>
-            <ComboBox x:Name="ReporterIdComboBox" Margin="0 5" IsEditable="True" IsTextSearchEnabled="False"/>
+            <ComboBox ItemsSource="{Binding ReporterUsers}" 
+                      SelectedItem="{Binding ReporterId, UpdateSourceTrigger=PropertyChanged}" 
+                      IsEditable="False" Margin="0 5"/>
 
             <TextBlock Text="Assignee Id"/>
-            <ComboBox x:Name="AssigneeIdComboBox" Margin="0 5" IsEditable="True" IsTextSearchEnabled="False"/>
+            <ComboBox ItemsSource="{Binding AssigneeUsers}" 
+                      SelectedItem="{Binding AssigneeId, UpdateSourceTrigger=PropertyChanged}" 
+                      IsEditable="False" Margin="0 5"/>
         </StackPanel>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 20 0 0">
-            <Button Content="Save" Width="100" Margin="10 0" Click="SaveButton_Click"/>
-            <Button Content="Cancel" Width="100" Click="CancelButton_Click"/>
+            <Button Content="Save" Width="100" Margin="10 0" Command="{Binding SaveCommand}"/>
+            <Button Content="Cancel" Width="100" Command="{Binding CancelCommand}"/>
         </StackPanel>
     </Grid>
 </UserControl>

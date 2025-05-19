@@ -25,14 +25,14 @@ namespace TaskManager.Services
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(query, connection);
 
-            command.Parameters.AddWithValue("@Code", task.Code ?? "");
-            command.Parameters.AddWithValue("@Title", task.Title ?? "");
-            command.Parameters.AddWithValue("@Description", task.Description ?? "");
+            command.Parameters.AddWithValue("@Code", task.Code ?? string.Empty);
+            command.Parameters.AddWithValue("@Title", task.Title ?? string.Empty);
+            command.Parameters.AddWithValue("@Description", task.Description ?? string.Empty);
             command.Parameters.AddWithValue("@Status", task.Status);
             command.Parameters.AddWithValue("@DueDate", task.DueDate == DateTime.MinValue ? (object)DBNull.Value : task.DueDate);
             command.Parameters.AddWithValue("@Priority", task.Priority);
-            command.Parameters.AddWithValue("@ReporterId", task.ReporterId ?? "");
-            command.Parameters.AddWithValue("@AssigneeId", task.AssigneeId ?? "");
+            command.Parameters.AddWithValue("@ReporterId", task.ReporterId ?? string.Empty);
+            command.Parameters.AddWithValue("@AssigneeId", task.AssigneeId ?? string.Empty);
             command.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
             command.Parameters.AddWithValue("@UpdatedAt", DateTime.Now);
 

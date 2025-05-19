@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Runtime.CompilerServices;
+using TaskManager.Common;
 using TaskManager.Services;
 
 namespace TaskManager.Services
@@ -19,7 +20,7 @@ namespace TaskManager.Services
         public static Logger Instance => _instance.Value;
 
         // Directory to store log files
-        private readonly string _logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AppLogs");
+        private readonly string _logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, AppConstants.AppText.FolderLog);
         // Current log file path
         private readonly string _logFilePath;
         // Lock object for thread-safe file writing
@@ -32,7 +33,7 @@ namespace TaskManager.Services
         private Logger()
         {
             // Fallback log file name with timestamp in case of error during initialization
-            string fallbackFileName = "fallback_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".log";
+            string fallbackFileName = AppConstants.Logging.FilePrefix_Fallback + DateTime.Now.ToString("yyyyMMdd_HHmmss") + AppConstants.Logging.Ext_Log;
             _logFilePath = Path.Combine(_logDirectory, fallbackFileName);
 
             try
@@ -55,7 +56,7 @@ namespace TaskManager.Services
                 }
 
                 // Create new log file with current timestamp
-                string fileName = DateTime.Now.ToString("yyyyMMdd_HH-mm-ss") + ".log";
+                string fileName = DateTime.Now.ToString("yyyyMMdd_HH-mm-ss") + AppConstants.Logging.Ext_Log;
                 _logFilePath = Path.Combine(_logDirectory, fileName);
             }
             catch
@@ -67,44 +68,44 @@ namespace TaskManager.Services
         /// <summary>
         /// Logs an informational message.
         /// </summary>
-        public void Info(string message, [CallerFilePath] string callerFilePath = "")
-            => LogInternal("[INFO]", message, GetClassName(callerFilePath));
+        public void Info(string message, [CallerFilePath] string callerFilePath = string.Empty)
+            => LogInternal(AppConstants.Logging.Level_Info, message, GetClassName(callerFilePath));
 
         /// <summary>
         /// Logs a success message.
         /// </summary>
-        public void Success(string message, [CallerFilePath] string callerFilePath = "")
-            => LogInternal("[SUCCESS]", message, GetClassName(callerFilePath));
+        public void Success(string message, [CallerFilePath] string callerFilePath = string.Empty)
+            => LogInternal(AppConstants.Logging.Level_Success, message, GetClassName(callerFilePath));
 
         /// <summary>
         /// Logs a warning message.
         /// </summary>
-        public void Warning(string message, [CallerFilePath] string callerFilePath = "")
-            => LogInternal("[WARNING]", message, GetClassName(callerFilePath));
+        public void Warning(string message, [CallerFilePath] string callerFilePath = string.Empty)
+            => LogInternal(AppConstants.Logging.Level_Warning, message, GetClassName(callerFilePath));
 
         /// <summary>
         /// Logs an error message with optional caller method name.
         /// </summary>
-        public void Error(string message, [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
+        public void Error(string message, [CallerFilePath] string callerFilePath = string.Empty, [CallerMemberName] string callerMemberName = string.Empty)
         {
             string className = GetClassName(callerFilePath);
             if (!string.IsNullOrWhiteSpace(callerMemberName))
                 className += $".{callerMemberName}";
 
-            LogInternal("[ERROR]", message, className);
+            LogInternal(AppConstants.Logging.Level_Error, message, className);
         }
 
         /// <summary>
         /// Logs an exception's message and stack trace with optional caller method name.
         /// </summary>
-        public void Error(Exception ex, [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
+        public void Error(Exception ex, [CallerFilePath] string callerFilePath = string.Empty, [CallerMemberName] string callerMemberName = string.Empty)
         {
             string className = GetClassName(callerFilePath);
             if (!string.IsNullOrWhiteSpace(callerMemberName))
                 className += $".{callerMemberName}";
 
             string message = $"{ex.Message}{Environment.NewLine}{ex.StackTrace}";
-            LogInternal("[ERROR]", message, className);
+            LogInternal(AppConstants.Logging.Level_Error, message, className);
         }
 
         /// <summary>
@@ -131,7 +132,7 @@ namespace TaskManager.Services
                 return "Unknown";
 
             var fileName = Path.GetFileName(callerFilePath);
-            fileName = fileName.Replace(".xaml.cs", "").Replace(".cs", "");
+            fileName = fileName.Replace(AppConstants.Logging.Ext_XamlCs, string.Empty).Replace(AppConstants.Logging.Ext_Cs, string.Empty);
 
             return fileName;
         }

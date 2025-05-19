@@ -2,6 +2,7 @@
 using TaskManager.Models;
 using TaskManager.Data;
 using TaskManager.Contexts;
+using TaskManager.Common;
 
 namespace TaskManager.ViewModels
 {
@@ -27,7 +28,7 @@ namespace TaskManager.ViewModels
         private readonly TaskRepository _taskRepository;
 
         // Repository for user data access
-        private readonly UserRepository _userRepository;
+        //private readonly UserRepository _userRepository;
 
         /// <summary>
         /// Constructor initializes repositories,
@@ -36,23 +37,10 @@ namespace TaskManager.ViewModels
         /// </summary>
         public TaskScreenViewModel()
         {
-            string connectionString = @"Server=localhost;Database=TaskManagerDB;Trusted_Connection=True;";
-
-            _taskRepository = new TaskRepository(connectionString);
-            _userRepository = new UserRepository(connectionString);
-
+            _taskRepository = new TaskRepository(AppConstants.Database.ConnectionString);
             // Load tasks from database
             var taskList = _taskRepository.GetAllTasks();
             Tasks = new ObservableCollection<TaskModel>(taskList);
-
-            // Load users and admins from database
-            _userRepository.GetUsersAndAdmins(out var users, out var admins);
-
-            // Store users/admins in singleton context
-            DatabaseContext.Instance.LoadNormalUsers(users);
-            DatabaseContext.Instance.LoadAdminUsers(admins);
-
-            // Initialize AvailableAssignees collection (to avoid CS8618 warning)
             AvailableAssignees = new ObservableCollection<string>();
         }
     }
