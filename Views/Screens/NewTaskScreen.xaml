@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:TaskManager.ViewModels"
              mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="800">
+             d:DesignHeight="700" d:DesignWidth="800">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -19,56 +19,83 @@
         <vm:NewTaskScreenViewModel />
     </UserControl.DataContext>
 
-    <Grid Margin="30">
+    <Grid Margin="20" MinWidth="600" MinHeight="650">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Create New Task" FontSize="24" FontWeight="Bold" Margin="0 0 0 20"/>
+        <!-- 3 columns: left & right flexible for spacing, middle for content -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Width="400">
-            <TextBlock Text="Code"/>
-            <TextBox Text="{Binding Code, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}" Margin="0 5"/>
+        <!-- Title, spanning center column -->
+        <TextBlock Grid.Column="1" Text="Create New Task" FontSize="28" FontWeight="Bold" Margin="0 0 0 20" HorizontalAlignment="Center"/>
 
-            <TextBlock Text="Title"/>
-            <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}" Margin="0 5"/>
+        <!-- Form content -->
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Description"/>
-            <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="80" TextWrapping="Wrap" Margin="0 5"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Code" Margin="0 8 0 2" FontWeight="SemiBold" TextAlignment="Right" VerticalAlignment="Top"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Code, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}" Height="30" Margin="5 4 0 10"/>
 
-            <TextBlock Text="Status"/>
-            <ComboBox SelectedValue="{Binding Status, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}" SelectedValuePath="Tag" Margin="0 5">
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Title" Margin="0 8 0 2" FontWeight="SemiBold" TextAlignment="Right" VerticalAlignment="Top"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Title, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}" Height="30" Margin="5 4 0 10"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Description" Margin="0 8 0 2" FontWeight="SemiBold" TextAlignment="Right" VerticalAlignment="Top"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="100" TextWrapping="Wrap" Margin="5 4 0 15"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Status" Margin="0 8 0 2" FontWeight="SemiBold" TextAlignment="Right" VerticalAlignment="Top"/>
+            <ComboBox Grid.Row="3" Grid.Column="1" SelectedValue="{Binding Status, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
+                      SelectedValuePath="Tag" Height="30" Margin="5 4 0 10">
                 <ComboBoxItem Content="Not Started" Tag="0"/>
                 <ComboBoxItem Content="In Progress" Tag="1"/>
                 <ComboBoxItem Content="Completed" Tag="2"/>
             </ComboBox>
 
-            <TextBlock Text="Due Date"/>
-            <DatePicker SelectedDate="{Binding DueDate, UpdateSourceTrigger=PropertyChanged}" Margin="0 5"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Due Date" Margin="0 8 0 2" FontWeight="SemiBold" TextAlignment="Right" VerticalAlignment="Top"/>
+            <DatePicker Grid.Row="4" Grid.Column="1" SelectedDate="{Binding DueDate, UpdateSourceTrigger=PropertyChanged}" Height="30" Margin="5 4 0 10"/>
 
-            <TextBlock Text="Priority"/>
-            <ComboBox SelectedValue="{Binding Priority, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}" SelectedValuePath="Tag" Margin="0 5">
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Priority" Margin="0 8 0 2" FontWeight="SemiBold" TextAlignment="Right" VerticalAlignment="Top"/>
+            <ComboBox Grid.Row="5" Grid.Column="1" SelectedValue="{Binding Priority, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
+                      SelectedValuePath="Tag" Height="30" Margin="5 4 0 10">
                 <ComboBoxItem Content="Low" Tag="2"/>
                 <ComboBoxItem Content="Medium" Tag="1"/>
                 <ComboBoxItem Content="High" Tag="0"/>
             </ComboBox>
 
-            <TextBlock Text="Reporter Id"/>
-            <ComboBox ItemsSource="{Binding ReporterUsers}"
-                      SelectedItem="{Binding ReporterId, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
-                      IsEditable="False" Margin="0 5"/>
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="Reporter" Margin="0 8 0 2" FontWeight="SemiBold" TextAlignment="Right" VerticalAlignment="Top"/>
+            <ComboBox Grid.Row="6" Grid.Column="1" ItemsSource="{Binding ReporterDisplayName}"
+                      SelectedItem="{Binding ReporterDisplayName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
+                      IsEditable="False" Height="30" Margin="5 4 0 10"/>
 
-            <TextBlock Text="Assignee Id"/>
-            <ComboBox ItemsSource="{Binding AssigneeUsers}"
-                      SelectedItem="{Binding AssigneeId, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
-                      IsEditable="False" Margin="0 5"/>
-        </StackPanel>
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="Assignee" Margin="0 8 0 2" FontWeight="SemiBold" TextAlignment="Right" VerticalAlignment="Top"/>
+            <ComboBox Grid.Row="7" Grid.Column="1" ItemsSource="{Binding ReporterDisplayName}"
+                      SelectedItem="{Binding ReporterDisplayName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
+                      IsEditable="False" Height="30" Margin="5 4 0 10"/>
+        </Grid>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 20 0 0">
-            <Button Content="Save" Width="100" Margin="10 0" Command="{Binding SaveCommand}"/>
-            <Button Content="Clear" Width="100" Command="{Binding ClearCommand}"/>
+        <!-- Buttons -->
+        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 25 0 0">
+            <Button Content="Save" Width="120" Height="35" Margin="0 0 15 0" Command="{Binding SaveCommand}"/>
+            <Button Content="Clear" Width="120" Height="35" Command="{Binding ClearCommand}"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -35,10 +35,9 @@
             public const string Ext_XamlCs = ".xaml.cs";
 
             public const string FilePrefix_Fallback = "fallback_";
-
-            public const string Level_Info = "[INFO]";
+            public const string Level_Information = "[INFO]";
             public const string Level_Success = "[SUCCESS]";
-            public const string Level_Warning = "[WARNING]";
+            public const string Level_Warning = "[WARN]";
             public const string Level_Error = "[ERROR]";
 
             public const string Message_TaskManagerStart = "***** Task Manager start *****";

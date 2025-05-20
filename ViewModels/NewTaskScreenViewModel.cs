@@ -20,14 +20,14 @@ namespace TaskManager.ViewModels
         public ObservableCollection<string> AssigneeUsers { get; }
 
         private string _reporterId;
-        public string ReporterId
+        public string ReporterDisplayName
         {
             get => _reporterId;
             set => SetProperty(ref _reporterId, value);
         }
 
         private string _assigneeId;
-        public string AssigneeId
+        public string AssigneeDisplayName
         {
             get => _assigneeId;
             set => SetProperty(ref _assigneeId, value);
@@ -119,12 +119,12 @@ namespace TaskManager.ViewModels
                         if (Priority < 0 || Priority > 2)
                             return AppConstants.AppText.ValidationMessages.InvalidPriority;
                         break;
-                    case nameof(ReporterId):
-                        if (string.IsNullOrWhiteSpace(ReporterId))
+                    case nameof(ReporterDisplayName):
+                        if (string.IsNullOrWhiteSpace(ReporterDisplayName))
                             return AppConstants.AppText.ValidationMessages.ReporterRequired;
                         break;
-                    case nameof(AssigneeId):
-                        if (string.IsNullOrWhiteSpace(AssigneeId))
+                    case nameof(AssigneeDisplayName):
+                        if (string.IsNullOrWhiteSpace(AssigneeDisplayName))
                             return AppConstants.AppText.ValidationMessages.AssigneeRequired;
                         break;
                 }
@@ -138,7 +138,7 @@ namespace TaskManager.ViewModels
         {
             get
             {
-                foreach (var prop in new[] { nameof(Code), nameof(Title), nameof(Status), nameof(Priority), nameof(ReporterId), nameof(AssigneeId) })
+                foreach (var prop in new[] { nameof(Code), nameof(Title), nameof(Status), nameof(Priority), nameof(ReporterDisplayName), nameof(AssigneeDisplayName) })
                 {
                     if (this[prop] != null)
                         return false;
@@ -155,8 +155,8 @@ namespace TaskManager.ViewModels
             OnPropertyChanged(nameof(Title));
             OnPropertyChanged(nameof(Status));
             OnPropertyChanged(nameof(Priority));
-            OnPropertyChanged(nameof(ReporterId));
-            OnPropertyChanged(nameof(AssigneeId));
+            OnPropertyChanged(nameof(ReporterDisplayName));
+            OnPropertyChanged(nameof(AssigneeDisplayName));
 
             if (!IsValid)
             {
@@ -171,8 +171,8 @@ namespace TaskManager.ViewModels
                 Status = Status,
                 Priority = Priority,
                 DueDate = DueDate ?? DateTime.Now,
-                ReporterDisplayName = ReporterId,
-                AssigneeDisplayName = AssigneeId,
+                ReporterDisplayName = ReporterDisplayName,
+                AssigneeDisplayName = AssigneeDisplayName,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
             };
@@ -214,8 +214,8 @@ namespace TaskManager.ViewModels
             Priority = 3;
 
             DueDate = null;
-            ReporterId = null;
-            AssigneeId = null;
+            ReporterDisplayName = null;
+            AssigneeDisplayName = null;
         }
 
         private string? GetEmployeeCodeByDisplayName(string displayName)

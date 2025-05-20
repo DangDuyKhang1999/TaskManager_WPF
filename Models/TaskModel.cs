@@ -68,7 +68,7 @@ namespace TaskManager.Models
         public string? ReporterDisplayName { get; set; }
 
         /// <summary>
-        /// Gets or sets the assignee of the task.
+        /// Gets or sets the Assignee display name of the task.
         /// Raises PropertyChanged event when the value changes.
         /// </summary>
         public string AssigneeDisplayName
@@ -83,6 +83,16 @@ namespace TaskManager.Models
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets the reporter Id (EmployeeCode).
+        /// </summary>
+        public string? ReporterId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the assignee Id (EmployeeCode).
+        /// </summary>
+        public string? AssigneeId { get; set; }
 
         /// <summary>
         /// Gets or sets the due date of the task.

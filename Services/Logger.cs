@@ -69,7 +69,7 @@ namespace TaskManager.Services
         /// Logs an informational message.
         /// </summary>
         public void Information(string message, [CallerFilePath] string callerFilePath = "")
-            => LogInternal(AppConstants.Logging.Level_Info, message, GetClassName(callerFilePath));
+            => LogInternal(AppConstants.Logging.Level_Information, message, GetClassName(callerFilePath));
 
         /// <summary>
         /// Logs a success message.
