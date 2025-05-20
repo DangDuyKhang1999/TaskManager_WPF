@@ -3,24 +3,36 @@ using System.Windows;
 using TaskManager.Views;      // For LoginWindow
 using TaskManager.Services;   // For Logger
 using TaskManager.Contexts;   // For UserSession
-using TaskManager.Common;   // For Common Value
+using TaskManager.Common;     // For AppConstants
 
 namespace TaskManager
 {
     public partial class App : Application
     {
-        /// <summary>
-        /// Override OnStartup to handle login flow and main window initialization
-        /// </summary>
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            // Initialize Logger - this creates a new log file and starts logging
+            // Initialize logger
             var logger = Logger.Instance;
             logger.Info(AppConstants.Logging.Message_TaskManagerStart);
 
-            // Create a dummy window so the app doesn't shut down when LoginWindow closes
+            bool skipLogin = false;
+
+            if (IniConfig.Exists && IniConfig.Mode?.ToLower() == "debug")
+            {
+                string debugUsername = "debug_user";
+                string employeeCode = "debug_user";
+                bool isAdmin = IniConfig.IsAdmin;
+
+                UserSession.Instance.Initialize(debugUsername, employeeCode, isAdmin);
+                logger.Success("Auto-login in DEBUG mode");
+                logger.Info($"User = '{debugUsername}', Admin = {isAdmin}");
+
+                skipLogin = true;
+            }
+
+            // Dummy window to prevent app shutdown when dialog closes
             var dummyWindow = new Window
             {
                 Title = AppConstants.AppText.MainWindowTitle,
@@ -28,28 +40,29 @@ namespace TaskManager
             };
             dummyWindow.Show();
 
-            // Show LoginWindow as a modal dialog
-            var loginWindow = new LoginWindow();
-            var loginResult = loginWindow.ShowDialog();
+            bool loginResult = false;
 
-            if (loginResult == true)
+            if (skipLogin)
             {
-                // Login successful, log info
-                Logger.Instance.Success("Logged in successfully!!!");
-                Logger.Instance.Info($"User = '{UserSession.Instance.UserName}', Admin = {UserSession.Instance.IsAdmin}");
+                loginResult = true;
+            }
+            else
+            {
+                var loginWindow = new LoginWindow();
+                loginResult = loginWindow.ShowDialog() == true;
+            }
 
-                // Show main application window
+            if (loginResult)
+            {
                 var mainWindow = new MainWindow();
                 Application.Current.MainWindow = mainWindow;
                 mainWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 mainWindow.Show();
 
-                // Close dummy window after main window is shown
                 dummyWindow.Close();
             }
             else
             {
-                // Login failed or cancelled, log and shutdown application
                 logger.Info("User login failed or cancelled.");
                 logger.Info("***** Task Manager end *****");
                 Application.Current.Shutdown();

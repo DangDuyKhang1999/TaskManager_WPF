@@ -49,7 +49,7 @@ public class TaskRepository
             FROM Tasks t
             LEFT JOIN Users u1 ON t.ReporterId = u1.EmployeeCode
             LEFT JOIN Users u2 ON t.AssigneeId = u2.EmployeeCode
-            /**WHERE_CONDITION**/";  // placeholder to be replaced dynamically
+            /**WHERE_CONDITION**/";
 
             string whereCondition;
             string employeeCode = UserSession.Instance.EmployeeCode;
