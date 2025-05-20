@@ -74,7 +74,7 @@ namespace TaskManager.ViewModels
         }
 
         public ICommand SaveCommand { get; }
-        public ICommand CancelCommand { get; }
+        public ICommand ClearCommand { get; }
 
         public NewTaskScreenViewModel()
         {
@@ -87,12 +87,13 @@ namespace TaskManager.ViewModels
             ReporterUsers = new ObservableCollection<string>(DatabaseContext.Instance.AdminUsersList);
             AssigneeUsers = new ObservableCollection<string>(DatabaseContext.Instance.NormalUsersList);
 
-            // Khởi tạo command
-            SaveCommand = new RelayCommand(_ => SaveTask());
-            CancelCommand = new RelayCommand(_ => Cancel());
+            SaveCommand = new RelayCommand(_ => SaveCommandExecute());
+            ClearCommand = new RelayCommand(_ => ClearCommandExecute());
+
+            ClearFields(); // Reset các trường về mặc định khi khởi tạo ViewModel
         }
 
-        private void SaveTask()
+        private void SaveCommandExecute()
         {
             var task = new TaskModel
             {
@@ -123,11 +124,23 @@ namespace TaskManager.ViewModels
                 $"- DueDate: {task.DueDate:yyyy-MM-dd}\n" +
                 $"- CreatedAt: {task.CreatedAt:yyyy-MM-dd HH:mm:ss}"
             );
-
         }
 
-        private void Cancel()
+        private void ClearCommandExecute()
         {
+            ClearFields();
+        }
+
+        private void ClearFields()
+        {
+            Code = string.Empty;
+            Title = string.Empty;
+            Description = string.Empty;
+            Status = 0;
+            Priority = 1;
+            DueDate = null;
+            ReporterId = null;
+            AssigneeId = null;
         }
 
         private string? GetEmployeeCodeByDisplayName(string displayName)
