@@ -102,14 +102,14 @@ namespace TaskManager.ViewModels
                 Status = Status,
                 Priority = Priority,
                 DueDate = DueDate ?? DateTime.Now,
-                ReporterId = ReporterId,
-                AssigneeId = AssigneeId,
+                ReporterDisplayName = ReporterId,
+                AssigneeDisplayName = AssigneeId,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
             };
 
-            var reporterCode = GetEmployeeCodeByDisplayName(task.ReporterId);
-            var assigneeCode = GetEmployeeCodeByDisplayName(task.AssigneeId);
+            var reporterCode = GetEmployeeCodeByDisplayName(task.ReporterDisplayName);
+            var assigneeCode = GetEmployeeCodeByDisplayName(task.AssigneeDisplayName);
 
             Logger.Instance.Info(
                 $"[New Task Created]\n" +
@@ -124,12 +124,10 @@ namespace TaskManager.ViewModels
                 $"- CreatedAt: {task.CreatedAt:yyyy-MM-dd HH:mm:ss}"
             );
 
-            // TODO: Thêm logic lưu task vào database nếu cần
         }
 
         private void Cancel()
         {
-            // TODO: Xử lý hủy, ví dụ reset dữ liệu hoặc đóng màn hình
         }
 
         private string? GetEmployeeCodeByDisplayName(string displayName)

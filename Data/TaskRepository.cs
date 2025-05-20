@@ -104,8 +104,8 @@ public class TaskRepository
             Status = Convert.ToInt32(reader["Status"]),
             DueDate = reader["DueDate"] != DBNull.Value ? Convert.ToDateTime(reader["DueDate"]) : DateTime.MinValue,
             Priority = Convert.ToInt32(reader["Priority"]),
-            ReporterId = reader["ReporterName"]?.ToString() ?? "(Unknown)",
-            AssigneeId = reader["AssigneeName"]?.ToString() ?? "(Unassigned)",
+            ReporterDisplayName = reader["ReporterName"]?.ToString() ?? "(Unknown)",
+            AssigneeDisplayName = reader["AssigneeName"]?.ToString() ?? "(Unassigned)",
             CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
             UpdatedAt = Convert.ToDateTime(reader["UpdatedAt"])
         };
@@ -130,8 +130,8 @@ public class TaskRepository
             command.Parameters.AddWithValue("@Status", task.Status);
             command.Parameters.AddWithValue("@DueDate", task.DueDate != DateTime.MinValue ? (object)task.DueDate : DBNull.Value);
             command.Parameters.AddWithValue("@Priority", task.Priority);
-            command.Parameters.AddWithValue("@ReporterId", task.ReporterId ?? string.Empty);
-            command.Parameters.AddWithValue("@AssigneeId", task.AssigneeId ?? string.Empty);
+            command.Parameters.AddWithValue("@ReporterId", task.ReporterDisplayName ?? string.Empty);
+            command.Parameters.AddWithValue("@AssigneeId", task.AssigneeDisplayName ?? string.Empty);
 
             command.ExecuteNonQuery();
         }

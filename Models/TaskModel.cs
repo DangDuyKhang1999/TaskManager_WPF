@@ -65,13 +65,13 @@ namespace TaskManager.Models
         /// <summary>
         /// Gets or sets the reporter (creator) of the task.
         /// </summary>
-        public string? ReporterId { get; set; }
+        public string? ReporterDisplayName { get; set; }
 
         /// <summary>
         /// Gets or sets the assignee of the task.
         /// Raises PropertyChanged event when the value changes.
         /// </summary>
-        public string AssigneeId
+        public string AssigneeDisplayName
         {
             get => _assignee;
             set
@@ -79,7 +79,7 @@ namespace TaskManager.Models
                 if (_assignee != value)
                 {
                     _assignee = value;
-                    OnPropertyChanged(nameof(AssigneeId));
+                    OnPropertyChanged(nameof(AssigneeDisplayName));
                 }
             }
         }

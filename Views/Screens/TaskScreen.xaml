@@ -28,13 +28,13 @@
                 <DataGridTemplateColumn Header="Reporter" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding ReporterId}" />
+                            <TextBlock Text="{Binding ReporterDisplayName}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
                             <ComboBox ItemsSource="{Binding DataContext.AvailableReporters, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                      SelectedItem="{Binding ReporterId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                      SelectedItem="{Binding ReporterDisplayName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
@@ -43,13 +43,13 @@
                 <DataGridTemplateColumn Header="Assignee" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding AssigneeId}" />
+                            <TextBlock Text="{Binding AssigneeDisplayName}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
                             <ComboBox ItemsSource="{Binding DataContext.AvailableAssignees, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                      SelectedItem="{Binding AssigneeId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                      SelectedItem="{Binding AssigneeDisplayName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>

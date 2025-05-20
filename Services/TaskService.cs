@@ -17,9 +17,9 @@ namespace TaskManager.Services
         {
             var query = @"
                 INSERT INTO Tasks
-                (Code, Title, Description, Status, DueDate, Priority, ReporterId, AssigneeId, CreatedAt, UpdatedAt)
+                (Code, Title, Description, Status, DueDate, Priority, ReporterIdDisplayName, AssigneeDisplayName, CreatedAt, UpdatedAt)
                 VALUES
-                (@Code, @Title, @Description, @Status, @DueDate, @Priority, @ReporterId, @AssigneeId, @CreatedAt, @UpdatedAt);
+                (@Code, @Title, @Description, @Status, @DueDate, @Priority, @ReporterIdDisplayName, @AssigneeDisplayName, @CreatedAt, @UpdatedAt);
             ";
 
             using var connection = new SqlConnection(_connectionString);
@@ -31,8 +31,8 @@ namespace TaskManager.Services
             command.Parameters.AddWithValue("@Status", task.Status);
             command.Parameters.AddWithValue("@DueDate", task.DueDate == DateTime.MinValue ? (object)DBNull.Value : task.DueDate);
             command.Parameters.AddWithValue("@Priority", task.Priority);
-            command.Parameters.AddWithValue("@ReporterId", task.ReporterId ?? string.Empty);
-            command.Parameters.AddWithValue("@AssigneeId", task.AssigneeId ?? string.Empty);
+            command.Parameters.AddWithValue("@ReporterIdDisplayName", task.ReporterDisplayName ?? string.Empty);
+            command.Parameters.AddWithValue("@AssigneeDisplayName", task.AssigneeDisplayName ?? string.Empty);
             command.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
             command.Parameters.AddWithValue("@UpdatedAt", DateTime.Now);
 
