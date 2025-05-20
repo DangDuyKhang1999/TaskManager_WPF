@@ -151,6 +151,7 @@ namespace TaskManager.ViewModels
         {
             _hasAttemptedSave = true;
 
+            // Kích hoạt validation cho tất cả các trường
             OnPropertyChanged(nameof(Code));
             OnPropertyChanged(nameof(Title));
             OnPropertyChanged(nameof(Status));
@@ -201,19 +202,26 @@ namespace TaskManager.ViewModels
 
         private void ClearFields()
         {
+            // Đặt flag xác thực về false trước
             _hasAttemptedSave = false;
 
+            // Đặt lại các giá trị
             Code = string.Empty;
             Title = string.Empty;
             Description = string.Empty;
-
-            // Set Status and Priority to 3 to ensure no default selection in the ComboBoxes.
-            Status = 3;
-            Priority = 3;
-
+            Status = -1; 
+            Priority = -1; 
             DueDate = null;
             ReporterDisplayName = null;
             AssigneeDisplayName = null;
+
+            // Kích hoạt PropertyChanged để cập nhật giao diện và xóa thông báo lỗi
+            OnPropertyChanged(nameof(Code));
+            OnPropertyChanged(nameof(Title));
+            OnPropertyChanged(nameof(Status));
+            OnPropertyChanged(nameof(Priority));
+            OnPropertyChanged(nameof(ReporterDisplayName));
+            OnPropertyChanged(nameof(AssigneeDisplayName));
         }
 
         private string? GetEmployeeCodeByDisplayName(string displayName)
