@@ -29,7 +29,7 @@ public class TaskRepository
             connection.Open();
 
             string employeeCode = UserSession.Instance.EmployeeCode;
-            bool isDebug = IniConfig.Exists && IniConfig.Mode?.ToLower() == "debug";
+            bool isDebug = IniConfig.Mode?.ToLower() == "debug";
             bool isAdmin = UserSession.Instance.IsAdmin;
 
             if (isDebug)
