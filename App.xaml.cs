@@ -15,7 +15,7 @@ namespace TaskManager
 
             // Initialize logger
             var logger = Logger.Instance;
-            logger.Info(AppConstants.Logging.Message_TaskManagerStart);
+            logger.Information(AppConstants.Logging.Message_TaskManagerStart);
 
             bool skipLogin = false;
 
@@ -27,7 +27,7 @@ namespace TaskManager
 
                 UserSession.Instance.Initialize(debugUsername, employeeCode, isAdmin);
                 logger.Success("Auto-login in DEBUG mode");
-                logger.Info($"User = '{debugUsername}', Admin = {isAdmin}");
+                logger.Information($"User = '{debugUsername}', Admin = {isAdmin}");
 
                 skipLogin = true;
             }
@@ -63,8 +63,8 @@ namespace TaskManager
             }
             else
             {
-                logger.Info("User login failed or cancelled.");
-                logger.Info("***** Task Manager end *****");
+                logger.Information("User login failed or cancelled.");
+                logger.Information("***** Task Manager end *****");
                 Application.Current.Shutdown();
             }
         }

@@ -32,6 +32,11 @@
         // Private constructor to prevent external instantiation.
         private UserSession() { }
 
+        public void SetEmployeeForDebug(string code)
+        {
+            EmployeeCode = code;
+        }
+
         /// <summary>
         /// Initializes the user session with the specified username, employee code, and admin status.
         /// </summary>

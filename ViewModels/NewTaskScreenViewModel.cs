@@ -112,7 +112,7 @@ namespace TaskManager.ViewModels
             var reporterCode = GetEmployeeCodeByDisplayName(task.ReporterDisplayName);
             var assigneeCode = GetEmployeeCodeByDisplayName(task.AssigneeDisplayName);
 
-            Logger.Instance.Info(
+            Logger.Instance.Information(
                 $"[New Task Created]\n" +
                 $"- Code: {task.Code}\n" +
                 $"- Title: {task.Title}\n" +

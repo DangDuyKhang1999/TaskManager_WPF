@@ -19,7 +19,7 @@ namespace TaskManager.Data
         public UserRepository(string connectionString)
         {
             _connectionString = connectionString;
-            Logger.Instance.Info("UserRepository initialized with connection string.");
+            Logger.Instance.Information("UserRepository initialized with connection string.");
         }
 
         /// <summary>
@@ -34,11 +34,11 @@ namespace TaskManager.Data
 
             try
             {
-                Logger.Instance.Info("Opening database connection to load user list and admin list.");
+                Logger.Instance.Information("Opening database connection to load user list and admin list.");
                 using var connection = new SqlConnection(_connectionString);
                 connection.Open();
 
-                Logger.Instance.Info("Executing query to retrieve active users and admins.");
+                Logger.Instance.Information("Executing query to retrieve active users and admins.");
                 const string query = "SELECT DisplayName, IsAdmin FROM Users WHERE IsActive = 1";
                 using var command = new SqlCommand(query, connection);
                 using var reader = command.ExecuteReader();
@@ -58,7 +58,7 @@ namespace TaskManager.Data
                         users.Add(displayName);
                     }
                 }
-                Logger.Instance.Info("Successfully retrieved list of users and admins.");
+                Logger.Instance.Information("Successfully retrieved list of users and admins.");
             }
             catch (SqlException ex)
             {
