@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Windows.Input;
 using TaskManager.Common;
@@ -10,9 +11,10 @@ using TaskManager.Services;
 
 namespace TaskManager.ViewModels
 {
-    public class NewTaskScreenViewModel : BaseViewModel
+    public class NewTaskScreenViewModel : BaseViewModel, IDataErrorInfo
     {
         private readonly UserRepository _userRepository;
+        private bool _hasAttemptedSave;
 
         public ObservableCollection<string> ReporterUsers { get; }
         public ObservableCollection<string> AssigneeUsers { get; }
@@ -90,11 +92,77 @@ namespace TaskManager.ViewModels
             SaveCommand = new RelayCommand(_ => SaveCommandExecute());
             ClearCommand = new RelayCommand(_ => ClearCommandExecute());
 
-            ClearFields(); // Reset các trường về mặc định khi khởi tạo ViewModel
+            ClearFields();
+        }
+
+        public string this[string columnName]
+        {
+            get
+            {
+                if (!_hasAttemptedSave) return null;
+
+                switch (columnName)
+                {
+                    case nameof(Code):
+                        if (string.IsNullOrWhiteSpace(Code))
+                            return AppConstants.AppText.ValidationMessages.CodeRequired;
+                        break;
+                    case nameof(Title):
+                        if (string.IsNullOrWhiteSpace(Title))
+                            return AppConstants.AppText.ValidationMessages.TitleRequired;
+                        break;
+                    case nameof(Status):
+                        if (Status < 0 || Status > 2)
+                            return AppConstants.AppText.ValidationMessages.InvalidStatus;
+                        break;
+                    case nameof(Priority):
+                        if (Priority < 0 || Priority > 2)
+                            return AppConstants.AppText.ValidationMessages.InvalidPriority;
+                        break;
+                    case nameof(ReporterId):
+                        if (string.IsNullOrWhiteSpace(ReporterId))
+                            return AppConstants.AppText.ValidationMessages.ReporterRequired;
+                        break;
+                    case nameof(AssigneeId):
+                        if (string.IsNullOrWhiteSpace(AssigneeId))
+                            return AppConstants.AppText.ValidationMessages.AssigneeRequired;
+                        break;
+                }
+                return null;
+            }
+        }
+
+        public string Error => null;
+
+        public bool IsValid
+        {
+            get
+            {
+                foreach (var prop in new[] { nameof(Code), nameof(Title), nameof(Status), nameof(Priority), nameof(ReporterId), nameof(AssigneeId) })
+                {
+                    if (this[prop] != null)
+                        return false;
+                }
+                return true;
+            }
         }
 
         private void SaveCommandExecute()
         {
+            _hasAttemptedSave = true;
+
+            OnPropertyChanged(nameof(Code));
+            OnPropertyChanged(nameof(Title));
+            OnPropertyChanged(nameof(Status));
+            OnPropertyChanged(nameof(Priority));
+            OnPropertyChanged(nameof(ReporterId));
+            OnPropertyChanged(nameof(AssigneeId));
+
+            if (!IsValid)
+            {
+                return;
+            }
+
             var task = new TaskModel
             {
                 Code = Code,
@@ -133,11 +201,18 @@ namespace TaskManager.ViewModels
 
         private void ClearFields()
         {
+            _hasAttemptedSave = false;
+
             Code = string.Empty;
             Title = string.Empty;
             Description = string.Empty;
-            Status = 0;
-            Priority = 1;
+
+            // Set Status and Priority to 3 to ensure no default selection in the ComboBoxes.
+            // Since valid ComboBox values (Tags) are 0, 1, and 2,
+            // 3 is outside this range and thus no item will be selected by default.
+            Status = 3;
+            Priority = 3;
+
             DueDate = null;
             ReporterId = null;
             AssigneeId = null;
