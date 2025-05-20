@@ -185,8 +185,8 @@ namespace TaskManager.ViewModels
                 $"- Code: {task.Code}\n" +
                 $"- Title: {task.Title}\n" +
                 $"- Description: {task.Description}\n" +
-                $"- Status: {task.StatusString}\n" +
-                $"- Priority: {task.PriorityString}\n" +
+                $"- Status: {task.Status}\n" +
+                $"- Priority: {task.Priority}\n" +
                 $"- Reporter (EmployeeCode): {reporterCode ?? "Unknown"}\n" +
                 $"- Assignee (EmployeeCode): {assigneeCode ?? "Unknown"}\n" +
                 $"- DueDate: {task.DueDate:yyyy-MM-dd}\n" +
@@ -208,8 +208,6 @@ namespace TaskManager.ViewModels
             Description = string.Empty;
 
             // Set Status and Priority to 3 to ensure no default selection in the ComboBoxes.
-            // Since valid ComboBox values (Tags) are 0, 1, and 2,
-            // 3 is outside this range and thus no item will be selected by default.
             Status = 3;
             Priority = 3;
 
