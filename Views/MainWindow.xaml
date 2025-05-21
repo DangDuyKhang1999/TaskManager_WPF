@@ -3,21 +3,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:screens="clr-namespace:TaskManager.Views.Screens"
         MinHeight="800" MinWidth="900" 
-        Title="Task Manager" Height="800" Width="900">
+        Title="Task Manager" Height="800" Width="900"
+        HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-    <Grid Margin="10">
-        <TabControl>
+    <Grid Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TabItem Header="Task">
-                <screens:TaskScreen />
+                <screens:TaskScreen HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </TabItem>
             <TabItem Header="New Task">
-                <screens:NewTaskScreen />
+                <screens:NewTaskScreen HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </TabItem>
             <TabItem Header="New User" x:Name="NewUserTab" Visibility="Collapsed">
-                <screens:NewUserScreen />
+                <screens:NewUserScreen HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </TabItem>
             <TabItem Header="Setting">
-                <screens:SettingScreen />
+                <screens:SettingScreen HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </TabItem>
         </TabControl>
     </Grid>
