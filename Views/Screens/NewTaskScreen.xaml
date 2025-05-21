@@ -5,38 +5,34 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:TaskManager.ViewModels"
              mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="800">
+             d:DesignHeight="650" d:DesignWidth="900">
 
     <UserControl.Resources>
         <ControlTemplate x:Key="ValidationErrorTemplate">
             <Grid VerticalAlignment="Center" SnapsToDevicePixels="True">
                 <Grid.ColumnDefinitions>
-                    <!-- Control chiếm 3 phần -->
                     <ColumnDefinition Width="3*"/>
-                    <!-- Message lỗi chiếm kích thước vừa đủ -->
                     <ColumnDefinition Width="Auto"/>
-                    <!-- Khoảng trắng dư ở bên phải -->
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0"
-                    BorderBrush="Red"
-                    BorderThickness="1"
-                    Padding="0"
-                    SnapsToDevicePixels="True">
+                        BorderBrush="Red"
+                        BorderThickness="1"
+                        Padding="0"
+                        SnapsToDevicePixels="True">
                     <AdornedElementPlaceholder
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    Margin="-1,-1,-1,-1"/>
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Margin="-1,-1,-1,-1"/>
                 </Border>
 
-                <!-- Error message -->
                 <TextBlock Grid.Column="1"
-                       Foreground="Red"
-                       FontSize="12"
-                       VerticalAlignment="Center"
-                       Text="{Binding [0].ErrorContent}"
-                       Margin="5,0,0,0"/>
+                           Foreground="Red"
+                           FontSize="14"
+                           VerticalAlignment="Center"
+                           Text="{Binding [0].ErrorContent}"
+                           Margin="5,0,0,0"/>
             </Grid>
         </ControlTemplate>
     </UserControl.Resources>
@@ -45,112 +41,118 @@
         <vm:NewTaskScreenViewModel />
     </UserControl.DataContext>
 
-    <!-- Main layout -->
-    <Grid HorizontalAlignment="Center" Width="600" Margin="30 0">
+    <Grid HorizontalAlignment="Center" Width="800" Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Title -->
         <TextBlock Text="Create New Task"
                    FontSize="28"
                    FontWeight="Bold"
-                   Margin="0 0 0 20"
+                   Margin="0 0 0 15"
                    HorizontalAlignment="Center"/>
 
-        <!-- Form -->
-        <Grid Grid.Row="1">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <Grid Margin="0 0 20 0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*"/>
-                        <ColumnDefinition Width="1*"/>
-                    </Grid.ColumnDefinitions>
+        <Grid Grid.Row="1" Margin="0 0 10 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0">
-                        <!-- Code -->
-                        <TextBlock Text="Code:" FontSize="14" Margin="0 0 0 2"/>
-                        <TextBox Text="{Binding Code, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
-                                 Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
-                                 Margin="0 0 0 10"
-                                 HorizontalAlignment="Stretch"/>
+            <StackPanel Grid.Column="0" MaxWidth="700">
+                <TextBlock Text="Code:" FontSize="14" Margin="0 0 0 3"/>
+                <TextBox Text="{Binding Code, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
+                         Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+                         Height="30"
+                         FontSize="14"
+                         Margin="0 0 0 8"
+                         HorizontalAlignment="Stretch"
+                         MaxWidth="700"/>
 
-                        <!-- Title -->
-                        <TextBlock Text="Title:" FontSize="14" Margin="0 0 0 2"/>
-                        <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
-                                 Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
-                                 Margin="0 0 0 10"
-                                 HorizontalAlignment="Stretch"/>
+                <TextBlock Text="Title:" FontSize="14" Margin="0 0 0 3"/>
+                <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
+                         Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+                         Height="30"
+                         FontSize="14"
+                         Margin="0 0 0 8"
+                         HorizontalAlignment="Stretch"
+                         MaxWidth="700"/>
 
-                        <!-- Description -->
-                        <TextBlock Text="Description:" FontSize="14" Margin="0 0 0 2"/>
-                        <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
-                                 AcceptsReturn="True"
-                                 TextWrapping="Wrap"
-                                 VerticalScrollBarVisibility="Auto"
-                                 Margin="0 0 0 10"
-                                 Height="100"
-                                 HorizontalAlignment="Stretch"/>
+                <TextBlock Text="Description:" FontSize="14" Margin="0 0 0 3"/>
+                <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         Margin="0 0 0 8"
+                         Height="90"
+                         FontSize="14"
+                         HorizontalAlignment="Stretch"
+                         MaxWidth="700"/>
 
-                        <!-- Status -->
-                        <TextBlock Text="Status:" FontSize="14" Margin="0 0 0 2"/>
-                        <ComboBox SelectedValue="{Binding Status, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
-                                  Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
-                                  SelectedValuePath="Tag"
-                                  Margin="0 0 0 10"
-                                  HorizontalAlignment="Stretch">
-                            <ComboBoxItem Content="Not Started" Tag="0"/>
-                            <ComboBoxItem Content="In Progress" Tag="1"/>
-                            <ComboBoxItem Content="Completed" Tag="2"/>
-                        </ComboBox>
+                <TextBlock Text="Status:" FontSize="14" Margin="0 0 0 3"/>
+                <ComboBox SelectedValue="{Binding Status, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
+                          Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+                          SelectedValuePath="Tag"
+                          Height="30"
+                          FontSize="14"
+                          Margin="0 0 0 8"
+                          HorizontalAlignment="Stretch"
+                          MaxWidth="700">
+                    <ComboBoxItem Content="Not Started" Tag="0"/>
+                    <ComboBoxItem Content="In Progress" Tag="1"/>
+                    <ComboBoxItem Content="Completed" Tag="2"/>
+                </ComboBox>
 
-                        <!-- Due Date -->
-                        <TextBlock Text="Due Date:" FontSize="14" Margin="0 0 0 2"/>
-                        <DatePicker SelectedDate="{Binding DueDate, UpdateSourceTrigger=PropertyChanged}"
-                                    Margin="0 0 0 10"
-                                    HorizontalAlignment="Stretch"/>
+                <TextBlock Text="Due Date:" FontSize="14" Margin="0 0 0 3"/>
+                <DatePicker SelectedDate="{Binding DueDate, UpdateSourceTrigger=PropertyChanged}"
+                            Height="30"
+                            FontSize="14"
+                            Margin="0 0 0 8"
+                            HorizontalAlignment="Stretch"
+                            MaxWidth="700"/>
 
-                        <!-- Priority -->
-                        <TextBlock Text="Priority:" FontSize="14" Margin="0 0 0 2"/>
-                        <ComboBox SelectedValue="{Binding Priority, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
-                                  Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
-                                  SelectedValuePath="Tag"
-                                  Margin="0 0 0 10"
-                                  HorizontalAlignment="Stretch">
-                            <ComboBoxItem Content="Low" Tag="2"/>
-                            <ComboBoxItem Content="Medium" Tag="1"/>
-                            <ComboBoxItem Content="High" Tag="0"/>
-                        </ComboBox>
+                <TextBlock Text="Priority:" FontSize="14" Margin="0 0 0 3"/>
+                <ComboBox SelectedValue="{Binding Priority, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
+                          Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+                          SelectedValuePath="Tag"
+                          Height="30"
+                          FontSize="14"
+                          Margin="0 0 0 8"
+                          HorizontalAlignment="Stretch"
+                          MaxWidth="700">
+                    <ComboBoxItem Content="Low" Tag="2"/>
+                    <ComboBoxItem Content="Medium" Tag="1"/>
+                    <ComboBoxItem Content="High" Tag="0"/>
+                </ComboBox>
 
-                        <!-- Reporter Id -->
-                        <TextBlock Text="Reporter Id:" FontSize="14" Margin="0 0 0 2"/>
-                        <ComboBox ItemsSource="{Binding ReporterUsers}"
-                                  SelectedItem="{Binding ReporterDisplayName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
-                                  Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
-                                  Margin="0 0 0 10"
-                                  HorizontalAlignment="Stretch"/>
+                <TextBlock Text="Reporter Id:" FontSize="14" Margin="0 0 0 3"/>
+                <ComboBox ItemsSource="{Binding ReporterUsers}"
+                          SelectedItem="{Binding ReporterDisplayName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
+                          Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+                          Height="30"
+                          FontSize="14"
+                          Margin="0 0 0 8"
+                          HorizontalAlignment="Stretch"
+                          MaxWidth="700"/>
 
-                        <!-- Assignee Id -->
-                        <TextBlock Text="Assignee Id:" FontSize="14" Margin="0 0 0 2"/>
-                        <ComboBox ItemsSource="{Binding AssigneeUsers}"
-                                  SelectedItem="{Binding AssigneeDisplayName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
-                                  Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
-                                  Margin="0 0 0 10"
-                                  HorizontalAlignment="Stretch"/>
-                    </StackPanel>
+                <TextBlock Text="Assignee Id:" FontSize="14" Margin="0 0 0 3"/>
+                <ComboBox ItemsSource="{Binding AssigneeUsers}"
+                          SelectedItem="{Binding AssigneeDisplayName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
+                          Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
+                          Height="30"
+                          FontSize="14"
+                          Margin="0 0 0 8"
+                          HorizontalAlignment="Stretch"
+                          MaxWidth="700"/>
+            </StackPanel>
 
-                    <!-- Spacer column -->
-                    <Grid Grid.Column="1"/>
-                </Grid>
-            </ScrollViewer>
+            <Grid Grid.Column="1"/>
         </Grid>
 
-        <!-- Buttons -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 20 0 0">
-            <Button Content="Save" Width="100" Margin="10 0" Command="{Binding SaveCommand}"/>
-            <Button Content="Cancel" Width="100" Command="{Binding ClearCommand}"/>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0">
+            <Button Content="Save" Width="100" Height="30" Margin="10 0 0 0" Command="{Binding SaveCommand}"/>
+            <Button Content="Cancel" Width="100" Height="30" Margin="10 0 0 0" Command="{Binding ClearCommand}"/>
         </StackPanel>
+
     </Grid>
 </UserControl>
