@@ -15,7 +15,6 @@ public class TaskRepository
     public TaskRepository(string connectionString)
     {
         _connectionString = connectionString;
-        Logger.Instance.Information("TaskRepository initialized with connection string.");
     }
 
     public List<TaskModel> GetAllTasks()

@@ -19,7 +19,6 @@ namespace TaskManager.Data
         public UserRepository(string connectionString)
         {
             _connectionString = connectionString;
-            Logger.Instance.Information("UserRepository initialized with connection string.");
         }
 
         /// <summary>
