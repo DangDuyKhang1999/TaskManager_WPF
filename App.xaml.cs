@@ -65,8 +65,15 @@ namespace TaskManager
             {
                 logger.Information("User login failed or cancelled.");
                 logger.Information("***** Task Manager end *****");
+                logger.Shutdown(); // Ensure logger shuts down and flushes logs
                 Application.Current.Shutdown();
             }
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            Logger.Instance.Shutdown(); // Ensure all logs are written before exit
+            base.OnExit(e);
         }
     }
 }

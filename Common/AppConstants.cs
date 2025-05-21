@@ -40,8 +40,8 @@
             public const string Level_Warning = "[WARN]";
             public const string Level_Error = "[ERROR]";
 
-            public const string Message_TaskManagerStart = "***** Task Manager start *****";
-            public const string Message_TaskManagerEnd = "***** Task Manager end *****";
+            public const string Message_TaskManagerStart = "           ************ Task Manager start ************";
+            public const string Message_TaskManagerEnd = "    ************ Task Manager end ************";
             public const string Message_UnexpectedError = "Unexpected error";
 
             public const string Message_LoginFailed = "An error occurred during login. Please contact admin.";
