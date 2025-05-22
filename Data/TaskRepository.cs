@@ -220,7 +220,21 @@ public class TaskRepository
             Logger.Instance.DatabaseFailure(errorMessage);
             return false;
         }
-
     }
+    public bool IsTaskCodeExists(string code)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+            return false;
+
+        using var connection = new SqlConnection(AppConstants.Database.ConnectionString);
+        connection.Open();
+
+        using var command = new SqlCommand("SELECT COUNT(1) FROM Tasks WHERE Code = @code", connection);
+        command.Parameters.AddWithValue("@code", code);
+
+        int count = (int)command.ExecuteScalar();
+        return count > 0;
+    }
+
 
 }

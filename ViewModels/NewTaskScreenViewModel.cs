@@ -97,16 +97,17 @@ namespace TaskManager.ViewModels
 
         public string this[string columnName]
         {
+
             get
             {
                 if (!_hasAttemptedSave) return null;
-
+                var taskRepository = new TaskRepository(AppConstants.Database.ConnectionString);
                 switch (columnName)
                 {
                     case nameof(Code):
                         if (string.IsNullOrWhiteSpace(Code))
                             return AppConstants.AppText.ValidationMessages.CodeRequired;
-                        if (IsTaskCodeExists(Code))
+                        if (taskRepository.IsTaskCodeExists(Code))
                             return AppConstants.AppText.Message_TaskCodeExists;
                         break;
                     case nameof(Title):
@@ -148,21 +149,7 @@ namespace TaskManager.ViewModels
                 return true;
             }
         }
-        private bool IsTaskCodeExists(string code)
-        {
-            if (string.IsNullOrWhiteSpace(code))
-                return false;
-
-            using var connection = new SqlConnection(AppConstants.Database.ConnectionString);
-            connection.Open();
-
-            using var command = new SqlCommand("SELECT COUNT(1) FROM Tasks WHERE Code = @code", connection);
-            command.Parameters.AddWithValue("@code", code);
-
-            int count = (int)command.ExecuteScalar();
-            return count > 0;
-        }
-
+       
         private void SaveCommandExecute()
         {
             _hasAttemptedSave = true;
@@ -212,8 +199,8 @@ namespace TaskManager.ViewModels
 
             try
             {
-                var repository = new TaskRepository(AppConstants.Database.ConnectionString);
-                bool isInserted = repository.InsertTask(task);
+                var taskRepository = new TaskRepository(AppConstants.Database.ConnectionString);
+                bool isInserted = taskRepository.InsertTask(task);
                 if (isInserted)
                 {
                     Logger.Instance.Information(
