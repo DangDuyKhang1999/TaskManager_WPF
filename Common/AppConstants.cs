@@ -26,6 +26,8 @@
         public static class Database
         {
             public const string ConnectionString = @"Server=localhost;Database=TaskManagerDB;Trusted_Connection=True;";
+            public const string ReporterCodeNotFound = "Reporter employee code not found for: ";
+            public const string AssigneeCodeNotFound = "Assignee employee code not found for: ";
         }
 
         public static class Logging

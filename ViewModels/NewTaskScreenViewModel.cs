@@ -146,7 +146,6 @@ namespace TaskManager.ViewModels
                 return true;
             }
         }
-
         private void SaveCommandExecute()
         {
             _hasAttemptedSave = true;
@@ -164,6 +163,22 @@ namespace TaskManager.ViewModels
                 return;
             }
 
+            // Lấy mã nhân viên từ DisplayName
+            var reporterCode = GetEmployeeCodeByDisplayName(ReporterDisplayName);
+            var assigneeCode = GetEmployeeCodeByDisplayName(AssigneeDisplayName);
+
+            if (string.IsNullOrEmpty(reporterCode))
+            {
+                Logger.Instance.Warning($"{AppConstants.Database.ReporterCodeNotFound}{ReporterDisplayName}");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(assigneeCode))
+            {
+                Logger.Instance.Warning($"{AppConstants.Database.AssigneeCodeNotFound}{AssigneeDisplayName}");
+                return;
+            }
+
             var task = new TaskModel
             {
                 Code = Code,
@@ -172,27 +187,34 @@ namespace TaskManager.ViewModels
                 Status = Status,
                 Priority = Priority,
                 DueDate = DueDate ?? DateTime.Now,
-                ReporterDisplayName = ReporterDisplayName,
-                AssigneeDisplayName = AssigneeDisplayName,
+                ReporterId = reporterCode,
+                AssigneeId = assigneeCode,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
             };
 
-            var reporterCode = GetEmployeeCodeByDisplayName(task.ReporterDisplayName);
-            var assigneeCode = GetEmployeeCodeByDisplayName(task.AssigneeDisplayName);
+            try
+            {
+                var repository = new TaskRepository(AppConstants.Database.ConnectionString);
+                repository.InsertTask(task);
 
-            Logger.Instance.Information(
-                $"[New Task Created]\n" +
-                $"- Code: {task.Code}\n" +
-                $"- Title: {task.Title}\n" +
-                $"- Description: {task.Description}\n" +
-                $"- Status: {task.Status}\n" +
-                $"- Priority: {task.Priority}\n" +
-                $"- Reporter (EmployeeCode): {reporterCode ?? "Unknown"}\n" +
-                $"- Assignee (EmployeeCode): {assigneeCode ?? "Unknown"}\n" +
-                $"- DueDate: {task.DueDate:yyyy-MM-dd}\n" +
-                $"- CreatedAt: {task.CreatedAt:yyyy-MM-dd HH:mm:ss}"
-            );
+                Logger.Instance.Information(
+                    $"[New Task Created]\n" +
+                    $"- Code: {task.Code}\n" +
+                    $"- Title: {task.Title}\n" +
+                    $"- Description: {task.Description}\n" +
+                    $"- Status: {task.Status}\n" +
+                    $"- Priority: {task.Priority}\n" +
+                    $"- ReporterId (EmployeeCode): {task.ReporterId}\n" +
+                    $"- AssigneeId (EmployeeCode): {task.AssigneeId}\n" +
+                    $"- DueDate: {task.DueDate:yyyy-MM-dd}\n" +
+                    $"- CreatedAt: {task.CreatedAt:yyyy-MM-dd HH:mm:ss}"
+                );
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"Lỗi khi thêm task: {ex.Message}");
+            }
         }
 
         private void ClearCommandExecute()

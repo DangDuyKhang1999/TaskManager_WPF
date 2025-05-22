@@ -53,10 +53,10 @@
         </Grid.RowDefinitions>
 
         <TextBlock Text="Create New Task"
-                   FontSize="28"
+                   FontSize="35"
                    FontWeight="Bold"
-                   Margin="0 0 200 0"
-                   HorizontalAlignment="Center"/>
+                   Margin="0 0 0 15"
+                   HorizontalAlignment="Left"/>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid Margin="0 0 10 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

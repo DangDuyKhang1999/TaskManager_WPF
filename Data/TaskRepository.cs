@@ -198,8 +198,8 @@ public class TaskRepository
             command.Parameters.AddWithValue("@Status", task.Status);
             command.Parameters.AddWithValue("@DueDate", task.DueDate != DateTime.MinValue ? (object)task.DueDate : DBNull.Value);
             command.Parameters.AddWithValue("@Priority", task.Priority);
-            command.Parameters.AddWithValue("@ReporterId", task.ReporterDisplayName ?? string.Empty);
-            command.Parameters.AddWithValue("@AssigneeId", task.AssigneeDisplayName ?? string.Empty);
+            command.Parameters.AddWithValue("@ReporterId", task.ReporterId ?? string.Empty);
+            command.Parameters.AddWithValue("@AssigneeId", task.AssigneeId ?? string.Empty);
 
             command.ExecuteNonQuery();
         }
