@@ -65,7 +65,7 @@ namespace TaskManager.Data
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error($"{AppConstants.Logging.Message_UnexpectedError}: {ex.Message}");
+                Logger.Instance.Error($"{AppConstants.AppText.Message_UnexpectedError}: {ex.Message}");
             }
         }
     }

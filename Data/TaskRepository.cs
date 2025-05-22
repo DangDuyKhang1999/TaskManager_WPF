@@ -178,7 +178,7 @@ public class TaskRepository
             UpdatedAt = Convert.ToDateTime(reader["UpdatedAt"])
         };
     }
-    public void InsertTask(TaskModel task)
+    public bool InsertTask(TaskModel task)
     {
         try
         {
@@ -186,10 +186,10 @@ public class TaskRepository
             connection.Open();
 
             var query = @"
-            INSERT INTO Tasks
-                (Code, Title, Description, Status, DueDate, Priority, ReporterId, AssigneeId, CreatedAt, UpdatedAt)
-            VALUES
-                (@Code, @Title, @Description, @Status, @DueDate, @Priority, @ReporterId, @AssigneeId, GETDATE(), GETDATE())";
+    INSERT INTO Tasks
+        (Code, Title, Description, Status, DueDate, Priority, ReporterId, AssigneeId, CreatedAt, UpdatedAt)
+    VALUES
+        (@Code, @Title, @Description, @Status, @DueDate, @Priority, @ReporterId, @AssigneeId, GETDATE(), GETDATE())";
 
             using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@Code", task.Code ?? string.Empty);
@@ -202,12 +202,25 @@ public class TaskRepository
             command.Parameters.AddWithValue("@AssigneeId", task.AssigneeId ?? string.Empty);
 
             command.ExecuteNonQuery();
+
+            Logger.Instance.DatabaseSuccess($"Task inserted successfully. Code: {task.Code}");
+            return true;
+        }
+        catch (SqlException sqlEx)
+        {
+            int errorCode = sqlEx.Number;
+            string errorMessage = $"SQL Error Code: {errorCode}, Message: {sqlEx.Message}{Environment.NewLine}{sqlEx.StackTrace}";
+
+            Logger.Instance.DatabaseFailure(errorMessage);
+            return false;
         }
         catch (Exception ex)
         {
-            Logger.Instance.Error($"Failed to insert task: {ex.Message}");
-            throw; 
+            string errorMessage = $"General error: {ex.Message}{Environment.NewLine}{ex.StackTrace}";
+            Logger.Instance.DatabaseFailure(errorMessage);
+            return false;
         }
+
     }
 
 }

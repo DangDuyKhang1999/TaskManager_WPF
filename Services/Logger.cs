@@ -79,6 +79,12 @@ namespace TaskManager.Services
             EnqueueLog(AppConstants.Logging.Level_Error, message, className);
         }
 
+        public void DatabaseSuccess(string message, [CallerFilePath] string callerFilePath = "")
+            => EnqueueLog(AppConstants.ExecutionStatus.DbSuccess, message, GetClassName(callerFilePath));
+
+        public void DatabaseFailure(string message, [CallerFilePath] string callerFilePath = "")
+            => EnqueueLog(AppConstants.ExecutionStatus.DbFailure, message, GetClassName(callerFilePath));
+
         private void EnqueueLog(string level, string message, string className)
         {
             string timestamp = DateTime.Now.ToString("HH:mm:ss.fff");

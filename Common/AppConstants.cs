@@ -10,7 +10,10 @@
             // Message for UI
             public const string Message_LoginEmptyFields = "Username or password cannot be empty!";
             public const string Message_LoginInvalidCredentials = "Invalid username or password.";
-
+            public const string Message_TaskSaveSuccess = "Task saved successfully.";
+            public const string Message_TaskSaveFailed = "Failed to save the task. Please try again or contact support.";
+            public const string Message_UnexpectedError = "Unexpected error: ";
+            public const string Message_TaskCodeExists = "This task code already exists. Please enter a unique code.";
             // Validation messages
             public static class ValidationMessages
             {
@@ -44,7 +47,6 @@
 
             public const string Message_TaskManagerStart = "           ************ Task Manager start ************";
             public const string Message_TaskManagerEnd = "    ************ Task Manager end ************";
-            public const string Message_UnexpectedError = "Unexpected error";
 
             public const string Message_LoginFailed = "An error occurred during login. Please contact admin.";
             public const string Message_LoginAuthFailed = "Authentication failed:";
@@ -64,6 +66,13 @@
             public const string InProgress = "In Progress";
             public const string Completed = "Completed";
             public const string Unknown = "Unknown";
+        }
+        public static class ExecutionStatus
+        {
+            public const string Success = "Success";
+            public const string Error = "Error";
+            public const string DbSuccess = "[DB_SUCCESS]";
+            public const string DbFailure = "[DB_FAILURE]";
         }
     }
 }

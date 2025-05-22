@@ -106,6 +106,10 @@ namespace TaskManager.ViewModels
                     case nameof(Code):
                         if (string.IsNullOrWhiteSpace(Code))
                             return AppConstants.AppText.ValidationMessages.CodeRequired;
+
+                        if (IsTaskCodeExists(Code))
+                            return AppConstants.AppText.Message_TaskCodeExists;
+
                         break;
                     case nameof(Title):
                         if (string.IsNullOrWhiteSpace(Title))
@@ -146,6 +150,21 @@ namespace TaskManager.ViewModels
                 return true;
             }
         }
+        private bool IsTaskCodeExists(string code)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+                return false;
+
+            using var connection = new SqlConnection(AppConstants.Database.ConnectionString);
+            connection.Open();
+
+            using var command = new SqlCommand("SELECT COUNT(1) FROM Tasks WHERE Code = @code", connection);
+            command.Parameters.AddWithValue("@code", code);
+
+            int count = (int)command.ExecuteScalar();
+            return count > 0;
+        }
+
         private void SaveCommandExecute()
         {
             _hasAttemptedSave = true;
@@ -196,25 +215,43 @@ namespace TaskManager.ViewModels
             try
             {
                 var repository = new TaskRepository(AppConstants.Database.ConnectionString);
-                repository.InsertTask(task);
+                bool isInserted = repository.InsertTask(task);
+                if (isInserted)
+                {
+                    Logger.Instance.Information(
+                      $"[New Task Created]\n" +
+                      $"- Code: {task.Code}\n" +
+                      $"- Title: {task.Title}\n" +
+                      $"- Description: {task.Description}\n" +
+                      $"- Status: {task.Status}\n" +
+                      $"- Priority: {task.Priority}\n" +
+                      $"- ReporterId (EmployeeCode): {task.ReporterId}\n" +
+                      $"- AssigneeId (EmployeeCode): {task.AssigneeId}\n" +
+                      $"- DueDate: {task.DueDate:yyyy-MM-dd}\n" +
+                      $"- CreatedAt: {task.CreatedAt:yyyy-MM-dd HH:mm:ss}"
+                     );
 
-                Logger.Instance.Information(
-                    $"[New Task Created]\n" +
-                    $"- Code: {task.Code}\n" +
-                    $"- Title: {task.Title}\n" +
-                    $"- Description: {task.Description}\n" +
-                    $"- Status: {task.Status}\n" +
-                    $"- Priority: {task.Priority}\n" +
-                    $"- ReporterId (EmployeeCode): {task.ReporterId}\n" +
-                    $"- AssigneeId (EmployeeCode): {task.AssigneeId}\n" +
-                    $"- DueDate: {task.DueDate:yyyy-MM-dd}\n" +
-                    $"- CreatedAt: {task.CreatedAt:yyyy-MM-dd HH:mm:ss}"
-                );
+                    System.Windows.MessageBox.Show(
+                        AppConstants.AppText.Message_TaskSaveSuccess,
+                        AppConstants.ExecutionStatus.Success,
+                        System.Windows.MessageBoxButton.OK,
+                        System.Windows.MessageBoxImage.Information);
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show(
+                        AppConstants.AppText.Message_TaskSaveFailed,
+                        AppConstants.ExecutionStatus.Error,
+                        System.Windows.MessageBoxButton.OK,
+                        System.Windows.MessageBoxImage.Error);
+                }
+
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error($"Lỗi khi thêm task: {ex.Message}");
+                Logger.Instance.Error($"{AppConstants.AppText.Message_UnexpectedError}{ ex.Message}");
             }
+            ClearFields();
         }
 
         private void ClearCommandExecute()
@@ -231,8 +268,8 @@ namespace TaskManager.ViewModels
             Code = string.Empty;
             Title = string.Empty;
             Description = string.Empty;
-            Status = -1; 
-            Priority = -1; 
+            Status = -1;
+            Priority = -1;
             DueDate = null;
             ReporterDisplayName = null;
             AssigneeDisplayName = null;
