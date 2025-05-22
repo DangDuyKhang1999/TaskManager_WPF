@@ -106,10 +106,8 @@ namespace TaskManager.ViewModels
                     case nameof(Code):
                         if (string.IsNullOrWhiteSpace(Code))
                             return AppConstants.AppText.ValidationMessages.CodeRequired;
-
                         if (IsTaskCodeExists(Code))
                             return AppConstants.AppText.Message_TaskCodeExists;
-
                         break;
                     case nameof(Title):
                         if (string.IsNullOrWhiteSpace(Title))
