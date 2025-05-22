@@ -1,8 +1,11 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 using TaskManager.Models;
 using TaskManager.Data;
 using TaskManager.Contexts;
 using TaskManager.Common;
+using TaskManager.Services;
 
 namespace TaskManager.ViewModels
 {
@@ -25,6 +28,8 @@ namespace TaskManager.ViewModels
         private readonly TaskRepository _taskRepository;
         private readonly UserRepository _userRepository;
 
+        public ICommand DeleteTaskCommand { get; }
+
         public TaskScreenViewModel()
         {
             string connectionString = AppConstants.Database.ConnectionString;
@@ -41,6 +46,26 @@ namespace TaskManager.ViewModels
             DatabaseContext.Instance.LoadAdminUsers(admins);
 
             AvailableAssignees = new ObservableCollection<string>();
+
+            DeleteTaskCommand = new RelayCommand(DeleteTask);
+        }
+
+        private void DeleteTask(object parameter)
+        {
+            if (parameter is not TaskModel task || string.IsNullOrWhiteSpace(task.Code))
+                return;
+
+            bool isDeleted = _taskRepository.DeleteTaskByCode(task.Code);
+
+            if (isDeleted)
+            {
+                Tasks.Remove(task);
+                Logger.Instance.Information($"Task '{task.Code}' removed from UI and database.");
+            }
+            else
+            {
+                Logger.Instance.Warning($"Failed to delete Task '{task.Code}'.");
+            }
         }
     }
 }

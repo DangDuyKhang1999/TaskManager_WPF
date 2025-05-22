@@ -4,6 +4,7 @@
              xmlns:vm="clr-namespace:TaskManager.ViewModels"
              xmlns:Contexts="clr-namespace:TaskManager.Contexts"
              Height="Auto" Width="Auto">
+    
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </UserControl.Resources>
@@ -79,7 +80,9 @@
                                          Visibility="{Binding Source={x:Static Contexts:UserSession.Instance}, Path=IsAdmin, Converter={StaticResource BoolToVisibilityConverter}}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Content="Delete" />
+                            <Button Content="Delete"
+                             Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                             CommandParameter="{Binding}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

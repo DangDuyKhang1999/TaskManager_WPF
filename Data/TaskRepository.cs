@@ -235,6 +235,43 @@ public class TaskRepository
         int count = (int)command.ExecuteScalar();
         return count > 0;
     }
+    public bool DeleteTaskByCode(string code)
+    {
+        try
+        {
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
 
+            var query = "DELETE FROM Tasks WHERE Code = @Code";
+            using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Code", code);
 
+            int affectedRows = command.ExecuteNonQuery();
+
+            if (affectedRows > 0)
+            {
+                Logger.Instance.DatabaseSuccess($"Task with Code '{code}' deleted successfully.");
+                return true;
+            }
+            else
+            {
+                Logger.Instance.Warning($"No task found with Code '{code}' to delete.");
+                return false;
+            }
+        }
+        catch (SqlException sqlEx)
+        {
+            int errorCode = sqlEx.Number;
+            string errorMessage = $"SQL Error Code: {errorCode}, Message: {sqlEx.Message}{Environment.NewLine}{sqlEx.StackTrace}";
+
+            Logger.Instance.DatabaseFailure(errorMessage);
+            return false;
+        }
+        catch (Exception ex)
+        {
+            string errorMessage = $"General error: {ex.Message}{Environment.NewLine}{ex.StackTrace}";
+            Logger.Instance.DatabaseFailure(errorMessage);
+            return false;
+        }
+    }
 }
