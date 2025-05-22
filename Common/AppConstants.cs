@@ -40,16 +40,17 @@
             public const string Ext_XamlCs = ".xaml.cs";
 
             public const string FilePrefix_Fallback = "fallback_";
-            public const string Level_Information = "[INFO]";
-            public const string Level_Success = "[SUCCESS]";
-            public const string Level_Warning = "[WARN]";
-            public const string Level_Error = "[ERROR]";
+            public const string Information = "[INFO]";
+            public const string Success = "[SUCCESS]";
+            public const string Warning = "[WARN]";
+            public const string Error = "[ERROR]";
 
-            public const string Message_TaskManagerStart = "           ************ Task Manager start ************";
-            public const string Message_TaskManagerEnd = "    ************ Task Manager end ************";
+            public const string TaskManagerStart = "           ************ Task Manager start ************";
+            public const string TaskManagerEnd = "    ************ Task Manager end ************";
 
-            public const string Message_LoginFailed = "An error occurred during login. Please contact admin.";
-            public const string Message_LoginAuthFailed = "Authentication failed:";
+            public const string LoginFailed = "An error occurred during login. Please contact admin.";
+            public const string LoginAuthFailed = "Authentication failed:";
+            public const string BlankPadding = "                                              ";
         }
 
         public static class PriorityLevels

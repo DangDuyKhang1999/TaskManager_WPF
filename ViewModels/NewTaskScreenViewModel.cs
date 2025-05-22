@@ -205,16 +205,16 @@ namespace TaskManager.ViewModels
                 {
                     Logger.Instance.Information(
                       $"[New Task Created]\n" +
-                      $"- Code: {task.Code}\n" +
-                      $"- Title: {task.Title}\n" +
-                      $"- Description: {task.Description}\n" +
-                      $"- Status: {task.Status}\n" +
-                      $"- Priority: {task.Priority}\n" +
-                      $"- ReporterId (EmployeeCode): {task.ReporterId}\n" +
-                      $"- AssigneeId (EmployeeCode): {task.AssigneeId}\n" +
-                      $"- DueDate: {task.DueDate:yyyy-MM-dd}\n" +
-                      $"- CreatedAt: {task.CreatedAt:yyyy-MM-dd HH:mm:ss}"
-                     );
+                      $"{AppConstants.Logging.BlankPadding}- Code: {task.Code}\n" +
+                      $"{AppConstants.Logging.BlankPadding}- Title: {task.Title}\n" +
+                      $"{AppConstants.Logging.BlankPadding}- Description: {task.Description}\n" +
+                      $"{AppConstants.Logging.BlankPadding}- Status: {task.Status}\n" +
+                      $"{AppConstants.Logging.BlankPadding}- Priority: {task.Priority}\n" +
+                      $"{AppConstants.Logging.BlankPadding}- ReporterId (EmployeeCode): {task.ReporterId}\n" +
+                      $"{AppConstants.Logging.BlankPadding}- AssigneeId (EmployeeCode): {task.AssigneeId}\n" +
+                      $"{AppConstants.Logging.BlankPadding}- DueDate: {task.DueDate:yyyy-MM-dd}\n" +
+                      $"{AppConstants.Logging.BlankPadding}- CreatedAt: {task.CreatedAt:yyyy-MM-dd HH:mm:ss}"
+                    );
 
                     System.Windows.MessageBox.Show(
                         AppConstants.AppText.Message_TaskSaveSuccess,

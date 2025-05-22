@@ -31,7 +31,7 @@ namespace TaskManager.Views
         /// </summary>
         private void MainWindow_Closed(object? sender, System.EventArgs e)
         {
-            Logger.Instance.Information(AppConstants.Logging.Message_TaskManagerEnd);
+            Logger.Instance.Information(AppConstants.Logging.TaskManagerEnd);
         }
     }
 }

@@ -90,8 +90,8 @@ namespace TaskManager.ViewModels
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error($"{AppConstants.Logging.Message_LoginAuthFailed} {ex.Message}");
-                ErrorMessage = AppConstants.Logging.Message_LoginFailed;
+                Logger.Instance.Error($"{AppConstants.Logging.LoginAuthFailed} {ex.Message}");
+                ErrorMessage = AppConstants.Logging.LoginFailed;
             }
 
             return false;

@@ -14,7 +14,7 @@ namespace TaskManager.ViewModels
 
         public void OnWindowClosed()
         {
-            Logger.Instance.Information(AppConstants.Logging.Message_TaskManagerEnd);
+            Logger.Instance.Information(AppConstants.Logging.TaskManagerEnd);
         }
     }
 }

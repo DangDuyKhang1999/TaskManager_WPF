@@ -52,13 +52,13 @@ namespace TaskManager.Services
         }
 
         public void Information(string message, [CallerFilePath] string callerFilePath = "")
-            => EnqueueLog(AppConstants.Logging.Level_Information, message, GetClassName(callerFilePath));
+            => EnqueueLog(AppConstants.Logging.Information, message, GetClassName(callerFilePath));
 
         public void Success(string message, [CallerFilePath] string callerFilePath = "")
-            => EnqueueLog(AppConstants.Logging.Level_Success, message, GetClassName(callerFilePath));
+            => EnqueueLog(AppConstants.Logging.Success, message, GetClassName(callerFilePath));
 
         public void Warning(string message, [CallerFilePath] string callerFilePath = "")
-            => EnqueueLog(AppConstants.Logging.Level_Warning, message, GetClassName(callerFilePath));
+            => EnqueueLog(AppConstants.Logging.Warning, message, GetClassName(callerFilePath));
 
         public void Error(string message, [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
         {
@@ -66,7 +66,7 @@ namespace TaskManager.Services
             if (!string.IsNullOrWhiteSpace(callerMemberName))
                 className += $".{callerMemberName}";
 
-            EnqueueLog(AppConstants.Logging.Level_Error, message, className);
+            EnqueueLog(AppConstants.Logging.Error, message, className);
         }
 
         public void Error(Exception ex, [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
@@ -76,7 +76,7 @@ namespace TaskManager.Services
                 className += $".{callerMemberName}";
 
             string message = $"{ex.Message}{Environment.NewLine}{ex.StackTrace}";
-            EnqueueLog(AppConstants.Logging.Level_Error, message, className);
+            EnqueueLog(AppConstants.Logging.Error, message, className);
         }
         private void EnqueueLog(string level, string message, string className)
         {

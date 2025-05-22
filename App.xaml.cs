@@ -15,7 +15,7 @@ namespace TaskManager
 
             // Initialize logger
             var logger = Logger.Instance;
-            logger.Information(AppConstants.Logging.Message_TaskManagerStart);
+            logger.Information(AppConstants.Logging.TaskManagerStart);
 
             bool skipLogin = false;
 
