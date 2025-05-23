@@ -4,7 +4,7 @@
     /// Singleton class representing the current user session.
     /// Stores information about the logged-in user such as username, employee code and admin status.
     /// </summary>
-    internal class UserSession
+    public class UserSession
     {
         // Lazy initialization to ensure thread-safe singleton instance.
         private static readonly Lazy<UserSession> _instance = new(() => new UserSession());

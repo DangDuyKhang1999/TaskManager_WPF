@@ -202,5 +202,31 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
                 CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
             };
         }
+        public bool DeleteUserById(int id)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                connection.Open();
+
+                const string query = "DELETE FROM Users WHERE Id = @Id";
+                using var command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Id", id);
+
+                int affected = command.ExecuteNonQuery();
+                return affected > 0;
+            }
+            catch (SqlException ex)
+            {
+                Logger.Instance.Error($"SQL Error: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"Error deleting user by ID: {ex.Message}");
+                return false;
+            }
+        }
+
     }
 }
