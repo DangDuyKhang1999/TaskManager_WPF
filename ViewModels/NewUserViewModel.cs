@@ -82,7 +82,6 @@ namespace TaskManager.ViewModels
                         {
                             return AppConstants.AppText.ValidationMessages.CodeDuplicate;
                         }
-
                         break;
 
                     case nameof(Username):
@@ -95,25 +94,34 @@ namespace TaskManager.ViewModels
                         {
                             return AppConstants.AppText.ValidationMessages.UsernameDuplicate;
                         }
-
                         break;
 
                     case nameof(Password):
                         return string.IsNullOrWhiteSpace(Password)
                             ? AppConstants.AppText.ValidationMessages.PasswordRequired
                             : null;
+
+                    case nameof(DisplayName):
+                        if (string.IsNullOrWhiteSpace(DisplayName))
+                        {
+                            return AppConstants.AppText.ValidationMessages.DisplayNameRequired;
+                        }
+                        break;
                 }
 
                 return null;
             }
         }
 
+
         public string Error => null;
 
         public bool IsValid =>
             this[nameof(EmployeeCode)] == null &&
             this[nameof(Username)] == null &&
-            this[nameof(Password)] == null;
+            this[nameof(Password)] == null &&
+            this[nameof(DisplayName)] == null;
+
 
         private void SaveExecute()
         {
@@ -122,6 +130,7 @@ namespace TaskManager.ViewModels
             OnPropertyChanged(nameof(EmployeeCode));
             OnPropertyChanged(nameof(Username));
             OnPropertyChanged(nameof(Password));
+            OnPropertyChanged(nameof(DisplayName));
 
             if (!IsValid)
                 return;
