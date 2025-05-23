@@ -20,9 +20,6 @@
             <TabItem Header="New User" x:Name="NewUserTab" Visibility="Collapsed">
                 <screens:NewUserScreen HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </TabItem>
-            <TabItem Header="Setting">
-                <screens:SettingScreen HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-            </TabItem>
         </TabControl>
     </Grid>
 </Window>
