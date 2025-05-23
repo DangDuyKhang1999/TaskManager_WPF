@@ -64,7 +64,8 @@ namespace TaskManager.Data
                 using var connection = new SqlConnection(_connectionString);
                 connection.Open();
 
-                const string query = "SELECT * FROM Users ORDER BY CreatedAt DESC";
+                // Sắp xếp theo Id tăng dần thay vì CreatedAt
+                const string query = "SELECT * FROM Users ORDER BY Id ASC";
                 using var command = new SqlCommand(query, connection);
                 using var reader = command.ExecuteReader();
 
@@ -117,91 +118,6 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
             }
         }
 
-        public bool DeleteUserByCode(string employeeCode)
-        {
-            try
-            {
-                using var connection = new SqlConnection(_connectionString);
-                connection.Open();
-
-                const string query = "DELETE FROM Users WHERE EmployeeCode = @EmployeeCode";
-                using var command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@EmployeeCode", employeeCode);
-
-                int affected = command.ExecuteNonQuery();
-                return affected > 0;
-            }
-            catch (SqlException ex)
-            {
-                Logger.Instance.Error($"SQL Error: {ex.Message}");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error($"Error deleting user: {ex.Message}");
-                return false;
-            }
-        }
-
-        public bool IsUsernameExists(string username)
-        {
-            if (string.IsNullOrWhiteSpace(username)) return false;
-
-            try
-            {
-                using var connection = new SqlConnection(_connectionString);
-                connection.Open();
-
-                const string query = "SELECT COUNT(1) FROM Users WHERE Username = @Username";
-                using var command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@Username", username);
-
-                int count = (int)command.ExecuteScalar();
-                return count > 0;
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error($"Error checking username: {ex.Message}");
-                return false;
-            }
-        }
-        public bool IsEmployeeCodeExists(string employeeCode)
-        {
-            if (string.IsNullOrWhiteSpace(employeeCode)) return false;
-
-            try
-            {
-                using var connection = new SqlConnection(_connectionString);
-                connection.Open();
-
-                const string query = "SELECT COUNT(1) FROM Users WHERE EmployeeCode = @EmployeeCode";
-                using var command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@EmployeeCode", employeeCode);
-
-                int count = (int)command.ExecuteScalar();
-                return count > 0;
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error($"Error checking employee code: {ex.Message}");
-                return false;
-            }
-        }
-        private UserModel MapReaderToUser(SqlDataReader reader)
-        {
-            return new UserModel
-            {
-                Id = Convert.ToInt32(reader["Id"]),
-                EmployeeCode = reader["EmployeeCode"]?.ToString() ?? string.Empty,
-                Username = reader["Username"]?.ToString() ?? string.Empty,
-                PasswordHash = reader["PasswordHash"]?.ToString() ?? string.Empty,
-                DisplayName = reader["DisplayName"]?.ToString(),
-                Email = reader["Email"]?.ToString(),
-                IsAdmin = Convert.ToBoolean(reader["IsAdmin"]),
-                IsActive = Convert.ToBoolean(reader["IsActive"]),
-                CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
-            };
-        }
         public bool DeleteUserById(int id)
         {
             try
@@ -228,5 +144,20 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
             }
         }
 
+        private UserModel MapReaderToUser(SqlDataReader reader)
+        {
+            return new UserModel
+            {
+                Id = Convert.ToInt32(reader["Id"]),
+                EmployeeCode = reader["EmployeeCode"]?.ToString() ?? string.Empty,
+                Username = reader["Username"]?.ToString() ?? string.Empty,
+                PasswordHash = reader["PasswordHash"]?.ToString() ?? string.Empty,
+                DisplayName = reader["DisplayName"]?.ToString(),
+                Email = reader["Email"]?.ToString(),
+                IsAdmin = Convert.ToBoolean(reader["IsAdmin"]),
+                IsActive = Convert.ToBoolean(reader["IsActive"]),
+                CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
+            };
+        }
     }
 }
