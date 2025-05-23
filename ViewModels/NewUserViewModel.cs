@@ -113,7 +113,6 @@ namespace TaskManager.ViewModels
             }
         }
 
-
         public string Error => null;
 
         public bool IsValid =>
@@ -121,7 +120,6 @@ namespace TaskManager.ViewModels
             this[nameof(Username)] == null &&
             this[nameof(Password)] == null &&
             this[nameof(DisplayName)] == null;
-
 
         private void SaveExecute()
         {
