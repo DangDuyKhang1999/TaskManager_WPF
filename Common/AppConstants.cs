@@ -32,12 +32,20 @@
                 public const string UsernameRequired = "Username must not be empty";
                 public const string PasswordRequired = "Password must not be empty";
                 public const string RoleRequired = "Role must be selected";
+                public const string CodeDuplicate = "This employee code already exists. Please enter a unique code.";
+                public const string UsernameDuplicate = "This username already exists. Please choose another.";
             }
         }
 
         public static class Database
         {
             public const string ConnectionString = @"Server=localhost;Database=TaskManagerDB;Trusted_Connection=True;";
+            public const string Query_GetUsersAndAdmins = "SELECT DisplayName, IsAdmin FROM Users WHERE IsActive = 1";
+            public const string Query_GetAllUsers = "SELECT * FROM Users ORDER BY Id ASC";
+            public const string Query_CheckEmployeeCode = "SELECT COUNT(1) FROM Users WHERE EmployeeCode = @EmployeeCode";
+            public const string Query_CheckUsername = "SELECT COUNT(1) FROM Users WHERE Username = @Username";
+            public const string Query_DeleteUserById = "DELETE FROM Users WHERE Id = @Id";
+
             public const string ReporterCodeNotFound = "Reporter employee code not found for: ";
             public const string AssigneeCodeNotFound = "Assignee employee code not found for: ";
         }

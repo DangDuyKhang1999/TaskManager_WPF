@@ -69,21 +69,41 @@ namespace TaskManager.ViewModels
             get
             {
                 if (!_hasAttemptedSave) return null;
+
                 switch (columnName)
                 {
                     case nameof(EmployeeCode):
-                        return string.IsNullOrWhiteSpace(EmployeeCode)
-                            ? AppConstants.AppText.ValidationMessages.CodeRequired
-                            : null;
+                        if (string.IsNullOrWhiteSpace(EmployeeCode))
+                        {
+                            return AppConstants.AppText.ValidationMessages.CodeRequired;
+                        }
+
+                        if (IsEmployeeCodeDuplicate(EmployeeCode))
+                        {
+                            return AppConstants.AppText.ValidationMessages.CodeDuplicate;
+                        }
+
+                        break;
+
                     case nameof(Username):
-                        return string.IsNullOrWhiteSpace(Username)
-                            ? AppConstants.AppText.ValidationMessages.UsernameRequired
-                            : null;
+                        if (string.IsNullOrWhiteSpace(Username))
+                        {
+                            return AppConstants.AppText.ValidationMessages.UsernameRequired;
+                        }
+
+                        if (IsUsernameDuplicate(Username))
+                        {
+                            return AppConstants.AppText.ValidationMessages.UsernameDuplicate;
+                        }
+
+                        break;
+
                     case nameof(Password):
                         return string.IsNullOrWhiteSpace(Password)
                             ? AppConstants.AppText.ValidationMessages.PasswordRequired
                             : null;
                 }
+
                 return null;
             }
         }
@@ -155,6 +175,34 @@ namespace TaskManager.ViewModels
             OnPropertyChanged(nameof(DisplayName));
             OnPropertyChanged(nameof(Email));
             OnPropertyChanged(nameof(IsAdmin));
+        }
+
+        private bool IsEmployeeCodeDuplicate(string employeeCode)
+        {
+            try
+            {
+                var userRepository = new UserRepository(AppConstants.Database.ConnectionString);
+                return userRepository.DoesEmployeeCodeExist(employeeCode);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"Error checking EmployeeCode duplication: {ex.Message}");
+                return false;
+            }
+        }
+
+        private bool IsUsernameDuplicate(string username)
+        {
+            try
+            {
+                var userRepository = new UserRepository(AppConstants.Database.ConnectionString);
+                return userRepository.DoesUsernameExist(username);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"Error checking Username duplication: {ex.Message}");
+                return false;
+            }
         }
     }
 }

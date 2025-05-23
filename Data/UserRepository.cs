@@ -7,9 +7,6 @@ using TaskManager.Services;
 
 namespace TaskManager.Data
 {
-    /// <summary>
-    /// Repository class responsible for interacting with the Users table in the database.
-    /// </summary>
     public class UserRepository
     {
         private readonly string _connectionString;
@@ -26,12 +23,11 @@ namespace TaskManager.Data
 
             try
             {
-                Logger.Instance.Information("Opening database connection to load user list and admin list.");
+                Logger.Instance.Information(AppConstants.Logging.Information + " Opening database connection to load user list and admin list.");
                 using var connection = new SqlConnection(_connectionString);
                 connection.Open();
 
-                const string query = "SELECT DisplayName, IsAdmin FROM Users WHERE IsActive = 1";
-                using var command = new SqlCommand(query, connection);
+                using var command = new SqlCommand(AppConstants.Database.Query_GetUsersAndAdmins, connection);
                 using var reader = command.ExecuteReader();
 
                 while (reader.Read())
@@ -47,11 +43,11 @@ namespace TaskManager.Data
             }
             catch (SqlException ex)
             {
-                Logger.Instance.Error($"[SQL] {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error($"Unexpected error: {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" Unexpected error: {ex.Message}");
             }
         }
 
@@ -64,9 +60,7 @@ namespace TaskManager.Data
                 using var connection = new SqlConnection(_connectionString);
                 connection.Open();
 
-                // Sắp xếp theo Id tăng dần thay vì CreatedAt
-                const string query = "SELECT * FROM Users ORDER BY Id ASC";
-                using var command = new SqlCommand(query, connection);
+                using var command = new SqlCommand(AppConstants.Database.Query_GetAllUsers, connection);
                 using var reader = command.ExecuteReader();
 
                 while (reader.Read())
@@ -76,7 +70,7 @@ namespace TaskManager.Data
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error($"Failed to load users: {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" Failed to load users: {ex.Message}");
             }
 
             return users;
@@ -89,7 +83,6 @@ namespace TaskManager.Data
                 using var connection = new SqlConnection(_connectionString);
                 connection.Open();
 
-                // Mã hóa mật khẩu bằng BCrypt
                 string hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
 
                 const string query = @"
@@ -99,27 +92,28 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
                 using var command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@EmployeeCode", user.EmployeeCode);
                 command.Parameters.AddWithValue("@Username", user.Username);
-                command.Parameters.AddWithValue("@PasswordHash", hashedPassword); // Sử dụng mật khẩu đã mã hóa
+                command.Parameters.AddWithValue("@PasswordHash", hashedPassword);
                 command.Parameters.AddWithValue("@DisplayName", user.DisplayName ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@Email", user.Email ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@IsAdmin", user.IsAdmin);
                 command.Parameters.AddWithValue("@IsActive", user.IsActive);
 
                 command.ExecuteNonQuery();
-                Logger.Instance.Information($"Inserted user successfully. Username: {user.Username}");
+                Logger.Instance.Information(AppConstants.Logging.Success + $" Inserted user successfully. Username: {user.Username}");
                 return true;
             }
             catch (SqlException ex)
             {
-                Logger.Instance.Error($"SQL Error: {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error: {ex.Message}");
                 return false;
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error($"Error inserting user: {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" Error inserting user: {ex.Message}");
                 return false;
             }
         }
+
         public bool DeleteUserById(int id)
         {
             try
@@ -127,8 +121,7 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
                 using var connection = new SqlConnection(_connectionString);
                 connection.Open();
 
-                const string query = "DELETE FROM Users WHERE Id = @Id";
-                using var command = new SqlCommand(query, connection);
+                using var command = new SqlCommand(AppConstants.Database.Query_DeleteUserById, connection);
                 command.Parameters.AddWithValue("@Id", id);
 
                 int affected = command.ExecuteNonQuery();
@@ -136,12 +129,62 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
             }
             catch (SqlException ex)
             {
-                Logger.Instance.Error($"SQL Error: {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error: {ex.Message}");
                 return false;
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error($"Error deleting user by ID: {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" Error deleting user by ID: {ex.Message}");
+                return false;
+            }
+        }
+
+        public bool DoesEmployeeCodeExist(string employeeCode)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                connection.Open();
+
+                using var command = new SqlCommand(AppConstants.Database.Query_CheckEmployeeCode, connection);
+                command.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+
+                int count = Convert.ToInt32(command.ExecuteScalar());
+                return count > 0;
+            }
+            catch (SqlException ex)
+            {
+                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(AppConstants.Logging.Error + $" Error checking EmployeeCode duplication: {ex.Message}");
+                return false;
+            }
+        }
+
+        public bool DoesUsernameExist(string username)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                connection.Open();
+
+                using var command = new SqlCommand(AppConstants.Database.Query_CheckUsername, connection);
+                command.Parameters.AddWithValue("@Username", username);
+
+                int count = Convert.ToInt32(command.ExecuteScalar());
+                return count > 0;
+            }
+            catch (SqlException ex)
+            {
+                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(AppConstants.Logging.Error + $" Error checking Username duplication: {ex.Message}");
                 return false;
             }
         }
