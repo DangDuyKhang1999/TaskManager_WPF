@@ -165,7 +165,28 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
                 return false;
             }
         }
+        public bool IsEmployeeCodeExists(string employeeCode)
+        {
+            if (string.IsNullOrWhiteSpace(employeeCode)) return false;
 
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                connection.Open();
+
+                const string query = "SELECT COUNT(1) FROM Users WHERE EmployeeCode = @EmployeeCode";
+                using var command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+
+                int count = (int)command.ExecuteScalar();
+                return count > 0;
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"Error checking employee code: {ex.Message}");
+                return false;
+            }
+        }
         private UserModel MapReaderToUser(SqlDataReader reader)
         {
             return new UserModel

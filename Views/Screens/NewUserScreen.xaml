@@ -1,12 +1,47 @@
 ﻿<UserControl x:Class="TaskManager.Views.Screens.NewUserScreen"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TaskManager.Views.Screens"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <TextBlock Text="New User UI here..." HorizontalAlignment="Center" VerticalAlignment="Center"/>
+             xmlns:vm="clr-namespace:TaskManager.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
+
+    <UserControl.DataContext>
+        <vm:NewUserViewModel />
+    </UserControl.DataContext>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Create New User" FontSize="30" FontWeight="Bold" Margin="0 0 0 20"/>
+
+        <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch">
+            <TextBlock Text="Employee Code:"/>
+            <TextBox Text="{Binding EmployeeCode, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+
+            <TextBlock Text="Username:"/>
+            <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+
+            <TextBlock Text="Password:"/>
+            <TextBox Text="{Binding Password, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+
+            <TextBlock Text="Display Name:"/>
+            <TextBox Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Text="Email:"/>
+            <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
+
+            <CheckBox Content="Is Admin" IsChecked="{Binding IsAdmin}" Margin="0 10 0 0"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 20 0 0">
+            <Button Content="Save" Width="100" Margin="5" Command="{Binding SaveCommand}"/>
+            <Button Content="Clear" Width="100" Margin="5" Command="{Binding ClearCommand}"/>
+        </StackPanel>
     </Grid>
 </UserControl>
