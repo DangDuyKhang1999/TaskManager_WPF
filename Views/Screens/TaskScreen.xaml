@@ -4,7 +4,7 @@
              xmlns:vm="clr-namespace:TaskManager.ViewModels"
              xmlns:Contexts="clr-namespace:TaskManager.Contexts"
              Height="Auto" Width="Auto">
-    
+
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </UserControl.Resources>
@@ -21,6 +21,9 @@
                   HeadersVisibility="Column"
                   GridLinesVisibility="All">
             <DataGrid.Columns>
+                <!-- ID -->
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto" IsReadOnly="True"/>
+
                 <!-- Task Code -->
                 <DataGridTextColumn Header="Task Code" Binding="{Binding Code}" Width="*" IsReadOnly="True"/>
 
