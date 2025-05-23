@@ -64,11 +64,12 @@ namespace TaskManager.ViewModels
             ClearFields();
         }
 
+        // IDataErrorInfo indexer - trả về lỗi validate chỉ khi đã bấm Save
         public string this[string columnName]
         {
             get
             {
-                if (!_hasAttemptedSave) return null;
+                if (!_hasAttemptedSave) return null;  // CHỈ validate khi bấm Save
                 switch (columnName)
                 {
                     case nameof(EmployeeCode):
@@ -99,11 +100,13 @@ namespace TaskManager.ViewModels
         {
             _hasAttemptedSave = true;
 
+            // Gọi OnPropertyChanged để UI cập nhật lỗi validate
             OnPropertyChanged(nameof(EmployeeCode));
             OnPropertyChanged(nameof(Username));
             OnPropertyChanged(nameof(Password));
 
-            if (!IsValid) return;
+            if (!IsValid)
+                return;
 
             var user = new UserModel
             {
