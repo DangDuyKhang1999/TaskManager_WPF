@@ -89,6 +89,9 @@ namespace TaskManager.Data
                 using var connection = new SqlConnection(_connectionString);
                 connection.Open();
 
+                // Mã hóa mật khẩu bằng BCrypt
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+
                 const string query = @"
 INSERT INTO Users (EmployeeCode, Username, PasswordHash, DisplayName, Email, IsAdmin, IsActive, CreatedAt)
 VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin, @IsActive, GETDATE())";
@@ -96,7 +99,7 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
                 using var command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@EmployeeCode", user.EmployeeCode);
                 command.Parameters.AddWithValue("@Username", user.Username);
-                command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
+                command.Parameters.AddWithValue("@PasswordHash", hashedPassword); // Sử dụng mật khẩu đã mã hóa
                 command.Parameters.AddWithValue("@DisplayName", user.DisplayName ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@Email", user.Email ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@IsAdmin", user.IsAdmin);
@@ -117,7 +120,6 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
                 return false;
             }
         }
-
         public bool DeleteUserById(int id)
         {
             try

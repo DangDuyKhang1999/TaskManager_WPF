@@ -81,7 +81,8 @@ namespace TaskManager.ViewModels
                     bool isAdmin = reader["IsAdmin"] is bool b && b;
                     string employeeCode = reader["EmployeeCode"]?.ToString();
 
-                    if (password == passwordHash)
+                    // So sánh mật khẩu bằng BCrypt
+                    if (!string.IsNullOrEmpty(passwordHash) && BCrypt.Net.BCrypt.Verify(password, passwordHash))
                     {
                         UserSession.Instance.Initialize(username, employeeCode, isAdmin);
                         return true;

@@ -33,7 +33,7 @@ public class TaskRepository
 
             if (isDebug)
             {
-                // Lấy EmployeeCode đầu tiên có IsAdmin == isAdmin (true hoặc false)
+                // DEBUG Mode Logic
                 var userQuery = "SELECT TOP 1 EmployeeCode FROM Users WHERE IsAdmin = @IsAdmin ORDER BY EmployeeCode";
                 using var userCmd = new SqlCommand(userQuery, connection);
                 userCmd.Parameters.AddWithValue("@IsAdmin", isAdmin);
@@ -54,21 +54,21 @@ public class TaskRepository
                 {
                     Logger.Instance.Information("DEBUG mode + Admin => Load ALL tasks.");
                     string query = @"
-                    SELECT 
-                        CAST(t.Id AS NVARCHAR) AS Id,
-                        t.Code,
-                        t.Title,
-                        t.Description,
-                        t.Status,
-                        t.DueDate,
-                        t.Priority,
-                        t.CreatedAt,
-                        t.UpdatedAt,
-                        u1.DisplayName AS ReporterName,
-                        u2.DisplayName AS AssigneeName
-                    FROM Tasks t
-                    LEFT JOIN Users u1 ON t.ReporterId = u1.EmployeeCode
-                    LEFT JOIN Users u2 ON t.AssigneeId = u2.EmployeeCode";
+                SELECT 
+                    CAST(t.Id AS NVARCHAR) AS Id,
+                    t.Code,
+                    t.Title,
+                    t.Description,
+                    t.Status,
+                    t.DueDate,
+                    t.Priority,
+                    t.CreatedAt,
+                    t.UpdatedAt,
+                    u1.DisplayName AS ReporterName,
+                    u2.DisplayName AS AssigneeName
+                FROM Tasks t
+                LEFT JOIN Users u1 ON t.ReporterId = u1.EmployeeCode
+                LEFT JOIN Users u2 ON t.AssigneeId = u2.EmployeeCode";
 
                     using var command = new SqlCommand(query, connection);
                     using var reader = command.ExecuteReader();
@@ -83,43 +83,6 @@ public class TaskRepository
                     Logger.Instance.Information("DEBUG mode + Non-admin => Load tasks assigned to the debug employee code.");
 
                     string query = @"
-                    SELECT 
-                        CAST(t.Id AS NVARCHAR) AS Id,
-                        t.Code,
-                        t.Title,
-                        t.Description,
-                        t.Status,
-                        t.DueDate,
-                        t.Priority,
-                        t.CreatedAt,
-                        t.UpdatedAt,
-                        u1.DisplayName AS ReporterName,
-                        u2.DisplayName AS AssigneeName
-                    FROM Tasks t
-                    LEFT JOIN Users u1 ON t.ReporterId = u1.EmployeeCode
-                    LEFT JOIN Users u2 ON t.AssigneeId = u2.EmployeeCode
-                    WHERE t.AssigneeId = @EmployeeCode";
-
-                    using var command = new SqlCommand(query, connection);
-                    command.Parameters.AddWithValue("@EmployeeCode", employeeCode);
-
-                    using var reader = command.ExecuteReader();
-
-                    while (reader.Read())
-                    {
-                        tasks.Add(MapReaderToTask(reader));
-                    }
-                }
-            }
-            else
-            {
-                Logger.Instance.Information($"Production mode - User {employeeCode}, IsAdmin = {isAdmin}");
-
-                string condition = isAdmin
-                    ? "WHERE t.ReporterId = @EmployeeCode OR t.AssigneeId = @EmployeeCode"
-                    : "WHERE t.AssigneeId = @EmployeeCode";
-
-                string query = $@"
                 SELECT 
                     CAST(t.Id AS NVARCHAR) AS Id,
                     t.Code,
@@ -135,16 +98,83 @@ public class TaskRepository
                 FROM Tasks t
                 LEFT JOIN Users u1 ON t.ReporterId = u1.EmployeeCode
                 LEFT JOIN Users u2 ON t.AssigneeId = u2.EmployeeCode
-                {condition}";
+                WHERE t.AssigneeId = @EmployeeCode";
 
-                using var command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+                    using var command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@EmployeeCode", employeeCode);
 
-                using var reader = command.ExecuteReader();
+                    using var reader = command.ExecuteReader();
 
-                while (reader.Read())
+                    while (reader.Read())
+                    {
+                        tasks.Add(MapReaderToTask(reader));
+                    }
+                }
+            }
+            else
+            {
+                // Release Mode Logic
+                Logger.Instance.Information($"Production mode - User {employeeCode}, IsAdmin = {isAdmin}");
+
+                if (isAdmin)
                 {
-                    tasks.Add(MapReaderToTask(reader));
+                    Logger.Instance.Information("Production mode + Admin => Load ALL tasks.");
+                    string query = @"
+                SELECT 
+                    CAST(t.Id AS NVARCHAR) AS Id,
+                    t.Code,
+                    t.Title,
+                    t.Description,
+                    t.Status,
+                    t.DueDate,
+                    t.Priority,
+                    t.CreatedAt,
+                    t.UpdatedAt,
+                    u1.DisplayName AS ReporterName,
+                    u2.DisplayName AS AssigneeName
+                FROM Tasks t
+                LEFT JOIN Users u1 ON t.ReporterId = u1.EmployeeCode
+                LEFT JOIN Users u2 ON t.AssigneeId = u2.EmployeeCode";
+
+                    using var command = new SqlCommand(query, connection);
+                    using var reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        tasks.Add(MapReaderToTask(reader));
+                    }
+                }
+                else
+                {
+                    Logger.Instance.Information("Production mode + Non-admin => Load tasks assigned to the user's EmployeeCode.");
+
+                    string query = @"
+                SELECT 
+                    CAST(t.Id AS NVARCHAR) AS Id,
+                    t.Code,
+                    t.Title,
+                    t.Description,
+                    t.Status,
+                    t.DueDate,
+                    t.Priority,
+                    t.CreatedAt,
+                    t.UpdatedAt,
+                    u1.DisplayName AS ReporterName,
+                    u2.DisplayName AS AssigneeName
+                FROM Tasks t
+                LEFT JOIN Users u1 ON t.ReporterId = u1.EmployeeCode
+                LEFT JOIN Users u2 ON t.AssigneeId = u2.EmployeeCode
+                WHERE t.AssigneeId = @EmployeeCode";
+
+                    using var command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+
+                    using var reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        tasks.Add(MapReaderToTask(reader));
+                    }
                 }
             }
         }
@@ -155,6 +185,7 @@ public class TaskRepository
 
         return tasks;
     }
+
 
     /// <summary>
     /// Maps the current record of a <see cref="SqlDataReader"/> to a <see cref="TaskModel"/> instance.
