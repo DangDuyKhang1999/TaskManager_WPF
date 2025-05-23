@@ -3,27 +3,74 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:vm="clr-namespace:TaskManager.ViewModels"
-        Title="Login" Height="300" Width="400">
+        Title="Login"
+        Height="200" Width="350"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+
+    <!-- Bind the ViewModel -->
     <Window.DataContext>
         <vm:LoginViewModel />
     </Window.DataContext>
 
-    <Grid>
-        <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" 
-                 HorizontalAlignment="Left" VerticalAlignment="Top" 
-                 Width="200" Margin="100,50,0,0"/>
+    <!-- Center the form within the window -->
+    <Grid VerticalAlignment="Center"
+          HorizontalAlignment="Center"
+          Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Username -->
+            <RowDefinition Height="Auto"/>
+            <!-- Password -->
+            <RowDefinition Height="Auto"/>
+            <!-- Error message -->
+            <RowDefinition Height="Auto"/>
+            <!-- Login button -->
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
 
-        <PasswordBox Name="PasswordBox" 
-                     HorizontalAlignment="Left" VerticalAlignment="Top" 
-                     Width="200" Margin="100,100,0,0" 
+        <!-- Username label and input -->
+        <TextBlock Text="Username:"
+                   VerticalAlignment="Center"
+                   Grid.Row="0" Grid.Column="0"
+                   Margin="0,0,10,10"/>
+        <TextBox Grid.Row="0" Grid.Column="1"
+                 Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
+                 Width="200"
+                 Margin="0,0,0,10"/>
+
+        <!-- Password label and input -->
+        <TextBlock Text="Password:"
+                   VerticalAlignment="Center"
+                   Grid.Row="1" Grid.Column="0"
+                   Margin="0,0,10,10"/>
+        <PasswordBox x:Name="PasswordBox"
+                     Grid.Row="1" Grid.Column="1"
+                     Width="200"
+                     Margin="0,0,0,10"
                      PasswordChanged="PasswordBox_PasswordChanged"/>
 
-        <Button Content="Login" Command="{Binding LoginCommand}" 
-                HorizontalAlignment="Left" VerticalAlignment="Top" 
-                Width="100" Height="30" Margin="150,150,0,0"/>
+        <!-- Validation / error message -->
+        <TextBlock Text="{Binding ErrorMessage}"
+                   Foreground="Red"
+                   Grid.Row="2"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   Margin="0,0,0,10"
+                   TextAlignment="Center"/>
 
-        <TextBlock Text="{Binding ErrorMessage}" 
-                   HorizontalAlignment="Left" VerticalAlignment="Top" 
-                   Foreground="Red" Margin="100,180,0,0"/>
+        <!-- Login button centered horizontally -->
+        <StackPanel Grid.Row="3"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center">
+            <Button Content="Login"
+                    Command="{Binding LoginCommand}"
+                    Width="100" Height="30"/>
+        </StackPanel>
     </Grid>
 </Window>
