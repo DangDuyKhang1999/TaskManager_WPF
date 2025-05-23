@@ -12,8 +12,12 @@
             public const string Message_LoginInvalidCredentials = "Invalid username or password.";
             public const string Message_TaskSaveSuccess = "Task saved successfully.";
             public const string Message_TaskSaveFailed = "Failed to save the task. Please try again or contact support.";
+            public const string Message_UserSaveSuccess = "User created successfully.";
+            public const string Message_UserSaveFailed = "Failed to create user. Please try again or contact support.";
             public const string Message_UnexpectedError = "Unexpected error: ";
             public const string Message_TaskCodeExists = "This task code already exists. Please enter a unique code.";
+            public const string Message_UsernameExists = "This username already exists. Please choose another.";
+
             // Validation messages
             public static class ValidationMessages
             {
@@ -23,6 +27,11 @@
                 public const string InvalidPriority = "Invalid priority value";
                 public const string ReporterRequired = "Reporter must be selected";
                 public const string AssigneeRequired = "Assignee must be selected";
+
+                public const string DisplayNameRequired = "Display name must not be empty";
+                public const string UsernameRequired = "Username must not be empty";
+                public const string PasswordRequired = "Password must not be empty";
+                public const string RoleRequired = "Role must be selected";
             }
         }
 
@@ -68,6 +77,7 @@
             public const string Completed = "Completed";
             public const string Unknown = "Unknown";
         }
+
         public static class ExecutionStatus
         {
             public const string Success = "Success";

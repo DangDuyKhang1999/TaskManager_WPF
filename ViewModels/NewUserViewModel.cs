@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
 using TaskManager.Common;
@@ -73,11 +72,17 @@ namespace TaskManager.ViewModels
                 switch (columnName)
                 {
                     case nameof(EmployeeCode):
-                        return string.IsNullOrWhiteSpace(EmployeeCode) ? "Employee code is required." : null;
+                        return string.IsNullOrWhiteSpace(EmployeeCode)
+                            ? AppConstants.AppText.ValidationMessages.CodeRequired
+                            : null;
                     case nameof(Username):
-                        return string.IsNullOrWhiteSpace(Username) ? "Username is required." : null;
+                        return string.IsNullOrWhiteSpace(Username)
+                            ? AppConstants.AppText.ValidationMessages.UsernameRequired
+                            : null;
                     case nameof(Password):
-                        return string.IsNullOrWhiteSpace(Password) ? "Password is required." : null;
+                        return string.IsNullOrWhiteSpace(Password)
+                            ? AppConstants.AppText.ValidationMessages.PasswordRequired
+                            : null;
                 }
                 return null;
             }
@@ -118,17 +123,17 @@ namespace TaskManager.ViewModels
                 bool inserted = userRepository.InsertUser(user);
                 if (inserted)
                 {
-                    System.Windows.MessageBox.Show("User created successfully.", "Success");
+                    System.Windows.MessageBox.Show(AppConstants.AppText.Message_UserSaveSuccess, AppConstants.ExecutionStatus.Success);
                     ClearFields();
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("Failed to create user.", "Error");
+                    System.Windows.MessageBox.Show(AppConstants.AppText.Message_UserSaveFailed, AppConstants.ExecutionStatus.Error);
                 }
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error("Error creating user: " + ex.Message);
+                Logger.Instance.Error(AppConstants.AppText.Message_UnexpectedError + ex.Message);
             }
         }
 
