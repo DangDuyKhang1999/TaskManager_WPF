@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:TaskManager.ViewModels"
+             xmlns:services="clr-namespace:TaskManager.Services"
              mc:Ignorable="d"
              d:DesignHeight="650" d:DesignWidth="900"
              HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -79,12 +80,10 @@
                              HorizontalAlignment="Stretch"/>
 
                     <TextBlock Text="Password:" FontSize="14" Margin="0 0 0 3"/>
-                    <PasswordBox Name="PasswordBox"
-                                 PasswordChanged="PasswordBox_PasswordChanged"
+                    <PasswordBox services:PasswordBoxHelper.BoundPassword="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 services:PasswordBoxHelper.BindPassword="True"
                                  Height="30" FontSize="14" Margin="0 0 0 8"
-                                 HorizontalAlignment="Stretch"
-                                 Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
-                                 Tag="{Binding Password, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"/>
+                                 HorizontalAlignment="Stretch"/>
 
                     <TextBlock Text="Display Name:" FontSize="14" Margin="0 0 0 3"/>
                     <TextBox Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}"

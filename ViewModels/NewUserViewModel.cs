@@ -64,12 +64,11 @@ namespace TaskManager.ViewModels
             ClearFields();
         }
 
-        // IDataErrorInfo indexer - trả về lỗi validate chỉ khi đã bấm Save
         public string this[string columnName]
         {
             get
             {
-                if (!_hasAttemptedSave) return null;  // CHỈ validate khi bấm Save
+                if (!_hasAttemptedSave) return null;
                 switch (columnName)
                 {
                     case nameof(EmployeeCode):
@@ -100,7 +99,6 @@ namespace TaskManager.ViewModels
         {
             _hasAttemptedSave = true;
 
-            // Gọi OnPropertyChanged để UI cập nhật lỗi validate
             OnPropertyChanged(nameof(EmployeeCode));
             OnPropertyChanged(nameof(Username));
             OnPropertyChanged(nameof(Password));
@@ -127,7 +125,6 @@ namespace TaskManager.ViewModels
                 if (inserted)
                 {
                     System.Windows.MessageBox.Show(AppConstants.AppText.Message_UserSaveSuccess, AppConstants.ExecutionStatus.Success);
-                    ClearFields();
                 }
                 else
                 {
@@ -138,17 +135,26 @@ namespace TaskManager.ViewModels
             {
                 Logger.Instance.Error(AppConstants.AppText.Message_UnexpectedError + ex.Message);
             }
+            ClearFields();
         }
 
         private void ClearFields()
         {
             _hasAttemptedSave = false;
-            EmployeeCode = Username = Password = DisplayName = Email = string.Empty;
+
+            EmployeeCode = string.Empty;
+            Username = string.Empty;
+            Password = string.Empty;
+            DisplayName = string.Empty;
+            Email = string.Empty;
             IsAdmin = false;
 
             OnPropertyChanged(nameof(EmployeeCode));
             OnPropertyChanged(nameof(Username));
             OnPropertyChanged(nameof(Password));
+            OnPropertyChanged(nameof(DisplayName));
+            OnPropertyChanged(nameof(Email));
+            OnPropertyChanged(nameof(IsAdmin));
         }
     }
 }
