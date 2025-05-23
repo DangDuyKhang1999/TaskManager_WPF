@@ -104,7 +104,7 @@ namespace TaskManager.ViewModels
             {
                 EmployeeCode = EmployeeCode,
                 Username = Username,
-                PasswordHash = Password, // In production, hash this
+                PasswordHash = Password,
                 DisplayName = DisplayName,
                 Email = Email,
                 IsAdmin = IsAdmin,
