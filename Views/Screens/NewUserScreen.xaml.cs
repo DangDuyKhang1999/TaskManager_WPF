@@ -1,6 +1,7 @@
 ﻿using System.Windows.Controls;
 using System.Windows;
 using TaskManager.ViewModels;
+using System.Windows.Data;
 
 namespace TaskManager.Views.Screens
 {
@@ -15,12 +16,15 @@ namespace TaskManager.Views.Screens
         {
             if (DataContext is NewUserViewModel vm)
             {
-                var passwordBox = (PasswordBox)sender;
-                vm.Password = passwordBox.Password;
+                var passwordBox = sender as PasswordBox;
+                if (passwordBox != null)
+                {
+                    vm.Password = passwordBox.Password;
 
-                // Trigger lại validation cho Password property qua binding ảo Tag
-                var bindingExpression = passwordBox.GetBindingExpression(PasswordBox.TagProperty);
-                bindingExpression?.UpdateSource();
+                    // Trigger validation binding
+                    BindingExpression bindingExpression = passwordBox.GetBindingExpression(PasswordBox.TagProperty);
+                    bindingExpression?.UpdateSource();
+                }
             }
         }
     }
