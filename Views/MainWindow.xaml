@@ -11,6 +11,9 @@
             <TabItem Header="Task">
                 <screens:TaskScreen HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </TabItem>
+            <TabItem Header="Users" x:Name="UsersTab" Visibility="Collapsed">
+                <screens:UsersScreen HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            </TabItem>
             <TabItem Header="New Task">
                 <screens:NewTaskScreen HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             </TabItem>

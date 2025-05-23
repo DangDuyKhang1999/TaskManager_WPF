@@ -1,31 +1,24 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
 using TaskManager.Common;
+using TaskManager.Models;
 using TaskManager.Services;
-using static TaskManager.Common.AppConstants;
 
 namespace TaskManager.Data
 {
     /// <summary>
-    /// Repository class responsible for fetching user data from the database.
+    /// Repository class responsible for interacting with the Users table in the database.
     /// </summary>
     public class UserRepository
     {
         private readonly string _connectionString;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="UserRepository"/> with the specified connection string.
-        /// </summary>
-        /// <param name="connectionString">Database connection string.</param>
         public UserRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        /// <summary>
-        /// Retrieves all active users from the database, separated by user type (normal users and admins).
-        /// </summary>
-        /// <param name="users">Output list of usernames who are normal users (IsAdmin = 0).</param>
-        /// <param name="admins">Output list of usernames who are admins (IsAdmin = 1).</param>
         public void GetUsersAndAdmins(out List<string> users, out List<string> admins)
         {
             users = new List<string>();
@@ -37,27 +30,20 @@ namespace TaskManager.Data
                 using var connection = new SqlConnection(_connectionString);
                 connection.Open();
 
-                Logger.Instance.Information("Executing query to retrieve active users and admins.");
                 const string query = "SELECT DisplayName, IsAdmin FROM Users WHERE IsActive = 1";
                 using var command = new SqlCommand(query, connection);
                 using var reader = command.ExecuteReader();
 
-                // Read each record and classify user as admin or normal user
                 while (reader.Read())
                 {
                     string displayName = reader["DisplayName"]?.ToString() ?? string.Empty;
                     bool isAdmin = reader["IsAdmin"] != DBNull.Value && (bool)reader["IsAdmin"];
 
                     if (isAdmin)
-                    {
                         admins.Add(displayName);
-                    }
                     else
-                    {
                         users.Add(displayName);
-                    }
                 }
-                Logger.Instance.Information("Successfully retrieved list of users and admins.");
             }
             catch (SqlException ex)
             {
@@ -65,8 +51,135 @@ namespace TaskManager.Data
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error($"{AppConstants.AppText.Message_UnexpectedError}: {ex.Message}");
+                Logger.Instance.Error($"Unexpected error: {ex.Message}");
             }
+        }
+
+        public List<UserModel> GetAllUsers()
+        {
+            var users = new List<UserModel>();
+
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                connection.Open();
+
+                const string query = "SELECT * FROM Users ORDER BY CreatedAt DESC";
+                using var command = new SqlCommand(query, connection);
+                using var reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    users.Add(MapReaderToUser(reader));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"Failed to load users: {ex.Message}");
+            }
+
+            return users;
+        }
+
+        public bool InsertUser(UserModel user)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                connection.Open();
+
+                const string query = @"
+INSERT INTO Users (EmployeeCode, Username, PasswordHash, DisplayName, Email, IsAdmin, IsActive, CreatedAt)
+VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin, @IsActive, GETDATE())";
+
+                using var command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@EmployeeCode", user.EmployeeCode);
+                command.Parameters.AddWithValue("@Username", user.Username);
+                command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
+                command.Parameters.AddWithValue("@DisplayName", user.DisplayName ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Email", user.Email ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@IsAdmin", user.IsAdmin);
+                command.Parameters.AddWithValue("@IsActive", user.IsActive);
+
+                command.ExecuteNonQuery();
+                Logger.Instance.Information($"Inserted user successfully. Username: {user.Username}");
+                return true;
+            }
+            catch (SqlException ex)
+            {
+                Logger.Instance.Error($"SQL Error: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"Error inserting user: {ex.Message}");
+                return false;
+            }
+        }
+
+        public bool DeleteUserByCode(string employeeCode)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                connection.Open();
+
+                const string query = "DELETE FROM Users WHERE EmployeeCode = @EmployeeCode";
+                using var command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@EmployeeCode", employeeCode);
+
+                int affected = command.ExecuteNonQuery();
+                return affected > 0;
+            }
+            catch (SqlException ex)
+            {
+                Logger.Instance.Error($"SQL Error: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"Error deleting user: {ex.Message}");
+                return false;
+            }
+        }
+
+        public bool IsUsernameExists(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username)) return false;
+
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                connection.Open();
+
+                const string query = "SELECT COUNT(1) FROM Users WHERE Username = @Username";
+                using var command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Username", username);
+
+                int count = (int)command.ExecuteScalar();
+                return count > 0;
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error($"Error checking username: {ex.Message}");
+                return false;
+            }
+        }
+
+        private UserModel MapReaderToUser(SqlDataReader reader)
+        {
+            return new UserModel
+            {
+                Id = Convert.ToInt32(reader["Id"]),
+                EmployeeCode = reader["EmployeeCode"]?.ToString() ?? string.Empty,
+                Username = reader["Username"]?.ToString() ?? string.Empty,
+                PasswordHash = reader["PasswordHash"]?.ToString() ?? string.Empty,
+                DisplayName = reader["DisplayName"]?.ToString(),
+                Email = reader["Email"]?.ToString(),
+                IsAdmin = Convert.ToBoolean(reader["IsAdmin"]),
+                IsActive = Convert.ToBoolean(reader["IsActive"]),
+                CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
+            };
         }
     }
 }

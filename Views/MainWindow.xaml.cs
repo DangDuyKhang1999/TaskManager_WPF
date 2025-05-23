@@ -16,6 +16,7 @@ namespace TaskManager.Views
             if (UserSession.Instance.IsAdmin)
             {
                 NewUserTab.Visibility = Visibility.Visible;
+                UsersTab.Visibility = Visibility.Visible;
             }
 
             // Center the window on the screen

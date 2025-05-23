@@ -11,7 +11,7 @@ using TaskManager.Services;
 
 namespace TaskManager.ViewModels
 {
-    public class NewTaskScreenViewModel : BaseViewModel, IDataErrorInfo
+    public class NewTaskViewModel : BaseViewModel, IDataErrorInfo
     {
         private readonly UserRepository _userRepository;
         private bool _hasAttemptedSave;
@@ -78,7 +78,7 @@ namespace TaskManager.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand ClearCommand { get; }
 
-        public NewTaskScreenViewModel()
+        public NewTaskViewModel()
         {
             _userRepository = new UserRepository(AppConstants.Database.ConnectionString);
 

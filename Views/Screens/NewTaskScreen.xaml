@@ -39,7 +39,7 @@
     </UserControl.Resources>
 
     <UserControl.DataContext>
-        <vm:NewTaskScreenViewModel />
+        <vm:NewTaskViewModel />
     </UserControl.DataContext>
 
     <Grid Margin="20" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="650">
