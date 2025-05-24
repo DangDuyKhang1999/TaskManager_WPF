@@ -1,4 +1,6 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
 using TaskManager.Common;
 using TaskManager.Contexts;
 using TaskManager.Models;
@@ -65,7 +67,9 @@ public class TaskRepository
                     t.CreatedAt,
                     t.UpdatedAt,
                     u1.DisplayName AS ReporterName,
-                    u2.DisplayName AS AssigneeName
+                    u1.EmployeeCode AS ReporterId,
+                    u2.DisplayName AS AssigneeName,
+                    u2.EmployeeCode AS AssigneeId
                 FROM Tasks t
                 LEFT JOIN Users u1 ON t.ReporterId = u1.EmployeeCode
                 LEFT JOIN Users u2 ON t.AssigneeId = u2.EmployeeCode";
@@ -94,7 +98,9 @@ public class TaskRepository
                     t.CreatedAt,
                     t.UpdatedAt,
                     u1.DisplayName AS ReporterName,
-                    u2.DisplayName AS AssigneeName
+                    u1.EmployeeCode AS ReporterId,
+                    u2.DisplayName AS AssigneeName,
+                    u2.EmployeeCode AS AssigneeId
                 FROM Tasks t
                 LEFT JOIN Users u1 ON t.ReporterId = u1.EmployeeCode
                 LEFT JOIN Users u2 ON t.AssigneeId = u2.EmployeeCode
@@ -131,7 +137,9 @@ public class TaskRepository
                     t.CreatedAt,
                     t.UpdatedAt,
                     u1.DisplayName AS ReporterName,
-                    u2.DisplayName AS AssigneeName
+                    u1.EmployeeCode AS ReporterId,
+                    u2.DisplayName AS AssigneeName,
+                    u2.EmployeeCode AS AssigneeId
                 FROM Tasks t
                 LEFT JOIN Users u1 ON t.ReporterId = u1.EmployeeCode
                 LEFT JOIN Users u2 ON t.AssigneeId = u2.EmployeeCode";
@@ -160,7 +168,9 @@ public class TaskRepository
                     t.CreatedAt,
                     t.UpdatedAt,
                     u1.DisplayName AS ReporterName,
-                    u2.DisplayName AS AssigneeName
+                    u1.EmployeeCode AS ReporterId,
+                    u2.DisplayName AS AssigneeName,
+                    u2.EmployeeCode AS AssigneeId
                 FROM Tasks t
                 LEFT JOIN Users u1 ON t.ReporterId = u1.EmployeeCode
                 LEFT JOIN Users u2 ON t.AssigneeId = u2.EmployeeCode
@@ -186,7 +196,6 @@ public class TaskRepository
         return tasks;
     }
 
-
     /// <summary>
     /// Maps the current record of a <see cref="SqlDataReader"/> to a <see cref="TaskModel"/> instance.
     /// </summary>
@@ -199,16 +208,19 @@ public class TaskRepository
             Id = Convert.ToInt32(reader["Id"]),
             Code = reader["Code"]?.ToString() ?? string.Empty,
             Title = reader["Title"]?.ToString() ?? string.Empty,
-            Description = reader["Description"]?.ToString() ?? string.Empty,
+            Description = reader["Description"] != DBNull.Value ? reader["Description"].ToString() : string.Empty,
             Status = Convert.ToInt32(reader["Status"]),
             DueDate = reader["DueDate"] != DBNull.Value ? Convert.ToDateTime(reader["DueDate"]) : DateTime.MinValue,
             Priority = Convert.ToInt32(reader["Priority"]),
             ReporterDisplayName = reader["ReporterName"]?.ToString() ?? "(Unknown)",
+            ReporterId = reader["ReporterId"] != DBNull.Value ? reader["ReporterId"].ToString() : null,
             AssigneeDisplayName = reader["AssigneeName"]?.ToString() ?? "(Unassigned)",
+            AssigneeId = reader["AssigneeId"] != DBNull.Value ? reader["AssigneeId"].ToString() : null,
             CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
             UpdatedAt = Convert.ToDateTime(reader["UpdatedAt"])
         };
     }
+
     public bool InsertTask(TaskModel task)
     {
         try
@@ -292,12 +304,13 @@ VALUES
             return false;
         }
     }
+
     public bool IsTaskCodeExists(string code)
     {
         if (string.IsNullOrWhiteSpace(code))
             return false;
 
-        using var connection = new SqlConnection(AppConstants.Database.ConnectionString);
+        using var connection = new SqlConnection(_connectionString);
         connection.Open();
 
         using var command = new SqlCommand("SELECT COUNT(1) FROM Tasks WHERE Code = @code", connection);
@@ -305,5 +318,35 @@ VALUES
 
         int count = (int)command.ExecuteScalar();
         return count > 0;
+    }
+
+    public bool UpdateTask(TaskModel task)
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            var command = new SqlCommand(@"
+            UPDATE Tasks 
+            SET 
+                Title = @Title,
+                Description = @Description,
+                Status = @Status,
+                DueDate = @DueDate,
+                Priority = @Priority,
+                AssigneeId = @AssigneeId,
+                UpdatedAt = GETDATE()
+            WHERE Code = @Code", connection);
+
+            command.Parameters.AddWithValue("@Title", task.Title ?? string.Empty);
+            command.Parameters.AddWithValue("@Description", task.Description ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@Status", task.Status);
+            command.Parameters.AddWithValue("@DueDate", task.DueDate != DateTime.MinValue ? (object)task.DueDate : DBNull.Value);
+            command.Parameters.AddWithValue("@Priority", task.Priority);
+            command.Parameters.AddWithValue("@AssigneeId", task.AssigneeId ?? string.Empty);
+            command.Parameters.AddWithValue("@Code", task.Code);
+
+            connection.Open();
+            int rowsAffected = command.ExecuteNonQuery();
+            return rowsAffected > 0;
+        }
     }
 }

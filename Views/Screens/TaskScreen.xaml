@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="TaskManager.Views.Screens.TaskScreen"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:vm="clr-namespace:TaskManager.ViewModels"
              xmlns:Contexts="clr-namespace:TaskManager.Contexts"
              Height="Auto" Width="Auto">
@@ -20,6 +21,15 @@
                   CanUserAddRows="False"
                   HeadersVisibility="Column"
                   GridLinesVisibility="All">
+
+            <!-- Chuyển event CellEditEnding thành command, truyền event args -->
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="CellEditEnding">
+                    <i:InvokeCommandAction Command="{Binding CellEditEndingCommand}" 
+                                           PassEventArgsToCommand="True" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+
             <DataGrid.Columns>
                 <!-- ID -->
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto" IsReadOnly="True"/>
@@ -64,13 +74,41 @@
                 </DataGridTemplateColumn>
 
                 <!-- Status -->
-                <DataGridTextColumn Header="Status" Binding="{Binding StatusString}" Width="*"/>
+                <DataGridTemplateColumn Header="Status" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding StatusString}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding DataContext.AvailableStatuses, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      SelectedValue="{Binding Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      SelectedValuePath="Key"
+                                      DisplayMemberPath="Value" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
 
                 <!-- Due Date -->
                 <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate, StringFormat={}{0:yyyy-MM-dd}}" Width="*" />
 
                 <!-- Priority -->
-                <DataGridTextColumn Header="Priority" Binding="{Binding PriorityString}" Width="*" />
+                <DataGridTemplateColumn Header="Priority" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding PriorityString}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding DataContext.AvailablePriorities, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      SelectedValue="{Binding Priority, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      SelectedValuePath="Key"
+                                      DisplayMemberPath="Value" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
 
                 <!-- Created Date -->
                 <DataGridTextColumn Header="Created Date" Binding="{Binding CreatedAt, StringFormat={}{0:yyyy-MM-dd HH:mm}}" Width="*" />
@@ -84,8 +122,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="Delete"
-                             Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                             CommandParameter="{Binding}" />
+                                    Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
