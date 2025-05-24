@@ -283,6 +283,7 @@ namespace TaskManager.ViewModels
                         AppConstants.ExecutionStatus.Success,
                         System.Windows.MessageBoxButton.OK,
                         System.Windows.MessageBoxImage.Information);
+                    _ = SignalRService.Instance.NotifyTaskChangedAsync();
                 }
                 else
                 {

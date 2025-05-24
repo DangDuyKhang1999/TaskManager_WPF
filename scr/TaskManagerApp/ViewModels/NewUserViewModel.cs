@@ -5,6 +5,7 @@ using TaskManager.Common;
 using TaskManager.Data;
 using TaskManager.Models;
 using TaskManager.Services;
+using TaskManagerApp.Contexts;
 
 namespace TaskManager.ViewModels
 {
@@ -183,6 +184,7 @@ namespace TaskManager.ViewModels
                 if (inserted)
                 {
                     MessageBox.Show(AppConstants.AppText.Message_UserSaveSuccess, AppConstants.ExecutionStatus.Success);
+                    _ = SignalRService.Instance.NotifyTaskChangedAsync();
                 }
                 else
                 {
