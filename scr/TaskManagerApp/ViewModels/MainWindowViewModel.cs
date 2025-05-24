@@ -2,12 +2,11 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using TaskManager.Common;
-using TaskManager.Contexts;
-using TaskManager.Services;
+using TaskManagerApp.Common;
+using TaskManagerApp.Contexts;
 using TaskManagerApp.Services;
 
-namespace TaskManager.ViewModels
+namespace TaskManagerApp.ViewModels
 {
     /// <summary>
     /// ViewModel for the main window, managing UI visibility and lifecycle events.

@@ -1,7 +1,7 @@
 ﻿using System.Windows.Controls;
-using TaskManager.Services;
+using TaskManagerApp.Services;
 
-namespace TaskManager.Views.Screens
+namespace TaskManagerApp.Views.Screens
 {
     /// <summary>
     /// Represents the screen for displaying and managing tasks.

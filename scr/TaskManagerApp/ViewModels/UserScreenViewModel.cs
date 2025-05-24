@@ -2,12 +2,13 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using TaskManager.Common;
-using TaskManager.Data;
-using TaskManager.Models;
-using TaskManager.Services;
+using TaskManagerApp.Common;
+using TaskManagerApp.Contexts;
+using TaskManagerApp.Data;
+using TaskManagerApp.Models;
+using TaskManagerApp.Services;
 
-namespace TaskManager.ViewModels
+namespace TaskManagerApp.ViewModels
 {
     /// <summary>
     /// ViewModel for managing users on the User screen.
@@ -39,11 +40,30 @@ namespace TaskManager.ViewModels
         {
             string connectionString = AppConstants.Database.ConnectionString;
             _userRepository = new UserRepository(connectionString);
-
-            var userList = _userRepository.GetAllUsers();
-            Users = new ObservableCollection<UserModel>(userList);
-
+            TaskEvents.TaskSaved += () =>
+            {
+                Application.Current.Dispatcher.Invoke(ReloadUsers);
+            };
+            ReloadUsers();
             DeleteUserCommand = new RelayCommand(DeleteUser);
+        }
+
+        /// <summary>
+        /// Reloads the list of users from the database.
+        /// </summary>
+        public void ReloadUsers()
+        {
+            try
+            {
+                var userList = _userRepository.GetAllUsers();
+                Users = new ObservableCollection<UserModel>(userList);
+                Logger.Instance.Information("Users reloaded successfully.");
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error("Error reloading users: " + ex.Message);
+                MessageBox.Show("Failed to reload users. Please try again later.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         /// <summary>
@@ -77,6 +97,7 @@ namespace TaskManager.ViewModels
                         "Success",
                         MessageBoxButton.OK,
                         MessageBoxImage.Information);
+                    _ = SignalRService.Instance.NotifyTaskChangedAsync();
                 }
             }
             else

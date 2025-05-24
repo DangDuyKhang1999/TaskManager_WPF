@@ -1,7 +1,7 @@
 ﻿using System.Windows.Controls;
-using TaskManager.ViewModels;
+using TaskManagerApp.ViewModels;
 
-namespace TaskManager.Views.Screens
+namespace TaskManagerApp.Views.Screens
 {
     /// <summary>
     /// Interaction logic for NewUserScreen.xaml.

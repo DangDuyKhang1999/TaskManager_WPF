@@ -1,7 +1,7 @@
 ﻿using System.Windows;
-using TaskManager.ViewModels;
+using TaskManagerApp.ViewModels;
 
-namespace TaskManager.Views
+namespace TaskManagerApp.Views
 {
     /// <summary>
     /// Represents the login window for the application.

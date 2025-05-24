@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Windows;
-using TaskManager.Views;      // For LoginWindow
-using TaskManager.Services;   // For Logger & SignalRClientService
-using TaskManager.Contexts;   // For UserSession
-using TaskManager.Common;     // For AppConstants
+using TaskManagerApp.Views;      // For LoginWindow
+using TaskManagerApp.Services;   // For Logger & SignalRClientService
+using TaskManagerApp.Contexts;   // For UserSession
+using TaskManagerApp.Common;     // For AppConstants
 
-namespace TaskManager
+namespace TaskManagerApp
 {
     public partial class App : Application
     {

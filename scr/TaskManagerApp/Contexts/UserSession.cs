@@ -1,4 +1,4 @@
-﻿namespace TaskManager.Contexts
+﻿namespace TaskManagerApp.Contexts
 {
     /// <summary>
     /// Singleton class representing the current user session.

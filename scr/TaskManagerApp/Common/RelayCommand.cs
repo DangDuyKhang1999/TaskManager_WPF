@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace TaskManager.Common
+namespace TaskManagerApp.Common
 {
     /// <summary>
     /// A generic command that relays its functionality to delegates.

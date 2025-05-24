@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace TaskManager.Views
+namespace TaskManagerApp.Views
 {
     /// <summary>
     /// Represents the main window of the application.

@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.Data.SqlClient;
-using TaskManager.Models;
+using TaskManagerApp.Models;
 
-namespace TaskManager.Services
+namespace TaskManagerApp.Services
 {
     /// <summary>
     /// Provides methods to interact with tasks in the database.

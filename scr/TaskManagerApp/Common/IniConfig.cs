@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 
-namespace TaskManager.Common
+namespace TaskManagerApp.Common
 {
     /// <summary>
     /// Provides access to configuration values from the TaskManager.ini file.

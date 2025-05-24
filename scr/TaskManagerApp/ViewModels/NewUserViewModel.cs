@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
-using TaskManager.Common;
-using TaskManager.Data;
-using TaskManager.Models;
-using TaskManager.Services;
+using TaskManagerApp.Common;
+using TaskManagerApp.Data;
+using TaskManagerApp.Models;
+using TaskManagerApp.Services;
 using TaskManagerApp.Contexts;
 
-namespace TaskManager.ViewModels
+namespace TaskManagerApp.ViewModels
 {
     /// <summary>
     /// ViewModel for creating a new user with validation support.
@@ -185,6 +185,7 @@ namespace TaskManager.ViewModels
                 {
                     MessageBox.Show(AppConstants.AppText.Message_UserSaveSuccess, AppConstants.ExecutionStatus.Success);
                     _ = SignalRService.Instance.NotifyTaskChangedAsync();
+                    TaskEvents.RaiseTaskSaved();
                 }
                 else
                 {

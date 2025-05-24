@@ -1,9 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using System.IO;
 using System.Runtime.CompilerServices;
-using TaskManager.Common;
+using TaskManagerApp.Common;
 
-namespace TaskManager.Services
+namespace TaskManagerApp.Services
 {
     /// <summary>
     /// Provides thread-safe logging functionality with background file writing.

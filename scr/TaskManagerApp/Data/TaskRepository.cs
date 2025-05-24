@@ -1,8 +1,8 @@
 ﻿using Microsoft.Data.SqlClient;
-using TaskManager.Common;
-using TaskManager.Contexts;
-using TaskManager.Models;
-using TaskManager.Services;
+using TaskManagerApp.Common;
+using TaskManagerApp.Contexts;
+using TaskManagerApp.Models;
+using TaskManagerApp.Services;
 
 public class TaskRepository
 {

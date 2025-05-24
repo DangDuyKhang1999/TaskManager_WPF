@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows.Input;
-using TaskManager.Common;
-using TaskManager.Services;
-using TaskManager.Contexts;
+using TaskManagerApp.Common;
+using TaskManagerApp.Services;
+using TaskManagerApp.Contexts;
 
-namespace TaskManager.ViewModels
+namespace TaskManagerApp.ViewModels
 {
     /// <summary>
     /// ViewModel for login screen handling user authentication.

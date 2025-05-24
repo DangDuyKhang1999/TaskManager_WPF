@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TaskManager.Views.Screens
+namespace TaskManagerApp.Views.Screens
 {
     /// <summary>
     /// Represents the screen for managing users within the application.

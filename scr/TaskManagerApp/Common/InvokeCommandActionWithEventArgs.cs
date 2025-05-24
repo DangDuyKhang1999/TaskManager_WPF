@@ -3,7 +3,7 @@ using System.Windows.Input;
 using Microsoft.Xaml.Behaviors;
 using System.Windows;
 
-namespace TaskManager.Common
+namespace TaskManagerApp.Common
 {
     /// <summary>
     /// A behavior that allows an ICommand to be invoked with event arguments as a parameter.

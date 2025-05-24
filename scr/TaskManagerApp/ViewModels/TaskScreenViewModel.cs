@@ -3,14 +3,13 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using TaskManager.Models;
-using TaskManager.Data;
-using TaskManager.Contexts;
-using TaskManager.Common;
-using TaskManager.Services;
+using TaskManagerApp.Models;
+using TaskManagerApp.Data;
 using TaskManagerApp.Contexts;
+using TaskManagerApp.Common;
+using TaskManagerApp.Services;
 
-namespace TaskManager.ViewModels
+namespace TaskManagerApp.ViewModels
 {
     /// <summary>
     /// ViewModel for managing tasks on the Task screen.
@@ -95,7 +94,14 @@ namespace TaskManager.ViewModels
             DeleteTaskCommand = new RelayCommand(DeleteTask);
             UpdateTaskCommand = new RelayCommand(UpdateTaskFromButton);
 
+            TaskEvents.TaskSaved += () =>
+            {
+                Application.Current.Dispatcher.Invoke(ReloadTasks);
+            };
+
             _ = InitSignalRAsync();
+            _ = InitSignalRAsync();
+
         }
 
         /// <summary>

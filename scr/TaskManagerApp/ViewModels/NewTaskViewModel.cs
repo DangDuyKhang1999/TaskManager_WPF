@@ -3,14 +3,13 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Microsoft.Data.SqlClient;
 using System.Windows.Input;
-using TaskManager.Common;
-using TaskManager.Contexts;
-using TaskManager.Data;
-using TaskManager.Models;
-using TaskManager.Services;
+using TaskManagerApp.Common;
 using TaskManagerApp.Contexts;
+using TaskManagerApp.Data;
+using TaskManagerApp.Models;
+using TaskManagerApp.Services;
 
-namespace TaskManager.ViewModels
+namespace TaskManagerApp.ViewModels
 {
     /// <summary>
     /// ViewModel for creating a new task with validation support.
@@ -284,6 +283,7 @@ namespace TaskManager.ViewModels
                         System.Windows.MessageBoxButton.OK,
                         System.Windows.MessageBoxImage.Information);
                     _ = SignalRService.Instance.NotifyTaskChangedAsync();
+                    TaskEvents.RaiseTaskSaved();
                 }
                 else
                 {

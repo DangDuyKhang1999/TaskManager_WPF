@@ -1,4 +1,4 @@
-﻿namespace TaskManager.Common
+﻿namespace TaskManagerApp.Common
 {
     /// <summary>
     /// Contains application-wide constants.

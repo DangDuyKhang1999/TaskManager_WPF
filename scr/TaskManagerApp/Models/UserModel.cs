@@ -1,4 +1,4 @@
-﻿namespace TaskManager.Models
+﻿namespace TaskManagerApp.Models
 {
     /// <summary>
     /// Represents a user entity with authentication and profile information.

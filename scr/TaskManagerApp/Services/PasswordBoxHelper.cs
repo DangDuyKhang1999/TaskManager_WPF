@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace TaskManager.Services
+namespace TaskManagerApp.Services
 {
     /// <summary>
     /// Provides attached properties to enable data binding for PasswordBox.Password.

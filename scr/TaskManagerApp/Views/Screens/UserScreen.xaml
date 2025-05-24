@@ -1,8 +1,8 @@
-﻿<UserControl x:Class="TaskManager.Views.Screens.UsersScreen" 
+﻿<UserControl x:Class="TaskManagerApp.Views.Screens.UsersScreen" 
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="clr-namespace:TaskManager.ViewModels"
-             xmlns:Contexts="clr-namespace:TaskManager.Contexts"
+             xmlns:vm="clr-namespace:TaskManagerApp.ViewModels"
+             xmlns:Contexts="clr-namespace:TaskManagerApp.Contexts"
              Height="Auto" Width="Auto">
 
     <!-- Resources -->

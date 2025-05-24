@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
-using TaskManager.Common;
+using TaskManagerApp.Common;
 
-namespace TaskManager.Models
+namespace TaskManagerApp.Models
 {
     /// <summary>
     /// Represents a task entity with properties suitable for data binding.

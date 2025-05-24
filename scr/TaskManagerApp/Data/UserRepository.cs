@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
-using TaskManager.Common;
-using TaskManager.Models;
-using TaskManager.Services;
+using TaskManagerApp.Common;
+using TaskManagerApp.Models;
+using TaskManagerApp.Services;
 
-namespace TaskManager.Data
+namespace TaskManagerApp.Data
 {
     /// <summary>
     /// Provides methods to perform CRUD operations on Users in the database.

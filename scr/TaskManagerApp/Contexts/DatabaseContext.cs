@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TaskManager.Contexts
+namespace TaskManagerApp.Contexts
 {
     /// <summary>
     /// Provides a singleton context for storing lists of normal and admin users in memory.
