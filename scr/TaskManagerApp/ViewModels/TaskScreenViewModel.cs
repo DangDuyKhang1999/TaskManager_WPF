@@ -25,7 +25,7 @@ namespace TaskManager.ViewModels
         public ObservableCollection<string> AssigneesDisplayName { get; set; }
 
         public ObservableCollection<KeyValuePair<int, string>> AvailableStatuses { get; } =
-            new ObservableCollection<KeyValuePair<int, string>>()
+            new()
             {
                 new(0, AppConstants.StatusValues.NotStarted),
                 new(1, AppConstants.StatusValues.InProgress),
@@ -33,7 +33,7 @@ namespace TaskManager.ViewModels
             };
 
         public ObservableCollection<KeyValuePair<int, string>> AvailablePriorities { get; } =
-            new ObservableCollection<KeyValuePair<int, string>>()
+            new()
             {
                 new(0, AppConstants.PriorityLevels.High),
                 new(1, AppConstants.PriorityLevels.Medium),
@@ -44,8 +44,7 @@ namespace TaskManager.ViewModels
         private readonly UserRepository _userRepository;
 
         public ICommand DeleteTaskCommand { get; }
-        public ICommand ToggleEditCommand { get; }
-        public ICommand CellEditEndingCommand { get; }
+        public ICommand UpdateTaskCommand { get; }
 
         public TaskScreenViewModel()
         {
@@ -56,9 +55,6 @@ namespace TaskManager.ViewModels
 
             Tasks = new ObservableCollection<TaskModel>(_taskRepository.GetAllTasks());
 
-            foreach (var task in Tasks)
-                task.IsEditing = false;
-
             _userRepository.GetUsersAndAdmins(out var users, out var admins);
             DatabaseContext.Instance.LoadNormalUsers(users);
             DatabaseContext.Instance.LoadAdminUsers(admins);
@@ -67,8 +63,7 @@ namespace TaskManager.ViewModels
             AssigneesDisplayName = new ObservableCollection<string>(DatabaseContext.Instance.NormalUsersList);
 
             DeleteTaskCommand = new RelayCommand(DeleteTask);
-            ToggleEditCommand = new RelayCommand(ToggleEdit);
-            CellEditEndingCommand = new RelayCommand(OnCellEditEnding);
+            UpdateTaskCommand = new RelayCommand(UpdateTaskFromButton);
 
             _ = InitSignalRAsync();
         }
@@ -121,16 +116,14 @@ namespace TaskManager.ViewModels
         {
             if (task == null || string.IsNullOrWhiteSpace(task.Code)) return;
 
-            // Cập nhật AssigneeId và ReporterId trước
             bool idsUpdated = _taskRepository.UpdateTaskIdsFromDisplayNames(task);
 
             if (!idsUpdated)
             {
                 MessageBox.Show($"Failed to map Assignee or Reporter for task '{task.Title}'.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return; // Hoặc vẫn có thể tiếp tục cập nhật tuỳ yêu cầu
+                return;
             }
 
-            // Tiếp tục cập nhật thông tin task
             bool isUpdated = _taskRepository.UpdateTask(task);
 
             if (isUpdated)
@@ -142,46 +135,21 @@ namespace TaskManager.ViewModels
                 MessageBox.Show($"Failed to update task '{task.Title}'.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private void ToggleEdit(object parameter)
+
+        private void UpdateTaskFromButton(object parameter)
         {
             if (parameter is not TaskModel task) return;
 
-            if (task.IsEditing)
-            {
-                var result = MessageBox.Show(
-                    $"Are you sure you want to update the task '{task.Title}'?",
-                    "Confirm Update",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question);
+            var result = MessageBox.Show(
+                $"Are you sure you want to update the task '{task.Title}'?",
+                "Confirm Update",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
 
-                if (result == MessageBoxResult.Yes)
-                {
-                    UpdateTask(task);
-                    task.IsEditing = false;
-                    MessageBox.Show($"Task '{task.Title}' updated successfully.", "Update Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    task.IsEditing = false;
-                }
-            }
-            else
+            if (result == MessageBoxResult.Yes)
             {
-                foreach (var t in Tasks)
-                    t.IsEditing = false;
-
-                task.IsEditing = true;
-            }
-        }
-
-        private void OnCellEditEnding(object parameter)
-        {
-            if (parameter is System.Windows.Controls.DataGridCellEditEndingEventArgs e)
-            {
-                if (e.Row.Item is TaskModel task)
-                {
-                    UpdateTask(task);
-                }
+                UpdateTask(task);
+                MessageBox.Show($"Task '{task.Title}' updated successfully.", "Update Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
     }
