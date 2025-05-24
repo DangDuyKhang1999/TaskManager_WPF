@@ -70,7 +70,17 @@ namespace TaskManager.ViewModels
             DeleteTaskCommand = new RelayCommand(DeleteTask);
             CellEditEndingCommand = new RelayCommand(OnCellEditEnding);
 
-            // Đảm bảo đã Start SignalR trước, sau đó mới đăng ký event
+            // **Bổ sung StartAsync với URL đúng của SignalR hub**
+            // Giả sử hub URL là "http://localhost:5000/taskhub"
+            _ = InitSignalRAsync();
+        }
+
+        private async Task InitSignalRAsync()
+        {
+            string hubUrl = "http://localhost:5000/taskhub";
+
+            await SignalRService.Instance.StartAsync(hubUrl);
+
             SignalRService.Instance.TasksChanged += SignalR_OnTaskChanged;
         }
 
