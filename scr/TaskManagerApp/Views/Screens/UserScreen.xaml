@@ -21,9 +21,6 @@
                   HeadersVisibility="Column"
                   GridLinesVisibility="All">
             <DataGrid.Columns>
-                <!-- ID -->
-                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto" />
-
                 <!-- Employee Code -->
                 <DataGridTextColumn Header="Employee Code" Binding="{Binding EmployeeCode}" Width="*" />
 

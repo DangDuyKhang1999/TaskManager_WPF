@@ -31,9 +31,6 @@
             </i:Interaction.Triggers>
 
             <DataGrid.Columns>
-                <!-- ID -->
-                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto" IsReadOnly="True"/>
-
                 <!-- Task Code -->
                 <DataGridTextColumn Header="Task Code" Binding="{Binding Code}" Width="*" IsReadOnly="True"/>
 
@@ -116,17 +113,27 @@
                 <!-- Updated Date -->
                 <DataGridTextColumn Header="Updated Date" Binding="{Binding UpdatedAt, StringFormat={}{0:yyyy-MM-dd HH:mm}}" Width="*" />
 
-                <!-- Delete Column -->
-                <DataGridTemplateColumn Header="Delete"
-                                         Visibility="{Binding Source={x:Static Contexts:UserSession.Instance}, Path=IsAdmin, Converter={StaticResource BoolToVisibilityConverter}}">
+                <!-- Edit Column (đã đổi vị trí, đặt trước Delete) -->
+                <DataGridTemplateColumn Header="Edit" Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Content="Delete"
-                                    Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}" />
+                            <Button Content="Edit" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+
+                <!-- Delete Column -->
+                <DataGridTemplateColumn Header="Delete"
+                         Visibility="{Binding Source={x:Static Contexts:UserSession.Instance}, Path=IsAdmin, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Delete"
+                    Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    CommandParameter="{Binding}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
