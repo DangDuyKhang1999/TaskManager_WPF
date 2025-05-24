@@ -137,6 +137,22 @@ namespace TaskManager.Models
         /// </summary>
         public DateTime UpdatedAt { get; set; }
 
+        private bool _isEditing;
+
+        public bool IsEditing
+        {
+            get => _isEditing;
+            set
+            {
+                if (_isEditing != value)
+                {
+                    _isEditing = value;
+                    OnPropertyChanged(nameof(IsEditing));
+                }
+            }
+        }
+
+
         /// <summary>
         /// Event triggered when a property value changes.
         /// </summary>
