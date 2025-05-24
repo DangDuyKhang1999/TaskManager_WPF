@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using System.Windows;
+using System.Windows.Input;
 using TaskManager.Common;
 using TaskManager.Data;
 using TaskManager.Models;
@@ -13,9 +9,16 @@ using TaskManager.Services;
 
 namespace TaskManager.ViewModels
 {
+    /// <summary>
+    /// ViewModel for managing users on the User screen.
+    /// </summary>
     public class UserScreenViewModel : BaseViewModel
     {
         private ObservableCollection<UserModel> _users;
+
+        /// <summary>
+        /// Collection of users displayed in the UI.
+        /// </summary>
         public ObservableCollection<UserModel> Users
         {
             get => _users;
@@ -24,8 +27,14 @@ namespace TaskManager.ViewModels
 
         private readonly UserRepository _userRepository;
 
+        /// <summary>
+        /// Command to delete a user.
+        /// </summary>
         public ICommand DeleteUserCommand { get; }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="UserScreenViewModel"/>.
+        /// </summary>
         public UserScreenViewModel()
         {
             string connectionString = AppConstants.Database.ConnectionString;
@@ -37,6 +46,10 @@ namespace TaskManager.ViewModels
             DeleteUserCommand = new RelayCommand(DeleteUser);
         }
 
+        /// <summary>
+        /// Deletes a user after confirmation.
+        /// </summary>
+        /// <param name="parameter">The user to delete.</param>
         private void DeleteUser(object parameter)
         {
             if (parameter is not UserModel user || user.Id <= 0)
@@ -74,4 +87,4 @@ namespace TaskManager.ViewModels
             }
         }
     }
-    }
+}

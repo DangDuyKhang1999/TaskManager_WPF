@@ -6,19 +6,33 @@ using TaskManager.Services;
 
 namespace TaskManagerApp.Contexts
 {
+    /// <summary>
+    /// Singleton service that manages SignalR connection and task change notifications.
+    /// </summary>
     public class SignalRService
     {
         private HubConnection _connection;
 
+        /// <summary>
+        /// Event triggered when a task change notification is received from the SignalR hub.
+        /// </summary>
         public event Action TasksChanged;
 
         private static readonly Lazy<SignalRService> _instance =
             new Lazy<SignalRService>(() => new SignalRService());
 
+        /// <summary>
+        /// Gets the singleton instance of the <see cref="SignalRService"/>.
+        /// </summary>
         public static SignalRService Instance => _instance.Value;
 
+        // Private constructor to enforce singleton pattern
         private SignalRService() { }
 
+        /// <summary>
+        /// Starts the SignalR connection to the specified hub URL.
+        /// </summary>
+        /// <param name="hubUrl">The URL of the SignalR hub.</param>
         public async Task StartAsync(string hubUrl)
         {
             if (_connection != null && _connection.State == HubConnectionState.Connected)
@@ -49,6 +63,9 @@ namespace TaskManagerApp.Contexts
             }
         }
 
+        /// <summary>
+        /// Sends a task change notification to the SignalR hub.
+        /// </summary>
         public async Task NotifyTaskChangedAsync()
         {
             if (_connection == null || _connection.State != HubConnectionState.Connected)
@@ -65,6 +82,9 @@ namespace TaskManagerApp.Contexts
             }
         }
 
+        /// <summary>
+        /// Stops and disposes the SignalR connection.
+        /// </summary>
         public async Task StopAsync()
         {
             if (_connection != null)

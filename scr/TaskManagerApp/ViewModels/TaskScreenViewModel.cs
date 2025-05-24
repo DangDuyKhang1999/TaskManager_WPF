@@ -12,18 +12,35 @@ using TaskManagerApp.Contexts;
 
 namespace TaskManager.ViewModels
 {
+    /// <summary>
+    /// ViewModel for managing tasks on the Task screen.
+    /// </summary>
     public class TaskScreenViewModel : BaseViewModel
     {
         private ObservableCollection<TaskModel> _tasks;
+
+        /// <summary>
+        /// Collection of tasks displayed in the UI.
+        /// </summary>
         public ObservableCollection<TaskModel> Tasks
         {
             get => _tasks;
             set => SetProperty(ref _tasks, value);
         }
 
+        /// <summary>
+        /// Collection of display names for reporters.
+        /// </summary>
         public ObservableCollection<string> ReporterDisplayName { get; set; }
+
+        /// <summary>
+        /// Collection of display names for assignees.
+        /// </summary>
         public ObservableCollection<string> AssigneesDisplayName { get; set; }
 
+        /// <summary>
+        /// Available status options for tasks.
+        /// </summary>
         public ObservableCollection<KeyValuePair<int, string>> AvailableStatuses { get; } =
             new()
             {
@@ -32,6 +49,9 @@ namespace TaskManager.ViewModels
                 new(2, AppConstants.StatusValues.Completed),
             };
 
+        /// <summary>
+        /// Available priority options for tasks.
+        /// </summary>
         public ObservableCollection<KeyValuePair<int, string>> AvailablePriorities { get; } =
             new()
             {
@@ -43,9 +63,19 @@ namespace TaskManager.ViewModels
         private readonly TaskRepository _taskRepository;
         private readonly UserRepository _userRepository;
 
+        /// <summary>
+        /// Command to delete a task.
+        /// </summary>
         public ICommand DeleteTaskCommand { get; }
+
+        /// <summary>
+        /// Command to update a task.
+        /// </summary>
         public ICommand UpdateTaskCommand { get; }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="TaskScreenViewModel"/>.
+        /// </summary>
         public TaskScreenViewModel()
         {
             string connectionString = AppConstants.Database.ConnectionString;
@@ -68,6 +98,9 @@ namespace TaskManager.ViewModels
             _ = InitSignalRAsync();
         }
 
+        /// <summary>
+        /// Initializes the SignalR connection and subscribes to task changes.
+        /// </summary>
         private async Task InitSignalRAsync()
         {
             string hubUrl = "http://localhost:5000/taskhub";
@@ -75,17 +108,27 @@ namespace TaskManager.ViewModels
             SignalRService.Instance.TasksChanged += SignalR_OnTaskChanged;
         }
 
+        /// <summary>
+        /// Handler for SignalR task change events.
+        /// </summary>
         private void SignalR_OnTaskChanged()
         {
             Application.Current.Dispatcher.Invoke(ReloadTasks);
         }
 
+        /// <summary>
+        /// Reloads tasks from the repository.
+        /// </summary>
         private void ReloadTasks()
         {
             var tasksFromDb = _taskRepository.GetAllTasks();
             Tasks = new ObservableCollection<TaskModel>(tasksFromDb);
         }
 
+        /// <summary>
+        /// Deletes a task after user confirmation.
+        /// </summary>
+        /// <param name="parameter">The task to delete.</param>
         private void DeleteTask(object parameter)
         {
             if (parameter is not TaskModel task || string.IsNullOrWhiteSpace(task.Code)) return;
@@ -112,6 +155,10 @@ namespace TaskManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Updates a task in the repository after mapping display names to IDs.
+        /// </summary>
+        /// <param name="task">The task to update.</param>
         public void UpdateTask(TaskModel task)
         {
             if (task == null || string.IsNullOrWhiteSpace(task.Code)) return;
@@ -136,6 +183,10 @@ namespace TaskManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Handles update command triggered from UI with confirmation.
+        /// </summary>
+        /// <param name="parameter">The task to update.</param>
         private void UpdateTaskFromButton(object parameter)
         {
             if (parameter is not TaskModel task) return;

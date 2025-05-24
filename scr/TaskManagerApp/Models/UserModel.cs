@@ -1,5 +1,4 @@
-﻿
-namespace TaskManager.Models
+﻿namespace TaskManager.Models
 {
     /// <summary>
     /// Represents a user entity with authentication and profile information.
@@ -7,47 +6,47 @@ namespace TaskManager.Models
     public class UserModel
     {
         /// <summary>
-        /// Gets or sets the unique identifier for the user (primary key).
+        /// Gets or sets the unique identifier for the user.
         /// </summary>
         public int Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique employee code for the user.
+        /// Gets or sets the unique employee code.
         /// </summary>
         public string EmployeeCode { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the username used for login (unique).
+        /// Gets or sets the login username.
         /// </summary>
         public string Username { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the hashed password of the user.
+        /// Gets or sets the hashed password.
         /// </summary>
         public string PasswordHash { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the display name of the user (optional).
+        /// Gets or sets the display name (optional).
         /// </summary>
         public string? DisplayName { get; set; }
 
         /// <summary>
-        /// Gets or sets the email address of the user (optional).
+        /// Gets or sets the email address (optional).
         /// </summary>
         public string? Email { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the user has administrative rights.
+        /// Gets or sets a value indicating administrative rights.
         /// </summary>
         public bool IsAdmin { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the user account is active.
+        /// Gets or sets a value indicating if the account is active.
         /// </summary>
         public bool IsActive { get; set; }
 
         /// <summary>
-        /// Gets or sets the date and time when the user account was created.
+        /// Gets or sets the creation date and time of the account.
         /// </summary>
         public DateTime CreatedAt { get; set; }
     }

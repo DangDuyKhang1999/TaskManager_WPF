@@ -7,12 +7,13 @@
              xmlns:converters="clr-namespace:TaskManagerApp.Converters"
              Height="Auto" Width="Auto">
 
-    <!-- giữ nguyên header, xmlns -->
-
+    <!-- Resources -->
     <UserControl.Resources>
+        <!-- Converts boolean values to Visibility enumeration -->
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </UserControl.Resources>
 
+    <!-- Set ViewModel as DataContext -->
     <UserControl.DataContext>
         <vm:TaskScreenViewModel />
     </UserControl.DataContext>
@@ -26,10 +27,14 @@
               GridLinesVisibility="All">
 
             <DataGrid.Columns>
+                <!-- Read-only Task Code column -->
                 <DataGridTextColumn Header="Task Code" Binding="{Binding Code}" IsReadOnly="True" Width="*" />
+                <!-- Editable Task Name column -->
                 <DataGridTextColumn Header="Task Name" Binding="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                <!-- Editable Description column -->
                 <DataGridTextColumn Header="Description" Binding="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*" />
 
+                <!-- Reporter selection with display and editing templates -->
                 <DataGridTemplateColumn Header="Reporter" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -38,12 +43,14 @@
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
+                            <!-- ComboBox bound to list of reporters from ViewModel -->
                             <ComboBox ItemsSource="{Binding DataContext.ReporterDisplayName, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                   SelectedItem="{Binding ReporterDisplayName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
+                <!-- Assignee selection with display and editing templates -->
                 <DataGridTemplateColumn Header="Assignee" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -52,12 +59,14 @@
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
+                            <!-- ComboBox bound to list of assignees from ViewModel -->
                             <ComboBox ItemsSource="{Binding DataContext.AssigneesDisplayName, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                   SelectedItem="{Binding AssigneeDisplayName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
+                <!-- Status selection with display and editing templates -->
                 <DataGridTemplateColumn Header="Status" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -66,6 +75,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
+                            <!-- ComboBox bound to available statuses in ViewModel -->
                             <ComboBox ItemsSource="{Binding DataContext.AvailableStatuses, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                   SelectedValue="{Binding Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   SelectedValuePath="Key"
@@ -74,8 +84,10 @@
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
+                <!-- Editable Due Date column with date formatting -->
                 <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate, StringFormat={}{0:yyyy-MM-dd}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*" />
 
+                <!-- Priority selection with display and editing templates -->
                 <DataGridTemplateColumn Header="Priority" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -84,6 +96,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
+                            <!-- ComboBox bound to available priorities in ViewModel -->
                             <ComboBox ItemsSource="{Binding DataContext.AvailablePriorities, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                   SelectedValue="{Binding Priority, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   SelectedValuePath="Key"
@@ -92,10 +105,12 @@
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
+                <!-- Read-only Created Date column with datetime formatting -->
                 <DataGridTextColumn Header="Created Date" Binding="{Binding CreatedAt, StringFormat={}{0:yyyy-MM-dd HH:mm}}" Width="*" />
+                <!-- Read-only Updated Date column with datetime formatting -->
                 <DataGridTextColumn Header="Updated Date" Binding="{Binding UpdatedAt, StringFormat={}{0:yyyy-MM-dd HH:mm}}" Width="*" />
 
-                <!-- Update Button -->
+                <!-- Update button to trigger update command on the ViewModel -->
                 <DataGridTemplateColumn Header="Update" Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -106,7 +121,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <!-- Delete -->
+                <!-- Delete button visible only for Admin users -->
                 <DataGridTemplateColumn Header="Delete"
                      Visibility="{Binding Source={x:Static Contexts:UserSession.Instance}, Path=IsAdmin, Converter={StaticResource BoolToVisibilityConverter}}">
                     <DataGridTemplateColumn.CellTemplate>

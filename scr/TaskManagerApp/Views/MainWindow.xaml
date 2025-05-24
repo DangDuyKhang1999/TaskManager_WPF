@@ -1,4 +1,4 @@
-﻿<Window x:Class="TaskManager.Views.MainWindow"
+﻿<Window x:Class="TaskManager.Views.MainWindow" 
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
@@ -9,17 +9,21 @@
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
         WindowStartupLocation="CenterScreen">
 
+    <!-- Set the ViewModel as DataContext -->
     <Window.DataContext>
         <vm:MainWindowViewModel />
     </Window.DataContext>
 
+    <!-- Bind the Closed event of the window to a command in the ViewModel -->
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closed">
             <i:InvokeCommandAction Command="{Binding WindowClosedCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
+    <!-- Main layout grid -->
     <Grid Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <!-- TabControl with different screens as tabs -->
         <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TabItem Header="Task">
                 <screens:TaskScreen HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>

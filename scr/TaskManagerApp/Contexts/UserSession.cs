@@ -2,15 +2,14 @@
 {
     /// <summary>
     /// Singleton class representing the current user session.
-    /// Stores information about the logged-in user such as username, employee code and admin status.
+    /// Stores information about the logged-in user such as username, employee code, and admin status.
     /// </summary>
     public class UserSession
     {
-        // Lazy initialization to ensure thread-safe singleton instance.
         private static readonly Lazy<UserSession> _instance = new(() => new UserSession());
 
         /// <summary>
-        /// Gets the singleton instance of the UserSession.
+        /// Gets the singleton instance of the <see cref="UserSession"/>.
         /// </summary>
         public static UserSession Instance => _instance.Value;
 
@@ -29,9 +28,12 @@
         /// </summary>
         public bool IsAdmin { get; private set; } = false;
 
-        // Private constructor to prevent external instantiation.
         private UserSession() { }
 
+        /// <summary>
+        /// Sets the employee code for debugging purposes.
+        /// </summary>
+        /// <param name="code">The employee code to assign.</param>
         public void SetEmployeeForDebug(string code)
         {
             EmployeeCode = code;
@@ -42,7 +44,7 @@
         /// </summary>
         /// <param name="userName">The username of the logged-in user.</param>
         /// <param name="employeeCode">The employee code of the logged-in user.</param>
-        /// <param name="isAdmin">True if the user is an admin; otherwise, false.</param>
+        /// <param name="isAdmin">Indicates if the user is an admin.</param>
         public void Initialize(string userName, string employeeCode, bool isAdmin)
         {
             UserName = userName;
@@ -51,7 +53,7 @@
         }
 
         /// <summary>
-        /// Clears the user session, resetting the username, employee code, and admin status.
+        /// Clears the user session by resetting all user-related information.
         /// </summary>
         public void Clear()
         {

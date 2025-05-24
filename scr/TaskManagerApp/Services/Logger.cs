@@ -5,6 +5,10 @@ using TaskManager.Common;
 
 namespace TaskManager.Services
 {
+    /// <summary>
+    /// Provides thread-safe logging functionality with background file writing.
+    /// Implements a singleton pattern.
+    /// </summary>
     public class Logger
     {
         private static readonly Lazy<Logger> _instance = new(() => new Logger());
@@ -15,6 +19,10 @@ namespace TaskManager.Services
         private readonly BlockingCollection<string> _logQueue = new();
         private readonly Thread _logThread;
 
+        /// <summary>
+        /// Initializes a new instance of the Logger class.
+        /// Creates log directory and file, starts background thread for log writing.
+        /// </summary>
         private Logger()
         {
             try
@@ -42,7 +50,6 @@ namespace TaskManager.Services
                 _logFilePath = Path.Combine(_logDirectory, fallbackFileName);
             }
 
-            // Start the background thread
             _logThread = new Thread(ProcessLogQueue)
             {
                 IsBackground = true,
@@ -51,15 +58,27 @@ namespace TaskManager.Services
             _logThread.Start();
         }
 
+        /// <summary>
+        /// Logs an informational message.
+        /// </summary>
         public void Information(string message, [CallerFilePath] string callerFilePath = "")
             => EnqueueLog(AppConstants.Logging.Information, message, GetClassName(callerFilePath));
 
+        /// <summary>
+        /// Logs a success message.
+        /// </summary>
         public void Success(string message, [CallerFilePath] string callerFilePath = "")
             => EnqueueLog(AppConstants.Logging.Success, message, GetClassName(callerFilePath));
 
+        /// <summary>
+        /// Logs a warning message.
+        /// </summary>
         public void Warning(string message, [CallerFilePath] string callerFilePath = "")
             => EnqueueLog(AppConstants.Logging.Warning, message, GetClassName(callerFilePath));
 
+        /// <summary>
+        /// Logs an error message with optional member name.
+        /// </summary>
         public void Error(string message, [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
         {
             string className = GetClassName(callerFilePath);
@@ -69,6 +88,9 @@ namespace TaskManager.Services
             EnqueueLog(AppConstants.Logging.Error, message, className);
         }
 
+        /// <summary>
+        /// Logs an exception with stack trace.
+        /// </summary>
         public void Error(Exception ex, [CallerFilePath] string callerFilePath = "", [CallerMemberName] string callerMemberName = "")
         {
             string className = GetClassName(callerFilePath);
@@ -78,13 +100,20 @@ namespace TaskManager.Services
             string message = $"{ex.Message}{Environment.NewLine}{ex.StackTrace}";
             EnqueueLog(AppConstants.Logging.Error, message, className);
         }
+
+        /// <summary>
+        /// Adds a formatted log entry to the queue.
+        /// </summary>
         private void EnqueueLog(string level, string message, string className)
         {
             string timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
             string logLine = $"[{timestamp}][{className}]{level}: {message}";
-            _logQueue.Add(logLine); // Add to queue
+            _logQueue.Add(logLine);
         }
 
+        /// <summary>
+        /// Background thread method to write logs from queue to file.
+        /// </summary>
         private void ProcessLogQueue()
         {
             foreach (var logLine in _logQueue.GetConsumingEnumerable())
@@ -95,10 +124,14 @@ namespace TaskManager.Services
                 }
                 catch
                 {
+                    // Suppress exceptions during logging to avoid recursive errors
                 }
             }
         }
 
+        /// <summary>
+        /// Extracts the class name from the caller file path.
+        /// </summary>
         private string GetClassName(string? callerFilePath)
         {
             if (string.IsNullOrWhiteSpace(callerFilePath))
@@ -112,12 +145,12 @@ namespace TaskManager.Services
 
         /// <summary>
         /// Gracefully shuts down the logger and flushes remaining logs.
-        /// Should be called when application exits.
+        /// Should be called on application exit.
         /// </summary>
         public void Shutdown()
         {
-            _logQueue.CompleteAdding();   // Signal that no more logs will be added
-            _logThread.Join();            // Wait for thread to finish writing logs
+            _logQueue.CompleteAdding();
+            _logThread.Join();
         }
     }
 }

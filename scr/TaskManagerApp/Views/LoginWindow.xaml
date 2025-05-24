@@ -8,52 +8,56 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
 
-    <!-- Bind the ViewModel -->
+    <!-- Set the ViewModel as DataContext -->
     <Window.DataContext>
         <vm:LoginViewModel />
     </Window.DataContext>
 
-    <!-- Center the form within the window -->
+    <!-- Grid container to layout controls, centered in the window -->
     <Grid VerticalAlignment="Center"
           HorizontalAlignment="Center"
           Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Username -->
+            <!-- Username row -->
             <RowDefinition Height="Auto"/>
-            <!-- Password -->
+            <!-- Password row -->
             <RowDefinition Height="Auto"/>
-            <!-- Error message -->
+            <!-- Error message row -->
             <RowDefinition Height="Auto"/>
-            <!-- Login button -->
+            <!-- Login button row -->
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
+            <!-- Labels column -->
             <ColumnDefinition Width="200"/>
+            <!-- Input controls column -->
         </Grid.ColumnDefinitions>
 
-        <!-- Username label and input -->
+        <!-- Username label -->
         <TextBlock Text="Username:"
                    VerticalAlignment="Center"
                    Grid.Row="0" Grid.Column="0"
                    Margin="0,0,10,10"/>
+        <!-- Username textbox bound to ViewModel property -->
         <TextBox Grid.Row="0" Grid.Column="1"
                  Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                  Width="200"
                  Margin="0,0,0,10"/>
 
-        <!-- Password label and input -->
+        <!-- Password label -->
         <TextBlock Text="Password:"
                    VerticalAlignment="Center"
                    Grid.Row="1" Grid.Column="0"
                    Margin="0,0,10,10"/>
+        <!-- PasswordBox with event handler to sync password to ViewModel -->
         <PasswordBox x:Name="PasswordBox"
                      Grid.Row="1" Grid.Column="1"
                      Width="200"
                      Margin="0,0,0,10"
                      PasswordChanged="PasswordBox_PasswordChanged"/>
 
-        <!-- Validation / error message -->
+        <!-- TextBlock to display error messages from ViewModel -->
         <TextBlock Text="{Binding ErrorMessage}"
                    Foreground="Red"
                    Grid.Row="2"

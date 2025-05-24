@@ -7,15 +7,27 @@ using TaskManager.Services;
 
 namespace TaskManager.Data
 {
+    /// <summary>
+    /// Provides methods to perform CRUD operations on Users in the database.
+    /// </summary>
     public class UserRepository
     {
         private readonly string _connectionString;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="UserRepository"/> with the specified connection string.
+        /// </summary>
+        /// <param name="connectionString">Database connection string.</param>
         public UserRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
 
+        /// <summary>
+        /// Retrieves the list of users and admins separately from the database.
+        /// </summary>
+        /// <param name="users">Output list of non-admin user display names.</param>
+        /// <param name="admins">Output list of admin user display names.</param>
         public void GetUsersAndAdmins(out List<string> users, out List<string> admins)
         {
             users = new List<string>();
@@ -51,6 +63,10 @@ namespace TaskManager.Data
             }
         }
 
+        /// <summary>
+        /// Retrieves all users from the database.
+        /// </summary>
+        /// <returns>List of <see cref="UserModel"/> objects.</returns>
         public List<UserModel> GetAllUsers()
         {
             var users = new List<UserModel>();
@@ -76,6 +92,11 @@ namespace TaskManager.Data
             return users;
         }
 
+        /// <summary>
+        /// Inserts a new user record into the database with hashed password.
+        /// </summary>
+        /// <param name="user">The <see cref="UserModel"/> to insert.</param>
+        /// <returns>True if insert succeeded; otherwise false.</returns>
         public bool InsertUser(UserModel user)
         {
             try
@@ -114,6 +135,11 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
             }
         }
 
+        /// <summary>
+        /// Deletes a user from the database by their ID.
+        /// </summary>
+        /// <param name="id">The user ID to delete.</param>
+        /// <returns>True if deletion succeeded; otherwise false.</returns>
         public bool DeleteUserById(int id)
         {
             try
@@ -139,6 +165,11 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
             }
         }
 
+        /// <summary>
+        /// Checks whether a given EmployeeCode already exists in the database.
+        /// </summary>
+        /// <param name="employeeCode">The employee code to check.</param>
+        /// <returns>True if exists; otherwise false.</returns>
         public bool DoesEmployeeCodeExist(string employeeCode)
         {
             try
@@ -164,6 +195,11 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
             }
         }
 
+        /// <summary>
+        /// Checks whether a given username already exists in the database.
+        /// </summary>
+        /// <param name="username">The username to check.</param>
+        /// <returns>True if exists; otherwise false.</returns>
         public bool DoesUsernameExist(string username)
         {
             try
@@ -189,6 +225,11 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
             }
         }
 
+        /// <summary>
+        /// Maps the current record of a <see cref="SqlDataReader"/> to a <see cref="UserModel"/> instance.
+        /// </summary>
+        /// <param name="reader">The SQL data reader positioned at a record.</param>
+        /// <returns>A populated <see cref="UserModel"/>.</returns>
         private UserModel MapReaderToUser(SqlDataReader reader)
         {
             return new UserModel

@@ -3,9 +3,14 @@ using System.Windows.Controls;
 
 namespace TaskManager.Services
 {
+    /// <summary>
+    /// Provides attached properties to enable data binding for PasswordBox.Password.
+    /// </summary>
     public static class PasswordBoxHelper
     {
-        // DependencyProperty để gắn Binding với PasswordBox.Password
+        /// <summary>
+        /// Attached DependencyProperty for binding the password string.
+        /// </summary>
         public static readonly DependencyProperty BoundPasswordProperty =
             DependencyProperty.RegisterAttached(
                 "BoundPassword",
@@ -13,15 +18,21 @@ namespace TaskManager.Services
                 typeof(PasswordBoxHelper),
                 new PropertyMetadata(string.Empty, OnBoundPasswordChanged));
 
-        // Hàm Get để lấy giá trị từ DependencyProperty
+        /// <summary>
+        /// Gets the BoundPassword property value.
+        /// </summary>
         public static string GetBoundPassword(DependencyObject obj) =>
             (string)obj.GetValue(BoundPasswordProperty);
 
-        // Hàm Set để đặt giá trị cho DependencyProperty
+        /// <summary>
+        /// Sets the BoundPassword property value.
+        /// </summary>
         public static void SetBoundPassword(DependencyObject obj, string value) =>
             obj.SetValue(BoundPasswordProperty, value);
 
-        // DependencyProperty để kiểm soát việc cập nhật hai chiều (TwoWay binding)
+        /// <summary>
+        /// Attached DependencyProperty to enable or disable two-way binding for Password.
+        /// </summary>
         public static readonly DependencyProperty BindPasswordProperty =
             DependencyProperty.RegisterAttached(
                 "BindPassword",
@@ -29,9 +40,15 @@ namespace TaskManager.Services
                 typeof(PasswordBoxHelper),
                 new PropertyMetadata(false, OnBindPasswordChanged));
 
+        /// <summary>
+        /// Gets the BindPassword property value.
+        /// </summary>
         public static bool GetBindPassword(DependencyObject obj) =>
             (bool)obj.GetValue(BindPasswordProperty);
 
+        /// <summary>
+        /// Sets the BindPassword property value.
+        /// </summary>
         public static void SetBindPassword(DependencyObject obj, bool value) =>
             obj.SetValue(BindPasswordProperty, value);
 
@@ -39,7 +56,7 @@ namespace TaskManager.Services
         {
             if (d is PasswordBox passwordBox)
             {
-                // Ngăn việc lặp lại cập nhật nếu giá trị mới trùng với Password hiện tại
+                // Avoid recursive update if value is already set
                 if (passwordBox.Password != (string)e.NewValue)
                 {
                     passwordBox.Password = (string)e.NewValue;
@@ -53,11 +70,12 @@ namespace TaskManager.Services
             {
                 if ((bool)e.NewValue)
                 {
-                    // Lắng nghe sự kiện PasswordChanged nếu được gắn TwoWay Binding
+                    // Attach event handler for two-way binding
                     passwordBox.PasswordChanged += PasswordBox_PasswordChanged;
                 }
                 else
                 {
+                    // Detach event handler when two-way binding is disabled
                     passwordBox.PasswordChanged -= PasswordBox_PasswordChanged;
                 }
             }
@@ -67,7 +85,7 @@ namespace TaskManager.Services
         {
             if (sender is PasswordBox passwordBox)
             {
-                // Lấy giá trị DependencyProperty BoundPassword và cập nhật
+                // Update BoundPassword attached property with current Password value
                 SetBoundPassword(passwordBox, passwordBox.Password);
             }
         }

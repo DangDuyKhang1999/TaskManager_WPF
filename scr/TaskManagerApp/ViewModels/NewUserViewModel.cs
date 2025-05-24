@@ -1,18 +1,24 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Input;
 using TaskManager.Common;
+using TaskManager.Data;
 using TaskManager.Models;
 using TaskManager.Services;
-using TaskManager.Data;
 
 namespace TaskManager.ViewModels
 {
+    /// <summary>
+    /// ViewModel for creating a new user with validation support.
+    /// </summary>
     public class NewUserViewModel : BaseViewModel, IDataErrorInfo
     {
         private bool _hasAttemptedSave;
 
         private string _employeeCode;
+        /// <summary>
+        /// Gets or sets the unique employee code.
+        /// </summary>
         public string EmployeeCode
         {
             get => _employeeCode;
@@ -20,6 +26,9 @@ namespace TaskManager.ViewModels
         }
 
         private string _username;
+        /// <summary>
+        /// Gets or sets the username for login.
+        /// </summary>
         public string Username
         {
             get => _username;
@@ -27,6 +36,9 @@ namespace TaskManager.ViewModels
         }
 
         private string _password;
+        /// <summary>
+        /// Gets or sets the password entered by the user.
+        /// </summary>
         public string Password
         {
             get => _password;
@@ -34,6 +46,9 @@ namespace TaskManager.ViewModels
         }
 
         private string _displayName;
+        /// <summary>
+        /// Gets or sets the display name.
+        /// </summary>
         public string DisplayName
         {
             get => _displayName;
@@ -41,6 +56,9 @@ namespace TaskManager.ViewModels
         }
 
         private string _email;
+        /// <summary>
+        /// Gets or sets the email address.
+        /// </summary>
         public string Email
         {
             get => _email;
@@ -48,15 +66,28 @@ namespace TaskManager.ViewModels
         }
 
         private bool _isAdmin;
+        /// <summary>
+        /// Gets or sets a value indicating whether the user has admin rights.
+        /// </summary>
         public bool IsAdmin
         {
             get => _isAdmin;
             set => SetProperty(ref _isAdmin, value);
         }
 
+        /// <summary>
+        /// Command to save the new user.
+        /// </summary>
         public ICommand SaveCommand { get; }
+
+        /// <summary>
+        /// Command to clear all input fields.
+        /// </summary>
         public ICommand ClearCommand { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NewUserViewModel"/> class.
+        /// </summary>
         public NewUserViewModel()
         {
             SaveCommand = new RelayCommand(_ => SaveExecute());
@@ -64,6 +95,9 @@ namespace TaskManager.ViewModels
             ClearFields();
         }
 
+        /// <summary>
+        /// Gets validation error for a specific property.
+        /// </summary>
         public string this[string columnName]
         {
             get
@@ -74,38 +108,26 @@ namespace TaskManager.ViewModels
                 {
                     case nameof(EmployeeCode):
                         if (string.IsNullOrWhiteSpace(EmployeeCode))
-                        {
                             return AppConstants.AppText.ValidationMessages.CodeRequired;
-                        }
-
                         if (IsEmployeeCodeDuplicate(EmployeeCode))
-                        {
                             return AppConstants.AppText.ValidationMessages.CodeDuplicate;
-                        }
                         break;
 
                     case nameof(Username):
                         if (string.IsNullOrWhiteSpace(Username))
-                        {
                             return AppConstants.AppText.ValidationMessages.UsernameRequired;
-                        }
-
                         if (IsUsernameDuplicate(Username))
-                        {
                             return AppConstants.AppText.ValidationMessages.UsernameDuplicate;
-                        }
                         break;
 
                     case nameof(Password):
-                        return string.IsNullOrWhiteSpace(Password)
-                            ? AppConstants.AppText.ValidationMessages.PasswordRequired
-                            : null;
+                        if (string.IsNullOrWhiteSpace(Password))
+                            return AppConstants.AppText.ValidationMessages.PasswordRequired;
+                        break;
 
                     case nameof(DisplayName):
                         if (string.IsNullOrWhiteSpace(DisplayName))
-                        {
                             return AppConstants.AppText.ValidationMessages.DisplayNameRequired;
-                        }
                         break;
                 }
 
@@ -113,14 +135,23 @@ namespace TaskManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Gets an object-level validation error. Always returns null.
+        /// </summary>
         public string Error => null;
 
+        /// <summary>
+        /// Indicates whether all required fields are valid.
+        /// </summary>
         public bool IsValid =>
             this[nameof(EmployeeCode)] == null &&
             this[nameof(Username)] == null &&
             this[nameof(Password)] == null &&
             this[nameof(DisplayName)] == null;
 
+        /// <summary>
+        /// Executes the save operation: validates input, inserts the user, and notifies the user.
+        /// </summary>
         private void SaveExecute()
         {
             _hasAttemptedSave = true;
@@ -151,20 +182,24 @@ namespace TaskManager.ViewModels
                 bool inserted = userRepository.InsertUser(user);
                 if (inserted)
                 {
-                    System.Windows.MessageBox.Show(AppConstants.AppText.Message_UserSaveSuccess, AppConstants.ExecutionStatus.Success);
+                    MessageBox.Show(AppConstants.AppText.Message_UserSaveSuccess, AppConstants.ExecutionStatus.Success);
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show(AppConstants.AppText.Message_UserSaveFailed, AppConstants.ExecutionStatus.Error);
+                    MessageBox.Show(AppConstants.AppText.Message_UserSaveFailed, AppConstants.ExecutionStatus.Error);
                 }
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(AppConstants.AppText.Message_UnexpectedError + ex.Message);
             }
+
             ClearFields();
         }
 
+        /// <summary>
+        /// Clears all input fields and resets validation state.
+        /// </summary>
         private void ClearFields()
         {
             _hasAttemptedSave = false;
@@ -184,6 +219,9 @@ namespace TaskManager.ViewModels
             OnPropertyChanged(nameof(IsAdmin));
         }
 
+        /// <summary>
+        /// Checks if the specified employee code already exists.
+        /// </summary>
         private bool IsEmployeeCodeDuplicate(string employeeCode)
         {
             try
@@ -198,6 +236,9 @@ namespace TaskManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Checks if the specified username already exists.
+        /// </summary>
         private bool IsUsernameDuplicate(string username)
         {
             try

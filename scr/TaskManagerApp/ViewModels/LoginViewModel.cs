@@ -6,39 +6,65 @@ using TaskManager.Contexts;
 
 namespace TaskManager.ViewModels
 {
+    /// <summary>
+    /// ViewModel for login screen handling user authentication.
+    /// </summary>
     public class LoginViewModel : BaseViewModel
     {
         private string _username;
         private string _password;
         private string _errorMessage;
 
+        /// <summary>
+        /// Gets or sets the username input by the user.
+        /// </summary>
         public string Username
         {
             get => _username;
             set => SetProperty(ref _username, value);
         }
 
+        /// <summary>
+        /// Gets or sets the password input by the user.
+        /// </summary>
         public string Password
         {
             get => _password;
             set => SetProperty(ref _password, value);
         }
 
+        /// <summary>
+        /// Gets or sets the error message displayed to the user.
+        /// </summary>
         public string ErrorMessage
         {
             get => _errorMessage;
             set => SetProperty(ref _errorMessage, value);
         }
 
+        /// <summary>
+        /// Command executed when the user attempts to log in.
+        /// </summary>
         public ICommand LoginCommand { get; }
 
+        /// <summary>
+        /// Event invoked when login is successful.
+        /// </summary>
         public event Action LoginSucceeded;
 
+        /// <summary>
+        /// Initializes a new instance of the LoginViewModel class.
+        /// </summary>
         public LoginViewModel()
         {
             LoginCommand = new RelayCommand(ExecuteLogin);
         }
 
+        /// <summary>
+        /// Executes the login process.
+        /// Validates input, attempts authentication, and handles success or failure.
+        /// </summary>
+        /// <param name="parameter">Command parameter (unused).</param>
         private void ExecuteLogin(object parameter)
         {
             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
@@ -59,6 +85,12 @@ namespace TaskManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Authenticates the user by verifying credentials against the database.
+        /// </summary>
+        /// <param name="username">Username input.</param>
+        /// <param name="password">Password input.</param>
+        /// <returns>True if authentication succeeds; otherwise, false.</returns>
         private bool AuthenticateUser(string username, string password)
         {
             try
@@ -81,7 +113,6 @@ namespace TaskManager.ViewModels
                     bool isAdmin = reader["IsAdmin"] is bool b && b;
                     string employeeCode = reader["EmployeeCode"]?.ToString();
 
-                    // So sánh mật khẩu bằng BCrypt
                     if (!string.IsNullOrEmpty(passwordHash) && BCrypt.Net.BCrypt.Verify(password, passwordHash))
                     {
                         UserSession.Instance.Initialize(username, employeeCode, isAdmin);

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using TaskManager.Common;
 using TaskManager.Contexts;
 using TaskManager.Models;
@@ -19,6 +17,10 @@ public class TaskRepository
         _connectionString = connectionString;
     }
 
+    /// <summary>
+    /// Retrieves all tasks based on user role and application mode.
+    /// </summary>
+    /// <returns>List of <see cref="TaskModel"/>.</returns>
     public List<TaskModel> GetAllTasks()
     {
         var tasks = new List<TaskModel>();
@@ -35,7 +37,7 @@ public class TaskRepository
 
             if (isDebug)
             {
-                // DEBUG Mode Logic
+                // DEBUG mode logic: determine employee code and load tasks accordingly
                 var userQuery = "SELECT TOP 1 EmployeeCode FROM Users WHERE IsAdmin = @IsAdmin ORDER BY EmployeeCode";
                 using var userCmd = new SqlCommand(userQuery, connection);
                 userCmd.Parameters.AddWithValue("@IsAdmin", isAdmin);
@@ -119,7 +121,7 @@ public class TaskRepository
             }
             else
             {
-                // Release Mode Logic
+                // Release mode logic: load tasks based on user role
                 Logger.Instance.Information($"Production mode - User {employeeCode}, IsAdmin = {isAdmin}");
 
                 if (isAdmin)
@@ -197,10 +199,10 @@ public class TaskRepository
     }
 
     /// <summary>
-    /// Maps the current record of a <see cref="SqlDataReader"/> to a <see cref="TaskModel"/> instance.
+    /// Maps a data record from <see cref="SqlDataReader"/> to a <see cref="TaskModel"/>.
     /// </summary>
-    /// <param name="reader">The SQL data reader positioned at a record.</param>
-    /// <returns>A populated <see cref="TaskModel"/>.</returns>
+    /// <param name="reader">The SQL data reader positioned at the current record.</param>
+    /// <returns>A populated <see cref="TaskModel"/> instance.</returns>
     private TaskModel MapReaderToTask(SqlDataReader reader)
     {
         return new TaskModel
@@ -221,6 +223,11 @@ public class TaskRepository
         };
     }
 
+    /// <summary>
+    /// Inserts a new task into the database.
+    /// </summary>
+    /// <param name="task">The task to insert.</param>
+    /// <returns>True if insertion succeeds; otherwise false.</returns>
     public bool InsertTask(TaskModel task)
     {
         try
@@ -265,6 +272,11 @@ VALUES
         }
     }
 
+    /// <summary>
+    /// Deletes a task by its Code.
+    /// </summary>
+    /// <param name="code">The task code.</param>
+    /// <returns>True if deletion succeeds; otherwise false.</returns>
     public bool DeleteTaskByCode(string code)
     {
         try
@@ -305,6 +317,11 @@ VALUES
         }
     }
 
+    /// <summary>
+    /// Checks if a task with the specified code exists.
+    /// </summary>
+    /// <param name="code">The task code.</param>
+    /// <returns>True if the code exists; otherwise false.</returns>
     public bool IsTaskCodeExists(string code)
     {
         if (string.IsNullOrWhiteSpace(code))
@@ -320,6 +337,11 @@ VALUES
         return count > 0;
     }
 
+    /// <summary>
+    /// Updates an existing task in the database.
+    /// </summary>
+    /// <param name="task">The task to update.</param>
+    /// <returns>True if update succeeds; otherwise false.</returns>
     public bool UpdateTask(TaskModel task)
     {
         using (var connection = new SqlConnection(_connectionString))
@@ -351,11 +373,12 @@ VALUES
             return rowsAffected > 0;
         }
     }
+
     /// <summary>
-    /// Cập nhật thuộc tính AssigneeId và ReporterId của TaskModel dựa trên AssigneeDisplayName và ReporterDisplayName.
+    /// Updates the AssigneeId and ReporterId properties of a task based on their display names.
     /// </summary>
-    /// <param name="task">TaskModel cần cập nhật các Id.</param>
-    /// <returns>True nếu tìm thấy ít nhất một Id và cập nhật thành công, false nếu không tìm thấy hoặc lỗi.</returns>
+    /// <param name="task">The task to update.</param>
+    /// <returns>True if at least one ID was found and updated; otherwise false.</returns>
     public bool UpdateTaskIdsFromDisplayNames(TaskModel task)
     {
         if (task == null) throw new ArgumentNullException(nameof(task));
@@ -388,11 +411,10 @@ VALUES
 
             if (string.IsNullOrEmpty(assigneeId) && string.IsNullOrEmpty(reporterId))
             {
-                Logger.Instance.Warning($"Không tìm thấy AssigneeId hoặc ReporterId từ DisplayName. AssigneeDisplayName='{task.AssigneeDisplayName}', ReporterDisplayName='{task.ReporterDisplayName}'");
+                Logger.Instance.Warning($"No AssigneeId or ReporterId found from DisplayName. AssigneeDisplayName='{task.AssigneeDisplayName}', ReporterDisplayName='{task.ReporterDisplayName}'");
                 return false;
             }
 
-            // Gán lại cho task
             if (!string.IsNullOrEmpty(assigneeId))
                 task.AssigneeId = assigneeId;
 
@@ -403,7 +425,7 @@ VALUES
         }
         catch (Exception ex)
         {
-            Logger.Instance.Error($"Error updating Ids from DisplayNames: {ex.Message}");
+            Logger.Instance.Error($"Error updating IDs from DisplayNames: {ex.Message}");
             return false;
         }
     }

@@ -5,7 +5,7 @@ using TaskManager.Common;
 namespace TaskManager.Models
 {
     /// <summary>
-    /// Represents a task entity with properties for data binding.
+    /// Represents a task entity with properties suitable for data binding.
     /// Implements INotifyPropertyChanged to notify the UI of property changes.
     /// </summary>
     public class TaskModel : INotifyPropertyChanged
@@ -68,7 +68,7 @@ namespace TaskManager.Models
         public string? ReporterDisplayName { get; set; }
 
         /// <summary>
-        /// Gets or sets the Assignee display name of the task.
+        /// Gets or sets the assignee display name of the task.
         /// Raises PropertyChanged event when the value changes.
         /// </summary>
         public string AssigneeDisplayName
@@ -128,40 +128,24 @@ namespace TaskManager.Models
         };
 
         /// <summary>
-        /// Gets or sets the date and time when the task was created.
+        /// Gets or sets the creation date and time of the task.
         /// </summary>
         public DateTime CreatedAt { get; set; }
 
         /// <summary>
-        /// Gets or sets the date and time when the task was last updated.
+        /// Gets or sets the last update date and time of the task.
         /// </summary>
         public DateTime UpdatedAt { get; set; }
 
-        private bool _isEditing;
-
-        public bool IsEditing
-        {
-            get => _isEditing;
-            set
-            {
-                if (_isEditing != value)
-                {
-                    _isEditing = value;
-                    OnPropertyChanged(nameof(IsEditing));
-                }
-            }
-        }
-
-
         /// <summary>
-        /// Event triggered when a property value changes.
+        /// Occurs when a property value changes.
         /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
-        /// Raises the PropertyChanged event to notify UI about property changes.
+        /// Raises the PropertyChanged event.
         /// </summary>
-        /// <param name="propertyName">The name of the property that changed.</param>
+        /// <param name="propertyName">Name of the property that changed.</param>
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }

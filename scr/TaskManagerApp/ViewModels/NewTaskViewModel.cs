@@ -11,15 +11,28 @@ using TaskManager.Services;
 
 namespace TaskManager.ViewModels
 {
+    /// <summary>
+    /// ViewModel for creating a new task with validation support.
+    /// </summary>
     public class NewTaskViewModel : BaseViewModel, IDataErrorInfo
     {
         private readonly UserRepository _userRepository;
         private bool _hasAttemptedSave;
 
+        /// <summary>
+        /// List of reporter user display names (admins).
+        /// </summary>
         public ObservableCollection<string> ReporterUsers { get; }
+
+        /// <summary>
+        /// List of assignee user display names (normal users).
+        /// </summary>
         public ObservableCollection<string> AssigneeUsers { get; }
 
         private string _reporterId;
+        /// <summary>
+        /// Selected reporter display name.
+        /// </summary>
         public string ReporterDisplayName
         {
             get => _reporterId;
@@ -27,6 +40,9 @@ namespace TaskManager.ViewModels
         }
 
         private string _assigneeId;
+        /// <summary>
+        /// Selected assignee display name.
+        /// </summary>
         public string AssigneeDisplayName
         {
             get => _assigneeId;
@@ -34,6 +50,9 @@ namespace TaskManager.ViewModels
         }
 
         private string _code;
+        /// <summary>
+        /// Task code.
+        /// </summary>
         public string Code
         {
             get => _code;
@@ -41,6 +60,9 @@ namespace TaskManager.ViewModels
         }
 
         private string _title;
+        /// <summary>
+        /// Task title.
+        /// </summary>
         public string Title
         {
             get => _title;
@@ -48,6 +70,9 @@ namespace TaskManager.ViewModels
         }
 
         private string _description;
+        /// <summary>
+        /// Task description.
+        /// </summary>
         public string Description
         {
             get => _description;
@@ -55,6 +80,9 @@ namespace TaskManager.ViewModels
         }
 
         private int _status;
+        /// <summary>
+        /// Task status.
+        /// </summary>
         public int Status
         {
             get => _status;
@@ -62,6 +90,9 @@ namespace TaskManager.ViewModels
         }
 
         private DateTime? _dueDate;
+        /// <summary>
+        /// Task due date.
+        /// </summary>
         public DateTime? DueDate
         {
             get => _dueDate;
@@ -69,15 +100,29 @@ namespace TaskManager.ViewModels
         }
 
         private int _priority;
+        /// <summary>
+        /// Task priority.
+        /// </summary>
         public int Priority
         {
             get => _priority;
             set => SetProperty(ref _priority, value);
         }
 
+        /// <summary>
+        /// Command to save the task.
+        /// </summary>
         public ICommand SaveCommand { get; }
+
+        /// <summary>
+        /// Command to clear all input fields.
+        /// </summary>
         public ICommand ClearCommand { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NewTaskViewModel"/> class.
+        /// Loads users and initializes commands.
+        /// </summary>
         public NewTaskViewModel()
         {
             _userRepository = new UserRepository(AppConstants.Database.ConnectionString);
@@ -95,9 +140,13 @@ namespace TaskManager.ViewModels
             ClearFields();
         }
 
+        /// <summary>
+        /// Provides validation error messages for properties.
+        /// </summary>
+        /// <param name="columnName">The property name.</param>
+        /// <returns>Error message or null.</returns>
         public string this[string columnName]
         {
-
             get
             {
                 if (!_hasAttemptedSave) return null;
@@ -135,8 +184,14 @@ namespace TaskManager.ViewModels
             }
         }
 
+        /// <summary>
+        /// Gets error message for the object. Always null.
+        /// </summary>
         public string Error => null;
 
+        /// <summary>
+        /// Determines whether the current data is valid.
+        /// </summary>
         public bool IsValid
         {
             get
@@ -149,12 +204,15 @@ namespace TaskManager.ViewModels
                 return true;
             }
         }
-       
+
+        /// <summary>
+        /// Executes the save command: validates, inserts task, logs, and notifies user.
+        /// </summary>
         private void SaveCommandExecute()
         {
             _hasAttemptedSave = true;
 
-            // Kích hoạt validation cho tất cả các trường
+            // Trigger validation for all relevant properties
             OnPropertyChanged(nameof(Code));
             OnPropertyChanged(nameof(Title));
             OnPropertyChanged(nameof(Status));
@@ -167,7 +225,7 @@ namespace TaskManager.ViewModels
                 return;
             }
 
-            // Lấy mã nhân viên từ DisplayName
+            // Retrieve employee codes by display names
             var reporterCode = GetEmployeeCodeByDisplayName(ReporterDisplayName);
             var assigneeCode = GetEmployeeCodeByDisplayName(AssigneeDisplayName);
 
@@ -230,26 +288,29 @@ namespace TaskManager.ViewModels
                         System.Windows.MessageBoxButton.OK,
                         System.Windows.MessageBoxImage.Error);
                 }
-
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error($"{AppConstants.AppText.Message_UnexpectedError}{ ex.Message}");
+                Logger.Instance.Error($"{AppConstants.AppText.Message_UnexpectedError}{ex.Message}");
             }
             ClearFields();
         }
 
+        /// <summary>
+        /// Executes the clear command to reset all fields.
+        /// </summary>
         private void ClearCommandExecute()
         {
             ClearFields();
         }
 
+        /// <summary>
+        /// Resets all input fields and validation state.
+        /// </summary>
         private void ClearFields()
         {
-            // Đặt flag xác thực về false trước
             _hasAttemptedSave = false;
 
-            // Đặt lại các giá trị
             Code = string.Empty;
             Title = string.Empty;
             Description = string.Empty;
@@ -259,7 +320,7 @@ namespace TaskManager.ViewModels
             ReporterDisplayName = null;
             AssigneeDisplayName = null;
 
-            // Kích hoạt PropertyChanged để cập nhật giao diện và xóa thông báo lỗi
+            // Notify UI to update bindings and clear validation errors
             OnPropertyChanged(nameof(Code));
             OnPropertyChanged(nameof(Title));
             OnPropertyChanged(nameof(Status));
@@ -268,6 +329,11 @@ namespace TaskManager.ViewModels
             OnPropertyChanged(nameof(AssigneeDisplayName));
         }
 
+        /// <summary>
+        /// Retrieves the employee code corresponding to a given display name.
+        /// </summary>
+        /// <param name="displayName">User's display name.</param>
+        /// <returns>Employee code or null if not found.</returns>
         private string? GetEmployeeCodeByDisplayName(string displayName)
         {
             using var connection = new SqlConnection(AppConstants.Database.ConnectionString);

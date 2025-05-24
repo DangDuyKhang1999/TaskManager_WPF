@@ -16,10 +16,15 @@ using System.Windows.Shapes;
 namespace TaskManager.Views.Screens
 {
     /// <summary>
-    /// Interaction logic for UsersScreen.xaml
+    /// Represents the screen for managing users within the application.
+    /// Provides a user interface to view, add, edit, or remove users.
     /// </summary>
     public partial class UsersScreen : UserControl
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UsersScreen"/> class.
+        /// Sets up the user interface components for user management functionalities.
+        /// </summary>
         public UsersScreen()
         {
             InitializeComponent();

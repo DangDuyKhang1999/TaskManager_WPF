@@ -1,13 +1,19 @@
 ﻿namespace TaskManager.Common
 {
+    /// <summary>
+    /// Contains application-wide constants.
+    /// </summary>
     public static class AppConstants
     {
+        /// <summary>
+        /// UI text and message constants.
+        /// </summary>
         public static class AppText
         {
             public const string MainWindowTitle = "Task Manager";
             public const string FolderLog = "AppLogs";
 
-            // Message for UI
+            // UI display messages
             public const string Message_LoginEmptyFields = "Username or password cannot be empty!";
             public const string Message_LoginInvalidCredentials = "Invalid username or password.";
             public const string Message_TaskSaveSuccess = "Task saved successfully.";
@@ -18,7 +24,9 @@
             public const string Message_TaskCodeExists = "This task code already exists. Please enter a unique code.";
             public const string Message_UsernameExists = "This username already exists. Please choose another.";
 
-            // Validation messages
+            /// <summary>
+            /// Validation message constants.
+            /// </summary>
             public static class ValidationMessages
             {
                 public const string CodeRequired = "Code must not be empty";
@@ -37,6 +45,9 @@
             }
         }
 
+        /// <summary>
+        /// Constants related to database configuration and queries.
+        /// </summary>
         public static class Database
         {
             public const string ConnectionString = @"Server=localhost;Database=TaskManagerDB;Trusted_Connection=True;";
@@ -50,6 +61,9 @@
             public const string AssigneeCodeNotFound = "Assignee employee code not found for: ";
         }
 
+        /// <summary>
+        /// Logging-related constants.
+        /// </summary>
         public static class Logging
         {
             public const string Ext_Log = ".log";
@@ -70,6 +84,9 @@
             public const string BlankPadding = "                                              ";
         }
 
+        /// <summary>
+        /// Priority level labels used in the application.
+        /// </summary>
         public static class PriorityLevels
         {
             public const string High = "High";
@@ -78,6 +95,9 @@
             public const string Unknown = "Unknown";
         }
 
+        /// <summary>
+        /// Task status values used in the application.
+        /// </summary>
         public static class StatusValues
         {
             public const string NotStarted = "Not Started";
@@ -86,6 +106,9 @@
             public const string Unknown = "Unknown";
         }
 
+        /// <summary>
+        /// Execution status values for logging and tracking.
+        /// </summary>
         public static class ExecutionStatus
         {
             public const string Success = "Success";

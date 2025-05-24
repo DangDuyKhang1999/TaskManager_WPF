@@ -4,15 +4,27 @@ using TaskManager.Models;
 
 namespace TaskManager.Services
 {
+    /// <summary>
+    /// Provides methods to interact with tasks in the database.
+    /// </summary>
     public class TaskService
     {
         private readonly string _connectionString;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TaskService"/> class.
+        /// </summary>
+        /// <param name="connectionString">The database connection string.</param>
         public TaskService(string connectionString)
         {
             _connectionString = connectionString;
         }
 
+        /// <summary>
+        /// Adds a new task to the database.
+        /// </summary>
+        /// <param name="task">The task model to add.</param>
+        /// <returns>True if the task was added successfully; otherwise, false.</returns>
         public bool AddTask(TaskModel task)
         {
             var query = @"
