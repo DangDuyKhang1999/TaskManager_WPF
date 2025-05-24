@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 using TaskManager.Views;      // For LoginWindow
-using TaskManager.Services;   // For Logger
+using TaskManager.Services;   // For Logger & SignalRClientService
 using TaskManager.Contexts;   // For UserSession
 using TaskManager.Common;     // For AppConstants
 
@@ -9,6 +9,7 @@ namespace TaskManager
 {
     public partial class App : Application
     {
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);

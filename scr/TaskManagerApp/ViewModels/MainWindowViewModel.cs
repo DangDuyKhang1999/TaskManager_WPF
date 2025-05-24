@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 using TaskManager.Common;
 using TaskManager.Contexts;
 using TaskManager.Services;
@@ -7,18 +10,34 @@ namespace TaskManager.ViewModels
 {
     public class MainWindowViewModel : BaseViewModel
     {
-        // Tiêu đề của cửa sổ
         public string WindowTitle => AppConstants.AppText.MainWindowTitle;
 
-        // Trạng thái hiển thị tab New User
         public Visibility NewUserTabVisibility =>
             UserSession.Instance?.IsAdmin == true ? Visibility.Visible : Visibility.Collapsed;
 
-        // Trạng thái hiển thị tab Users
         public Visibility UsersTabVisibility =>
             UserSession.Instance?.IsAdmin == true ? Visibility.Visible : Visibility.Collapsed;
 
-        // Xử lý sự kiện khi cửa sổ đóng
+        public ICommand WindowClosedCommand { get; }
+
+        public MainWindowViewModel()
+        {
+            WindowClosedCommand = new RelayCommand(_ => OnWindowClosed());
+            _ = InitializeSignalRAsync();
+        }
+
+        private async Task InitializeSignalRAsync()
+        {
+            try
+            {
+                Logger.Instance.Information("SignalR client started.");
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error("Lỗi kết nối SignalR: " + ex.Message);
+            }
+        }
+
         public void OnWindowClosed()
         {
             Logger.Instance.Information(AppConstants.Logging.TaskManagerEnd);

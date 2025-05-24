@@ -7,7 +7,7 @@ namespace TaskManagerSignalRHub.Hubs
     {
         public async Task NotifyTaskChanged()
         {
-            await Clients.Others.SendAsync("ReceiveTaskChanged");
+            await Clients.Others.SendAsync("TaskChanged");
         }
     }
 }

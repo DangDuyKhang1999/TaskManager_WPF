@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
 using TaskManager.Models;
@@ -6,6 +8,7 @@ using TaskManager.Data;
 using TaskManager.Contexts;
 using TaskManager.Common;
 using TaskManager.Services;
+using TaskManagerApp.Contexts;
 
 namespace TaskManager.ViewModels
 {
@@ -66,6 +69,24 @@ namespace TaskManager.ViewModels
 
             DeleteTaskCommand = new RelayCommand(DeleteTask);
             CellEditEndingCommand = new RelayCommand(OnCellEditEnding);
+
+            // Đảm bảo đã Start SignalR trước, sau đó mới đăng ký event
+            SignalRService.Instance.TasksChanged += SignalR_OnTaskChanged;
+        }
+
+        private void SignalR_OnTaskChanged()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                ReloadTasks();
+                Logger.Instance.Information("Tasks reloaded from SignalR event.");
+            });
+        }
+
+        private void ReloadTasks()
+        {
+            var tasksFromDb = _taskRepository.GetAllTasks();
+            Tasks = new ObservableCollection<TaskModel>(tasksFromDb);
         }
 
         private void DeleteTask(object parameter)
@@ -73,13 +94,13 @@ namespace TaskManager.ViewModels
             if (parameter is not TaskModel task || string.IsNullOrWhiteSpace(task.Code))
                 return;
 
-            var result = System.Windows.MessageBox.Show(
+            var result = MessageBox.Show(
                 $"Are you sure you want to delete the task '{task.Title}'?",
                 "Confirm Delete",
-                System.Windows.MessageBoxButton.YesNo,
-                System.Windows.MessageBoxImage.Warning);
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
 
-            if (result != System.Windows.MessageBoxResult.Yes)
+            if (result != MessageBoxResult.Yes)
                 return;
 
             bool isDeleted = _taskRepository.DeleteTaskByCode(task.Code);
@@ -88,20 +109,22 @@ namespace TaskManager.ViewModels
             {
                 Tasks.Remove(task);
                 Logger.Instance.Information($"Task '{task.Code}' removed from UI and database.");
-                System.Windows.MessageBox.Show(
+                MessageBox.Show(
                     $"Task '{task.Title}' was deleted successfully.",
                     "Success",
-                    System.Windows.MessageBoxButton.OK,
-                    System.Windows.MessageBoxImage.Information);
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                _ = SignalRService.Instance.NotifyTaskChangedAsync();
             }
             else
             {
                 Logger.Instance.Warning($"Failed to delete Task '{task.Code}'.");
-                System.Windows.MessageBox.Show(
+                MessageBox.Show(
                     $"Failed to delete task '{task.Title}'. Please try again later.",
                     "Error",
-                    System.Windows.MessageBoxButton.OK,
-                    System.Windows.MessageBoxImage.Error);
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
         }
 
@@ -126,15 +149,16 @@ namespace TaskManager.ViewModels
             if (isUpdated)
             {
                 Logger.Instance.Information($"Task '{task.Code}' updated successfully.");
+                _ = SignalRService.Instance.NotifyTaskChangedAsync();
             }
             else
             {
                 Logger.Instance.Warning($"Failed to update Task '{task.Code}'.");
-                System.Windows.MessageBox.Show(
+                MessageBox.Show(
                     $"Failed to update task '{task.Title}'. Please try again later.",
                     "Error",
-                    System.Windows.MessageBoxButton.OK,
-                    System.Windows.MessageBoxImage.Error);
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
         }
     }
