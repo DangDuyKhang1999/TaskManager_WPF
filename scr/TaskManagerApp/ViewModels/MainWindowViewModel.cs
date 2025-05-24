@@ -5,6 +5,7 @@ using System.Windows.Input;
 using TaskManager.Common;
 using TaskManager.Contexts;
 using TaskManager.Services;
+using TaskManagerApp.Services;
 
 namespace TaskManager.ViewModels
 {
@@ -35,8 +36,12 @@ namespace TaskManager.ViewModels
         /// </summary>
         public ICommand WindowClosedCommand { get; }
 
+        // Service to host the internal SignalR server.
+        private readonly SignalRHostService _signalRHostService = new();
+
         /// <summary>
         /// Initializes a new instance of the MainWindowViewModel class.
+        /// Sets up the window close command and starts the SignalR server.
         /// </summary>
         public MainWindowViewModel()
         {
@@ -45,13 +50,24 @@ namespace TaskManager.ViewModels
         }
 
         /// <summary>
-        /// Initializes the SignalR client.
-        /// This method currently runs synchronously without asynchronous operations.
+        /// Starts the SignalR host server asynchronously and logs the result.
         /// </summary>
         private Task InitializeSignalRAsync()
         {
             try
             {
+                _signalRHostService.StartAsync().ContinueWith(t =>
+                {
+                    if (t.IsCompletedSuccessfully)
+                    {
+                        Logger.Instance.Information("SignalR Hub server started.");
+                    }
+                    else if (t.IsFaulted && t.Exception != null)
+                    {
+                        Logger.Instance.Error("SignalR Hub start error: " + t.Exception.GetBaseException().Message);
+                    }
+                });
+
                 Logger.Instance.Information("SignalR client started.");
             }
             catch (Exception ex)
@@ -62,10 +78,29 @@ namespace TaskManager.ViewModels
         }
 
         /// <summary>
-        /// Handles actions to perform when the main window is closed.
+        /// Stops the SignalR host server asynchronously and logs the result when the window is closed.
         /// </summary>
         public void OnWindowClosed()
         {
+            try
+            {
+                _signalRHostService.StopAsync().ContinueWith(t =>
+                {
+                    if (t.IsCompletedSuccessfully)
+                    {
+                        Logger.Instance.Information(AppConstants.Logging.TaskManagerEnd);
+                    }
+                    else if (t.IsFaulted && t.Exception != null)
+                    {
+                        Logger.Instance.Error("Error stopping SignalR Hub: " + t.Exception.GetBaseException().Message);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error("Error stopping SignalR Hub: " + ex.Message);
+            }
+
             Logger.Instance.Information(AppConstants.Logging.TaskManagerEnd);
         }
     }
