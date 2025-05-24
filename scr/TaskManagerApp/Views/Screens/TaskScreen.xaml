@@ -35,12 +35,8 @@
             </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Task Code" Binding="{Binding Code}" IsReadOnly="True" Width="*" />
-
-                <DataGridTextColumn Header="Task Name" 
-                                    Binding="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*" />
-
-                <DataGridTextColumn Header="Description" 
-                                    Binding="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                <DataGridTextColumn Header="Task Name" Binding="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                <DataGridTextColumn Header="Description" Binding="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*" />
 
                 <!-- Reporter -->
                 <DataGridTemplateColumn Header="Reporter" Width="*">
@@ -49,6 +45,12 @@
                             <TextBlock Text="{Binding ReporterDisplayName}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding DataContext.ReporterDisplayName, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      SelectedItem="{Binding ReporterDisplayName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
                 <!-- Assignee -->
@@ -60,7 +62,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
-                            <ComboBox ItemsSource="{Binding DataContext.AvailableAssignees, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                            <ComboBox ItemsSource="{Binding DataContext.AssigneesDisplayName, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                       SelectedItem="{Binding AssigneeDisplayName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
@@ -83,8 +85,7 @@
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTextColumn Header="Due Date" 
-                                    Binding="{Binding DueDate, StringFormat={}{0:yyyy-MM-dd}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate, StringFormat={}{0:yyyy-MM-dd}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*" />
 
                 <!-- Priority -->
                 <DataGridTemplateColumn Header="Priority" Width="*">

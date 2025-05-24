@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using TaskManager.Models;
@@ -20,7 +21,8 @@ namespace TaskManager.ViewModels
             set => SetProperty(ref _tasks, value);
         }
 
-        public ObservableCollection<string> AvailableAssignees { get; set; }
+        public ObservableCollection<string> ReporterDisplayName { get; set; }
+        public ObservableCollection<string> AssigneesDisplayName { get; set; }
 
         public ObservableCollection<KeyValuePair<int, string>> AvailableStatuses { get; } =
             new ObservableCollection<KeyValuePair<int, string>>()
@@ -60,7 +62,8 @@ namespace TaskManager.ViewModels
             DatabaseContext.Instance.LoadNormalUsers(users);
             DatabaseContext.Instance.LoadAdminUsers(admins);
 
-            AvailableAssignees = new ObservableCollection<string>();
+            ReporterDisplayName = new ObservableCollection<string>(DatabaseContext.Instance.AdminUsersList);
+            AssigneesDisplayName = new ObservableCollection<string>(DatabaseContext.Instance.NormalUsersList);
 
             DeleteTaskCommand = new RelayCommand(DeleteTask);
             ToggleEditCommand = new RelayCommand(ToggleEdit);
@@ -147,7 +150,7 @@ namespace TaskManager.ViewModels
                     MessageBox.Show($"Task '{task.Title}' updated successfully.", "Update Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
-                { 
+                {
                     task.IsEditing = false;
                 }
             }
