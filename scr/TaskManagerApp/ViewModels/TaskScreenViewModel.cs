@@ -45,6 +45,7 @@ namespace TaskManager.ViewModels
 
         public ICommand DeleteTaskCommand { get; }
         public ICommand ToggleEditCommand { get; }
+        public ICommand CellEditEndingCommand { get; }
 
         public TaskScreenViewModel()
         {
@@ -67,6 +68,7 @@ namespace TaskManager.ViewModels
 
             DeleteTaskCommand = new RelayCommand(DeleteTask);
             ToggleEditCommand = new RelayCommand(ToggleEdit);
+            CellEditEndingCommand = new RelayCommand(OnCellEditEnding);
 
             _ = InitSignalRAsync();
         }
@@ -74,7 +76,6 @@ namespace TaskManager.ViewModels
         private async Task InitSignalRAsync()
         {
             string hubUrl = "http://localhost:5000/taskhub";
-
             await SignalRService.Instance.StartAsync(hubUrl);
             SignalRService.Instance.TasksChanged += SignalR_OnTaskChanged;
         }
@@ -120,7 +121,18 @@ namespace TaskManager.ViewModels
         {
             if (task == null || string.IsNullOrWhiteSpace(task.Code)) return;
 
+            // Cập nhật AssigneeId và ReporterId trước
+            bool idsUpdated = _taskRepository.UpdateTaskIdsFromDisplayNames(task);
+
+            if (!idsUpdated)
+            {
+                MessageBox.Show($"Failed to map Assignee or Reporter for task '{task.Title}'.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return; // Hoặc vẫn có thể tiếp tục cập nhật tuỳ yêu cầu
+            }
+
+            // Tiếp tục cập nhật thông tin task
             bool isUpdated = _taskRepository.UpdateTask(task);
+
             if (isUpdated)
             {
                 _ = SignalRService.Instance.NotifyTaskChangedAsync();
@@ -130,7 +142,6 @@ namespace TaskManager.ViewModels
                 MessageBox.Show($"Failed to update task '{task.Title}'.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
         private void ToggleEdit(object parameter)
         {
             if (parameter is not TaskModel task) return;
@@ -160,6 +171,17 @@ namespace TaskManager.ViewModels
                     t.IsEditing = false;
 
                 task.IsEditing = true;
+            }
+        }
+
+        private void OnCellEditEnding(object parameter)
+        {
+            if (parameter is System.Windows.Controls.DataGridCellEditEndingEventArgs e)
+            {
+                if (e.Row.Item is TaskModel task)
+                {
+                    UpdateTask(task);
+                }
             }
         }
     }

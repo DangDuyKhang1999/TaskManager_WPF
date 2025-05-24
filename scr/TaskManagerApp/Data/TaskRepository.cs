@@ -332,6 +332,7 @@ VALUES
                 Status = @Status,
                 DueDate = @DueDate,
                 Priority = @Priority,
+                ReporterId = @ReporterId,
                 AssigneeId = @AssigneeId,
                 UpdatedAt = GETDATE()
             WHERE Code = @Code", connection);
@@ -341,12 +342,69 @@ VALUES
             command.Parameters.AddWithValue("@Status", task.Status);
             command.Parameters.AddWithValue("@DueDate", task.DueDate != DateTime.MinValue ? (object)task.DueDate : DBNull.Value);
             command.Parameters.AddWithValue("@Priority", task.Priority);
+            command.Parameters.AddWithValue("@ReporterId", task.ReporterId ?? string.Empty);
             command.Parameters.AddWithValue("@AssigneeId", task.AssigneeId ?? string.Empty);
             command.Parameters.AddWithValue("@Code", task.Code);
 
             connection.Open();
             int rowsAffected = command.ExecuteNonQuery();
             return rowsAffected > 0;
+        }
+    }
+    /// <summary>
+    /// Cập nhật thuộc tính AssigneeId và ReporterId của TaskModel dựa trên AssigneeDisplayName và ReporterDisplayName.
+    /// </summary>
+    /// <param name="task">TaskModel cần cập nhật các Id.</param>
+    /// <returns>True nếu tìm thấy ít nhất một Id và cập nhật thành công, false nếu không tìm thấy hoặc lỗi.</returns>
+    public bool UpdateTaskIdsFromDisplayNames(TaskModel task)
+    {
+        if (task == null) throw new ArgumentNullException(nameof(task));
+
+        try
+        {
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
+
+            string assigneeId = null;
+            string reporterId = null;
+
+            if (!string.IsNullOrEmpty(task.AssigneeDisplayName))
+            {
+                string assigneeQuery = "SELECT TOP 1 EmployeeCode FROM Users WHERE DisplayName = @DisplayName";
+                using var cmd = new SqlCommand(assigneeQuery, connection);
+                cmd.Parameters.AddWithValue("@DisplayName", task.AssigneeDisplayName);
+                var result = cmd.ExecuteScalar();
+                assigneeId = result?.ToString();
+            }
+
+            if (!string.IsNullOrEmpty(task.ReporterDisplayName))
+            {
+                string reporterQuery = "SELECT TOP 1 EmployeeCode FROM Users WHERE DisplayName = @DisplayName";
+                using var cmd = new SqlCommand(reporterQuery, connection);
+                cmd.Parameters.AddWithValue("@DisplayName", task.ReporterDisplayName);
+                var result = cmd.ExecuteScalar();
+                reporterId = result?.ToString();
+            }
+
+            if (string.IsNullOrEmpty(assigneeId) && string.IsNullOrEmpty(reporterId))
+            {
+                Logger.Instance.Warning($"Không tìm thấy AssigneeId hoặc ReporterId từ DisplayName. AssigneeDisplayName='{task.AssigneeDisplayName}', ReporterDisplayName='{task.ReporterDisplayName}'");
+                return false;
+            }
+
+            // Gán lại cho task
+            if (!string.IsNullOrEmpty(assigneeId))
+                task.AssigneeId = assigneeId;
+
+            if (!string.IsNullOrEmpty(reporterId))
+                task.ReporterId = reporterId;
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Logger.Instance.Error($"Error updating Ids from DisplayNames: {ex.Message}");
+            return false;
         }
     }
 }
