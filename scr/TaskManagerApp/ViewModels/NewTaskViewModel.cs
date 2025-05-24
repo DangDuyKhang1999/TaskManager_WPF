@@ -8,6 +8,7 @@ using TaskManager.Contexts;
 using TaskManager.Data;
 using TaskManager.Models;
 using TaskManager.Services;
+using TaskManagerApp.Contexts;
 
 namespace TaskManager.ViewModels
 {
@@ -201,7 +202,7 @@ namespace TaskManager.ViewModels
             {
                 foreach (var prop in new[] { nameof(Code), nameof(Title), nameof(Status), nameof(Priority), nameof(ReporterDisplayName), nameof(AssigneeDisplayName) })
                 {
-                    if (this[prop] != null)
+                    if (!string.IsNullOrEmpty(this[prop]))
                         return false;
                 }
                 return true;

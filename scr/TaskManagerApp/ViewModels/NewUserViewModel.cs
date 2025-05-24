@@ -144,10 +144,10 @@ namespace TaskManager.ViewModels
         /// Indicates whether all required fields are valid.
         /// </summary>
         public bool IsValid =>
-            this[nameof(EmployeeCode)] == null &&
-            this[nameof(Username)] == null &&
-            this[nameof(Password)] == null &&
-            this[nameof(DisplayName)] == null;
+            string.IsNullOrEmpty(this[nameof(EmployeeCode)]) &&
+            string.IsNullOrEmpty(this[nameof(Username)]) &&
+            string.IsNullOrEmpty(this[nameof(Password)]) &&
+            string.IsNullOrEmpty(this[nameof(DisplayName)]);
 
         /// <summary>
         /// Executes the save operation: validates input, inserts the user, and notifies the user.
