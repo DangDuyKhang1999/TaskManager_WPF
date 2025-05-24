@@ -50,7 +50,7 @@
         /// </summary>
         public static class Database
         {
-            public const string ConnectionString = @"Server=localhost;Database=TaskManagerDB;Trusted_Connection=True;";
+            public const string ConnectionString = @"Server=localhost;Database=TaskManagerDB;Trusted_Connection=True;TrustServerCertificate=True;";
             public const string Query_GetUsersAndAdmins = "SELECT DisplayName, IsAdmin FROM Users WHERE IsActive = 1";
             public const string Query_GetAllUsers = "SELECT * FROM Users ORDER BY Id ASC";
             public const string Query_CheckEmployeeCode = "SELECT COUNT(1) FROM Users WHERE EmployeeCode = @EmployeeCode";

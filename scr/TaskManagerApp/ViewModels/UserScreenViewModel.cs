@@ -14,14 +14,14 @@ namespace TaskManager.ViewModels
     /// </summary>
     public class UserScreenViewModel : BaseViewModel
     {
-        private ObservableCollection<UserModel> _users;
+        private ObservableCollection<UserModel>? _users;
 
         /// <summary>
         /// Collection of users displayed in the UI.
         /// </summary>
-        public ObservableCollection<UserModel> Users
+        public ObservableCollection<UserModel>? Users
         {
-            get => _users;
+            get => _users ??= new ObservableCollection<UserModel>();
             set => SetProperty(ref _users, value);
         }
 
@@ -50,7 +50,7 @@ namespace TaskManager.ViewModels
         /// Deletes a user after confirmation.
         /// </summary>
         /// <param name="parameter">The user to delete.</param>
-        private void DeleteUser(object parameter)
+        private void DeleteUser(object? parameter)
         {
             if (parameter is not UserModel user || user.Id <= 0)
                 return;
@@ -68,13 +68,16 @@ namespace TaskManager.ViewModels
 
             if (isDeleted)
             {
-                Users.Remove(user);
-                Logger.Instance.Information($"User '{user.Username}' removed from UI and database.");
-                MessageBox.Show(
-                    $"User '{user.DisplayName}' was deleted successfully.",
-                    "Success",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                if (Users != null && user != null)
+                {
+                    Users.Remove(user);
+                    Logger.Instance.Information($"User '{user.Username}' removed from UI and database.");
+                    MessageBox.Show(
+                        $"User '{user.DisplayName}' was deleted successfully.",
+                        "Success",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
             }
             else
             {

@@ -11,12 +11,12 @@ namespace TaskManagerApp.Contexts
     /// </summary>
     public class SignalRService
     {
-        private HubConnection _connection;
+        private HubConnection? _connection;
 
         /// <summary>
         /// Event triggered when a task change notification is received from the SignalR hub.
         /// </summary>
-        public event Action TasksChanged;
+        public event Action? TasksChanged;
 
         private static readonly Lazy<SignalRService> _instance =
             new Lazy<SignalRService>(() => new SignalRService());

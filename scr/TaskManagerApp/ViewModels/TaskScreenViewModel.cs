@@ -17,14 +17,14 @@ namespace TaskManager.ViewModels
     /// </summary>
     public class TaskScreenViewModel : BaseViewModel
     {
-        private ObservableCollection<TaskModel> _tasks;
+        private ObservableCollection<TaskModel>? _tasks;
 
         /// <summary>
         /// Collection of tasks displayed in the UI.
         /// </summary>
         public ObservableCollection<TaskModel> Tasks
         {
-            get => _tasks;
+            get => _tasks ??= new ObservableCollection<TaskModel>();
             set => SetProperty(ref _tasks, value);
         }
 
@@ -129,7 +129,7 @@ namespace TaskManager.ViewModels
         /// Deletes a task after user confirmation.
         /// </summary>
         /// <param name="parameter">The task to delete.</param>
-        private void DeleteTask(object parameter)
+        private void DeleteTask(object? parameter)
         {
             if (parameter is not TaskModel task || string.IsNullOrWhiteSpace(task.Code)) return;
 
@@ -187,7 +187,7 @@ namespace TaskManager.ViewModels
         /// Handles update command triggered from UI with confirmation.
         /// </summary>
         /// <param name="parameter">The task to update.</param>
-        private void UpdateTaskFromButton(object parameter)
+        private void UpdateTaskFromButton(object? parameter)
         {
             if (parameter is not TaskModel task) return;
 

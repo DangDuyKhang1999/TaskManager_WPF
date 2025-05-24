@@ -45,9 +45,10 @@ namespace TaskManager.ViewModels
         }
 
         /// <summary>
-        /// Asynchronously initializes the SignalR client.
+        /// Initializes the SignalR client.
+        /// This method currently runs synchronously without asynchronous operations.
         /// </summary>
-        private async Task InitializeSignalRAsync()
+        private Task InitializeSignalRAsync()
         {
             try
             {
@@ -57,6 +58,7 @@ namespace TaskManager.ViewModels
             {
                 Logger.Instance.Error("SignalR connection error: " + ex.Message);
             }
+            return Task.CompletedTask;
         }
 
         /// <summary>

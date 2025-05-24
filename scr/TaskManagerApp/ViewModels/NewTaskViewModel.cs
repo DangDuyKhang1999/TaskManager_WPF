@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Windows.Input;
 using TaskManager.Common;
 using TaskManager.Contexts;
@@ -29,17 +29,18 @@ namespace TaskManager.ViewModels
         /// </summary>
         public ObservableCollection<string> AssigneeUsers { get; }
 
-        private string _reporterId;
+        private string _reporterId = string.Empty;
         /// <summary>
         /// Selected reporter display name.
         /// </summary>
         public string ReporterDisplayName
         {
             get => _reporterId;
+
             set => SetProperty(ref _reporterId, value);
         }
 
-        private string _assigneeId;
+        private string _assigneeId = string.Empty;
         /// <summary>
         /// Selected assignee display name.
         /// </summary>
@@ -49,7 +50,7 @@ namespace TaskManager.ViewModels
             set => SetProperty(ref _assigneeId, value);
         }
 
-        private string _code;
+        private string _code = string.Empty;
         /// <summary>
         /// Task code.
         /// </summary>
@@ -59,7 +60,7 @@ namespace TaskManager.ViewModels
             set => SetProperty(ref _code, value);
         }
 
-        private string _title;
+        private string _title = string.Empty;
         /// <summary>
         /// Task title.
         /// </summary>
@@ -69,7 +70,7 @@ namespace TaskManager.ViewModels
             set => SetProperty(ref _title, value);
         }
 
-        private string _description;
+        private string _description = string.Empty;
         /// <summary>
         /// Task description.
         /// </summary>
@@ -149,8 +150,10 @@ namespace TaskManager.ViewModels
         {
             get
             {
-                if (!_hasAttemptedSave) return null;
+                if (!_hasAttemptedSave) return string.Empty;
+
                 var taskRepository = new TaskRepository(AppConstants.Database.ConnectionString);
+
                 switch (columnName)
                 {
                     case nameof(Code):
@@ -180,14 +183,14 @@ namespace TaskManager.ViewModels
                             return AppConstants.AppText.ValidationMessages.AssigneeRequired;
                         break;
                 }
-                return null;
+                return string.Empty;
             }
         }
 
         /// <summary>
         /// Gets error message for the object. Always null.
         /// </summary>
-        public string Error => null;
+        public string Error => string.Empty;
 
         /// <summary>
         /// Determines whether the current data is valid.
@@ -317,8 +320,8 @@ namespace TaskManager.ViewModels
             Status = -1;
             Priority = -1;
             DueDate = null;
-            ReporterDisplayName = null;
-            AssigneeDisplayName = null;
+            ReporterDisplayName = string.Empty;
+            AssigneeDisplayName = string.Empty;
 
             // Notify UI to update bindings and clear validation errors
             OnPropertyChanged(nameof(Code));

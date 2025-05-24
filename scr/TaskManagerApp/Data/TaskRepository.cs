@@ -1,4 +1,4 @@
-﻿using System.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using TaskManager.Common;
 using TaskManager.Contexts;
 using TaskManager.Models;
@@ -388,8 +388,8 @@ VALUES
             using var connection = new SqlConnection(_connectionString);
             connection.Open();
 
-            string assigneeId = null;
-            string reporterId = null;
+            string? assigneeId = null;
+            string? reporterId = null;
 
             if (!string.IsNullOrEmpty(task.AssigneeDisplayName))
             {

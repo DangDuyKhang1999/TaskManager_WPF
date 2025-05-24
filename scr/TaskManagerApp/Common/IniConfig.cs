@@ -9,7 +9,10 @@ namespace TaskManager.Common
     public static class IniConfig
     {
         // Full path to the INI configuration file.
-        private static readonly string _iniPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "TaskManager.ini");
+        private static readonly string _iniPath =
+            Path.Combine(
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? AppContext.BaseDirectory,
+                "TaskManager.ini");
 
         /// <summary>
         /// Indicates whether the INI file exists.
@@ -19,7 +22,7 @@ namespace TaskManager.Common
         /// <summary>
         /// Gets the application mode from the INI file.
         /// </summary>
-        public static string Mode => GetValue("AppSettings", "Mode");
+        public static string? Mode => GetValue("AppSettings", "Mode");
 
         /// <summary>
         /// Determines whether the current user is an admin based on the INI file.
@@ -32,7 +35,7 @@ namespace TaskManager.Common
         /// <param name="section">The section name in the INI file.</param>
         /// <param name="key">The key within the section.</param>
         /// <returns>The corresponding value, or null if not found.</returns>
-        private static string GetValue(string section, string key)
+        private static string? GetValue(string section, string key)
         {
             if (!File.Exists(_iniPath))
                 return null;
@@ -40,7 +43,7 @@ namespace TaskManager.Common
             string[] lines = File.ReadAllLines(_iniPath);
             bool inSection = false;
 
-            foreach (string line in lines)
+            foreach (string? line in lines)
             {
                 var trimmed = line.Trim();
 

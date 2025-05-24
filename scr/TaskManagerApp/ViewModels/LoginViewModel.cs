@@ -11,9 +11,9 @@ namespace TaskManager.ViewModels
     /// </summary>
     public class LoginViewModel : BaseViewModel
     {
-        private string _username;
-        private string _password;
-        private string _errorMessage;
+        private string _username = string.Empty;
+        private string _password = string.Empty;
+        private string _errorMessage = string.Empty;
 
         /// <summary>
         /// Gets or sets the username input by the user.
@@ -50,7 +50,7 @@ namespace TaskManager.ViewModels
         /// <summary>
         /// Event invoked when login is successful.
         /// </summary>
-        public event Action LoginSucceeded;
+        public event Action? LoginSucceeded;
 
         /// <summary>
         /// Initializes a new instance of the LoginViewModel class.
@@ -65,7 +65,7 @@ namespace TaskManager.ViewModels
         /// Validates input, attempts authentication, and handles success or failure.
         /// </summary>
         /// <param name="parameter">Command parameter (unused).</param>
-        private void ExecuteLogin(object parameter)
+        private void ExecuteLogin(object? parameter)
         {
             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
             {
@@ -95,7 +95,7 @@ namespace TaskManager.ViewModels
         {
             try
             {
-                using var connection = new System.Data.SqlClient.SqlConnection(AppConstants.Database.ConnectionString);
+                using var connection = new Microsoft.Data.SqlClient.SqlConnection(AppConstants.Database.ConnectionString);
                 connection.Open();
 
                 string query = @"
@@ -103,7 +103,7 @@ namespace TaskManager.ViewModels
                     FROM Users 
                     WHERE Username = @Username COLLATE Latin1_General_BIN AND IsActive = 1";
 
-                using var command = new System.Data.SqlClient.SqlCommand(query, connection);
+                using var command = new Microsoft.Data.SqlClient.SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Username", username);
 
                 using var reader = command.ExecuteReader();
@@ -111,11 +111,11 @@ namespace TaskManager.ViewModels
                 {
                     var passwordHash = reader["PasswordHash"]?.ToString();
                     bool isAdmin = reader["IsAdmin"] is bool b && b;
-                    string employeeCode = reader["EmployeeCode"]?.ToString();
+                    string? employeeCode = reader["EmployeeCode"]?.ToString();
 
                     if (!string.IsNullOrEmpty(passwordHash) && BCrypt.Net.BCrypt.Verify(password, passwordHash))
                     {
-                        UserSession.Instance.Initialize(username, employeeCode, isAdmin);
+                        UserSession.Instance.Initialize(username, employeeCode ?? string.Empty, isAdmin);
                         return true;
                     }
                 }

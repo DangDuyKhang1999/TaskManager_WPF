@@ -15,7 +15,7 @@ namespace TaskManager.ViewModels
     {
         private bool _hasAttemptedSave;
 
-        private string _employeeCode;
+        private string _employeeCode = string.Empty;
         /// <summary>
         /// Gets or sets the unique employee code.
         /// </summary>
@@ -25,7 +25,7 @@ namespace TaskManager.ViewModels
             set => SetProperty(ref _employeeCode, value);
         }
 
-        private string _username;
+        private string _username = string.Empty;
         /// <summary>
         /// Gets or sets the username for login.
         /// </summary>
@@ -35,7 +35,7 @@ namespace TaskManager.ViewModels
             set => SetProperty(ref _username, value);
         }
 
-        private string _password;
+        private string _password = string.Empty;
         /// <summary>
         /// Gets or sets the password entered by the user.
         /// </summary>
@@ -45,7 +45,7 @@ namespace TaskManager.ViewModels
             set => SetProperty(ref _password, value);
         }
 
-        private string _displayName;
+        private string _displayName = string.Empty;
         /// <summary>
         /// Gets or sets the display name.
         /// </summary>
@@ -55,7 +55,7 @@ namespace TaskManager.ViewModels
             set => SetProperty(ref _displayName, value);
         }
 
-        private string _email;
+        private string _email = string.Empty;
         /// <summary>
         /// Gets or sets the email address.
         /// </summary>
@@ -102,7 +102,7 @@ namespace TaskManager.ViewModels
         {
             get
             {
-                if (!_hasAttemptedSave) return null;
+                if (!_hasAttemptedSave) return string.Empty;
 
                 switch (columnName)
                 {
@@ -131,14 +131,14 @@ namespace TaskManager.ViewModels
                         break;
                 }
 
-                return null;
+                return string.Empty;
             }
         }
 
         /// <summary>
         /// Gets an object-level validation error. Always returns null.
         /// </summary>
-        public string Error => null;
+        public string Error => string.Empty;
 
         /// <summary>
         /// Indicates whether all required fields are valid.
