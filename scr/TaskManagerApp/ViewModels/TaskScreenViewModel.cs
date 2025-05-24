@@ -146,6 +146,10 @@ namespace TaskManager.ViewModels
                     task.IsEditing = false;
                     MessageBox.Show($"Task '{task.Title}' updated successfully.", "Update Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
+                else
+                { 
+                    task.IsEditing = false;
+                }
             }
             else
             {

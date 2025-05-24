@@ -23,7 +23,16 @@
                   CanUserAddRows="False"
                   HeadersVisibility="Column"
                   GridLinesVisibility="All">
-
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="White" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                            <Setter Property="Background" Value="LightGreen" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Task Code" Binding="{Binding Code}" IsReadOnly="True" Width="*" />
 
