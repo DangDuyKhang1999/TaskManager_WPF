@@ -88,6 +88,8 @@ dotnet run --project TaskManagerApp
 - Edit user information  
 - Convert `TaskManagerSignalRHub` from `.exe` to `.dll` and publish as a single executable  
 - Embed the database instead of creating a new one manually  
+- In the ComboBox for selecting users, automatically show at most 5 users that best match the input characters instead of displaying the entire user list
+ 
 
 ---
 
