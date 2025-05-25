@@ -12,7 +12,7 @@ namespace TaskManagerApp.Common
         private static readonly string _iniPath =
             Path.Combine(
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? AppContext.BaseDirectory,
-                "TaskManager.ini");
+                AppConstants.IniSettings.IniFileName);
 
         /// <summary>
         /// Indicates whether the INI file exists.
@@ -22,12 +22,13 @@ namespace TaskManagerApp.Common
         /// <summary>
         /// Gets the application mode from the INI file.
         /// </summary>
-        public static string? Mode => GetValue("AppSettings", "Mode");
+        public static string? Mode => GetValue(AppConstants.IniSettings.Section_AppSettings, AppConstants.IniSettings.Key_Mode);
 
         /// <summary>
         /// Determines whether the current user is an admin based on the INI file.
         /// </summary>
-        public static bool IsAdmin => GetValue("AppSettings", "IsAdmin")?.ToLower() == "true";
+        public static bool IsAdmin => GetValue(AppConstants.IniSettings.Section_AppSettings, AppConstants.IniSettings.Key_IsAdmin)?.ToLower() 
+                                      == AppConstants.IniSettings.Admin_Mode;
 
         /// <summary>
         /// Reads a value from a specified section and key in the INI file.

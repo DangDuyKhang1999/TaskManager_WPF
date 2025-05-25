@@ -117,5 +117,29 @@
             public const string DbSuccess = "[DB_SUCCESS]";
             public const string DbFailure = "[DB_FAILURE]";
         }
+
+        /// <summary>
+        /// Constants related to INI configuration file keys and sections.
+        /// </summary>
+        public static class IniSettings
+        {
+            public const string IniFileName = "TaskManager.ini";
+
+            public const string Section_AppSettings = "AppSettings";
+            public const string Key_Mode = "Mode";
+            public const string Key_IsAdmin = "IsAdmin";
+            public const string Debug_Mode = "debug";
+            public const string Admin_Mode = "true";
+        }
+        /// <summary>
+        /// SignalR event and method names.
+        /// </summary>
+        public static class SignalREvents
+        {
+            public const string TaskChanged = "TaskChanged";
+            public const string UserChanged = "UserChanged";
+            public const string NotifyTaskChanged = "NotifyTaskChanged";
+            public const string NotifyUserChanged = "NotifyUserChanged";
+        }
     }
 }

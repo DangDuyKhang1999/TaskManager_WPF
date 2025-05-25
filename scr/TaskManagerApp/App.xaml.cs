@@ -22,7 +22,7 @@ namespace TaskManagerApp
 
             bool skipLogin = false;
 
-            if (IniConfig.Exists && IniConfig.Mode?.ToLower() == "debug")
+            if (IniConfig.Exists && IniConfig.Mode?.ToLower() == AppConstants.IniSettings.Debug_Mode)
             {
                 string debugUsername = "debug_user";
                 string employeeCode = "debug_user";

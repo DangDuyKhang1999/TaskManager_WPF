@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Windows.Threading;
 using TaskManagerApp.Services;
+using TaskManagerApp.Common;
 
 namespace TaskManagerApp.Contexts
 {
@@ -50,7 +51,7 @@ namespace TaskManagerApp.Contexts
                 .WithAutomaticReconnect()
                 .Build();
 
-            _connection.On("TaskChanged", () =>
+            _connection.On(AppConstants.SignalREvents.TaskChanged, () =>
             {
                 // Ensure event is raised on UI thread
                 Dispatcher.CurrentDispatcher.Invoke(() =>
@@ -60,7 +61,7 @@ namespace TaskManagerApp.Contexts
                 });
             });
 
-            _connection.On("UserChanged", () =>
+            _connection.On(AppConstants.SignalREvents.UserChanged, () =>
             {
                 Dispatcher.CurrentDispatcher.Invoke(() =>
                 {
@@ -90,7 +91,7 @@ namespace TaskManagerApp.Contexts
 
             try
             {
-                await _connection.SendAsync("NotifyTaskChanged");
+                await _connection.SendAsync(AppConstants.SignalREvents.NotifyTaskChanged);
                 Logger.Instance.Information("SignalR notification sent: NotifyTaskChanged");
             }
             catch (Exception ex)
@@ -109,7 +110,7 @@ namespace TaskManagerApp.Contexts
 
             try
             {
-                await _connection.SendAsync("NotifyUserChanged");
+                await _connection.SendAsync(AppConstants.SignalREvents.NotifyUserChanged);
                 Logger.Instance.Information("SignalR notification sent: NotifyUserChanged");
             }
             catch (Exception ex)
