@@ -4,8 +4,8 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:screens="clr-namespace:TaskManagerApp.Views.Screens"
         xmlns:vm="clr-namespace:TaskManagerApp.ViewModels"
-        MinHeight="800" MinWidth="900"
-        Title="{Binding WindowTitle}" Height="800" Width="900"
+        MinHeight="800" MinWidth="750"
+        Title="{Binding WindowTitle}" Height="800" Width="750"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
         WindowStartupLocation="CenterScreen">
 
