@@ -80,6 +80,7 @@
             public const string TaskManagerEnd = "    ************ Task Manager end ************";
 
             public const string LoginFailed = "An error occurred during login. Please contact admin.";
+            public const string LoginFailedCancel = "User login failed or cancelled.";
             public const string LoginAuthFailed = "Authentication failed:";
             public const string BlankPadding = "                                              ";
         }

@@ -17,20 +17,17 @@ namespace TaskManagerApp
         {
             base.OnStartup(e);
 
-            // Initialize logger instance and log app start
             var logger = Logger.Instance;
             logger.Information(AppConstants.Logging.TaskManagerStart);
 
             bool skipLogin = false;
 
-            // Check if running in debug mode to auto-login
             if (IniConfig.Exists && IniConfig.Mode?.ToLower() == "debug")
             {
                 string debugUsername = "debug_user";
                 string employeeCode = "debug_user";
                 bool isAdmin = IniConfig.IsAdmin;
 
-                // Initialize user session with debug credentials
                 UserSession.Instance.Initialize(debugUsername, employeeCode, isAdmin);
                 logger.Success("Auto-login in DEBUG mode");
                 logger.Information($"User = '{debugUsername}', Admin = {isAdmin}");
@@ -38,28 +35,28 @@ namespace TaskManagerApp
                 skipLogin = true;
             }
 
-            // Create a dummy window to keep the app alive while login dialog is shown
-            var dummyWindow = new Window
-            {
-                Title = AppConstants.AppText.MainWindowTitle,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
-            };
-            dummyWindow.Show();
-
+            Window? dummyWindow = null;
             bool loginResult = false;
 
-            // Show login window unless skipping login
-            if (skipLogin)
+            if (!skipLogin)
             {
-                loginResult = true;
-            }
-            else
-            {
+                dummyWindow = new Window
+                {
+                    Title = AppConstants.AppText.MainWindowTitle,
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    Width = 750,
+                    Height = 800
+                };
+                dummyWindow.Show();
+
                 var loginWindow = new LoginWindow();
                 loginResult = loginWindow.ShowDialog() == true;
             }
+            else
+            {
+                loginResult = true;
+            }
 
-            // If login successful, show main window and close dummy window
             if (loginResult)
             {
                 var mainWindow = new MainWindow();
@@ -67,14 +64,13 @@ namespace TaskManagerApp
                 mainWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 mainWindow.Show();
 
-                dummyWindow.Close();
+                dummyWindow?.Close();
             }
             else
             {
-                // Log failure or cancellation and shutdown app
-                logger.Information("User login failed or cancelled.");
-                logger.Information("***** Task Manager end *****");
-                logger.Shutdown(); // Flush logs before exit
+                logger.Information(AppConstants.Logging.LoginFailedCancel);
+                logger.Information(AppConstants.Logging.TaskManagerEnd);
+                logger.Shutdown();
                 Application.Current.Shutdown();
             }
         }
@@ -82,10 +78,9 @@ namespace TaskManagerApp
         /// <summary>
         /// Override OnExit to ensure logger is properly shut down.
         /// </summary>
-        /// <param name="e">Exit event arguments</param>
         protected override void OnExit(ExitEventArgs e)
         {
-            Logger.Instance.Shutdown(); // Flush and close logger on exit
+            Logger.Instance.Shutdown();
             base.OnExit(e);
         }
     }
