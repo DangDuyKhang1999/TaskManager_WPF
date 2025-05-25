@@ -1,6 +1,6 @@
 # Task Manager Application
 
-A task management application developed with C# (.NET 6/8) and WPF using the MVVM pattern. Data is stored in SQL Server.
+A task management application developed with C# (.NET 8) and WPF using the MVVM pattern. Data is stored in SQL Server.
 
 ---
 
