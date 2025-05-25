@@ -226,6 +226,8 @@ Solution 'TaskManager' (2 of 2 projects)
 │   ├── Data/
 │   │   ├── TaskRepository.cs
 │   │   └── UserRepository.cs
+│   ├── Debug/
+│   │   └── TaskManager.ini
 │   ├── Models/
 │   │   ├── TaskModel.cs
 │   │   └── UserModel.cs
@@ -289,6 +291,9 @@ Solution 'TaskManager' (2 of 2 projects)
 │   │   ├── TaskRepository.cs (Class for data access operations related to Task)
 │   │   └── UserRepository.cs (Class for data access operations related to User)
 │   │
+│   ├── Debug/ (Folder containing configuration files for Debug mode)
+│   │   └── TaskManager.ini (Application configuration file)
+│   │
 │   ├── Models/ (Folder for classes representing data structures - Business Logic objects)
 │   │   ├── TaskModel.cs (Model for the Task object)
 │   │   └── UserModel.cs (Model for the User object)
@@ -343,3 +348,25 @@ Solution 'TaskManager' (2 of 2 projects)
 - Log Rotation: Automatically manages log files by deleting older logs to keep the total count at a maximum of 5.
 - Contextual Logging: Automatically captures the calling class and method for error logs.
 - Graceful Shutdown: Provides a Shutdown() method to ensure all queued logs are written before the application exits.
+
+---
+
+## Debug Mode Configuration
+
+The application supports reading a configuration file named `TaskManager.ini` for development and testing purposes.
+
+Example `TaskManager.ini` content:
+
+```ini
+[AppSettings]
+Mode=Debug
+IsAdmin=false
+```
+
+### Behavior in Debug Mode:
+- **Skip Login Screen**: The app will bypass the login process and go directly to the main screen.
+- **Admin Privileges**:  
+  - If `IsAdmin=true`, the current user is treated as an **Admin**.  
+  - If `IsAdmin=false`, the current user is treated as a **regular user**.
+
+> In `Release` mode, this configuration is ignored and the app follows the normal login workflow.
