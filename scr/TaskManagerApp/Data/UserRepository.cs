@@ -1,4 +1,5 @@
-﻿using System;
+﻿// UserRepository.cs
+using System;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 using TaskManagerApp.Common;
@@ -37,18 +38,17 @@ namespace TaskManagerApp.Data
             {
                 Logger.Instance.Information(AppConstants.Logging.Information + " Opening database connection to load user list and admin list.");
 
-                // Establish connection and execute query to fetch users
                 using var connection = new SqlConnection(_connectionString);
                 connection.Open();
 
                 using var command = new SqlCommand(AppConstants.Database.Query_GetUsersAndAdmins, connection);
                 using var reader = command.ExecuteReader();
 
-                // Process each row, separating admins and users based on IsAdmin flag
                 while (reader.Read())
                 {
+                    // Safely read DisplayName
                     string displayName = reader["DisplayName"]?.ToString() ?? string.Empty;
-                    bool isAdmin = reader["IsAdmin"] != DBNull.Value && (bool)reader["IsAdmin"];
+                    bool isAdmin = reader["IsAdmin"] != DBNull.Value && Convert.ToBoolean(reader["IsAdmin"]);
 
                     if (isAdmin)
                         admins.Add(displayName);
@@ -58,11 +58,13 @@ namespace TaskManagerApp.Data
             }
             catch (SqlException ex)
             {
-                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error: {ex.Message}");
+                // Log SQL-specific errors
+                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(AppConstants.Logging.Error + $" Unexpected error: {ex.Message}");
+                // Log unexpected errors
+                Logger.Instance.Error(AppConstants.Logging.Error + $" Unexpected error: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
             }
         }
 
@@ -82,15 +84,19 @@ namespace TaskManagerApp.Data
                 using var command = new SqlCommand(AppConstants.Database.Query_GetAllUsers, connection);
                 using var reader = command.ExecuteReader();
 
-                // Map each database record to a UserModel instance
                 while (reader.Read())
                 {
+                    // Map each record to UserModel with null checks
                     users.Add(MapReaderToUser(reader));
                 }
             }
+            catch (SqlException ex)
+            {
+                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error loading users: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
+            }
             catch (Exception ex)
             {
-                Logger.Instance.Error(AppConstants.Logging.Error + $" Failed to load users: {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" Failed to load users: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
             }
 
             return users;
@@ -103,25 +109,31 @@ namespace TaskManagerApp.Data
         /// <returns>True if insertion is successful; otherwise, false.</returns>
         public bool InsertUser(UserModel user)
         {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            if (string.IsNullOrWhiteSpace(user.EmployeeCode) || string.IsNullOrWhiteSpace(user.Username))
+            {
+                Logger.Instance.Error(AppConstants.Logging.Error + " EmployeeCode and Username must not be empty.");
+                return false;
+            }
+
             try
             {
                 using var connection = new SqlConnection(_connectionString);
                 connection.Open();
 
-                // Hash the plaintext password before storing
-                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+                // Hash the password before storing
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash ?? string.Empty);
 
                 const string query = @"
 INSERT INTO Users (EmployeeCode, Username, PasswordHash, DisplayName, Email, IsAdmin, IsActive, CreatedAt)
 VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin, @IsActive, GETDATE())";
 
                 using var command = new SqlCommand(query, connection);
-                // Add parameters with null checks for optional fields
                 command.Parameters.AddWithValue("@EmployeeCode", user.EmployeeCode);
                 command.Parameters.AddWithValue("@Username", user.Username);
                 command.Parameters.AddWithValue("@PasswordHash", hashedPassword);
-                command.Parameters.AddWithValue("@DisplayName", user.DisplayName ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@Email", user.Email ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@DisplayName", string.IsNullOrWhiteSpace(user.DisplayName) ? DBNull.Value : (object)user.DisplayName);
+                command.Parameters.AddWithValue("@Email", string.IsNullOrWhiteSpace(user.Email) ? DBNull.Value : (object)user.Email);
                 command.Parameters.AddWithValue("@IsAdmin", user.IsAdmin);
                 command.Parameters.AddWithValue("@IsActive", user.IsActive);
 
@@ -132,12 +144,12 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
             }
             catch (SqlException ex)
             {
-                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error: {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error inserting user: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
                 return false;
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(AppConstants.Logging.Error + $" Error inserting user: {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" Error inserting user: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
                 return false;
             }
         }
@@ -149,6 +161,12 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
         /// <returns>True if deletion succeeded; otherwise false.</returns>
         public bool DeleteUserById(int id)
         {
+            if (id <= 0)
+            {
+                Logger.Instance.Error(AppConstants.Logging.Error + " Invalid user ID specified for deletion.");
+                return false;
+            }
+
             try
             {
                 using var connection = new SqlConnection(_connectionString);
@@ -157,18 +175,17 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
                 using var command = new SqlCommand(AppConstants.Database.Query_DeleteUserById, connection);
                 command.Parameters.AddWithValue("@Id", id);
 
-                // Execute deletion and check if any rows were affected
                 int affected = command.ExecuteNonQuery();
                 return affected > 0;
             }
             catch (SqlException ex)
             {
-                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error: {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error deleting user: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
                 return false;
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(AppConstants.Logging.Error + $" Error deleting user by ID: {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" Error deleting user: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
                 return false;
             }
         }
@@ -180,6 +197,9 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
         /// <returns>True if the code exists; otherwise false.</returns>
         public bool DoesEmployeeCodeExist(string employeeCode)
         {
+            if (string.IsNullOrWhiteSpace(employeeCode))
+                return false;
+
             try
             {
                 using var connection = new SqlConnection(_connectionString);
@@ -188,18 +208,18 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
                 using var command = new SqlCommand(AppConstants.Database.Query_CheckEmployeeCode, connection);
                 command.Parameters.AddWithValue("@EmployeeCode", employeeCode);
 
-                // Execute scalar query returning count of matching records
-                int count = Convert.ToInt32(command.ExecuteScalar());
+                var result = command.ExecuteScalar();
+                int count = result != null && int.TryParse(result.ToString(), out int val) ? val : 0;
                 return count > 0;
             }
             catch (SqlException ex)
             {
-                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error: {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error checking EmployeeCode: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
                 return false;
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(AppConstants.Logging.Error + $" Error checking EmployeeCode duplication: {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" Error checking EmployeeCode: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
                 return false;
             }
         }
@@ -211,6 +231,9 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
         /// <returns>True if the username exists; otherwise false.</returns>
         public bool DoesUsernameExist(string username)
         {
+            if (string.IsNullOrWhiteSpace(username))
+                return false;
+
             try
             {
                 using var connection = new SqlConnection(_connectionString);
@@ -219,17 +242,18 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
                 using var command = new SqlCommand(AppConstants.Database.Query_CheckUsername, connection);
                 command.Parameters.AddWithValue("@Username", username);
 
-                int count = Convert.ToInt32(command.ExecuteScalar());
+                var result = command.ExecuteScalar();
+                int count = result != null && int.TryParse(result.ToString(), out int val) ? val : 0;
                 return count > 0;
             }
             catch (SqlException ex)
             {
-                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error: {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" SQL Error checking Username: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
                 return false;
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(AppConstants.Logging.Error + $" Error checking Username duplication: {ex.Message}");
+                Logger.Instance.Error(AppConstants.Logging.Error + $" Error checking Username: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
                 return false;
             }
         }
@@ -241,18 +265,26 @@ VALUES (@EmployeeCode, @Username, @PasswordHash, @DisplayName, @Email, @IsAdmin,
         /// <returns>A user model populated with the record's data.</returns>
         private UserModel MapReaderToUser(SqlDataReader reader)
         {
-            return new UserModel
+            try
             {
-                Id = Convert.ToInt32(reader["Id"]),
-                EmployeeCode = reader["EmployeeCode"]?.ToString() ?? string.Empty,
-                Username = reader["Username"]?.ToString() ?? string.Empty,
-                PasswordHash = reader["PasswordHash"]?.ToString() ?? string.Empty,
-                DisplayName = reader["DisplayName"]?.ToString(),
-                Email = reader["Email"]?.ToString(),
-                IsAdmin = Convert.ToBoolean(reader["IsAdmin"]),
-                IsActive = Convert.ToBoolean(reader["IsActive"]),
-                CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
-            };
+                return new UserModel
+                {
+                    Id = Convert.ToInt32(reader["Id"]),
+                    EmployeeCode = reader["EmployeeCode"]?.ToString() ?? string.Empty,
+                    Username = reader["Username"]?.ToString() ?? string.Empty,
+                    PasswordHash = reader["PasswordHash"]?.ToString() ?? string.Empty,
+                    DisplayName = reader["DisplayName"]?.ToString(),
+                    Email = reader["Email"]?.ToString(),
+                    IsAdmin = reader["IsAdmin"] != DBNull.Value && Convert.ToBoolean(reader["IsAdmin"]),
+                    IsActive = reader["IsActive"] != DBNull.Value && Convert.ToBoolean(reader["IsActive"]),
+                    CreatedAt = reader["CreatedAt"] != DBNull.Value ? Convert.ToDateTime(reader["CreatedAt"]) : DateTime.MinValue
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(AppConstants.Logging.Error + $" Error mapping user record: {ex.Message}");
+                return new UserModel();
+            }
         }
     }
 }
