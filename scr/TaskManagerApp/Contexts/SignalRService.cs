@@ -7,7 +7,8 @@ using TaskManagerApp.Services;
 namespace TaskManagerApp.Contexts
 {
     /// <summary>
-    /// Singleton service that manages SignalR connection and task change notifications.
+    /// Singleton service that manages SignalR connection and real-time notifications
+    /// for task and user changes.
     /// </summary>
     public class SignalRService
     {
@@ -17,6 +18,11 @@ namespace TaskManagerApp.Contexts
         /// Event triggered when a task change notification is received from the SignalR hub.
         /// </summary>
         public event Action? TasksChanged;
+
+        /// <summary>
+        /// Event triggered when a user change notification is received from the SignalR hub.
+        /// </summary>
+        public event Action? UsersChanged;
 
         private static readonly Lazy<SignalRService> _instance =
             new Lazy<SignalRService>(() => new SignalRService());
@@ -31,6 +37,7 @@ namespace TaskManagerApp.Contexts
 
         /// <summary>
         /// Starts the SignalR connection to the specified hub URL.
+        /// Registers handlers for TaskChanged and UserChanged events.
         /// </summary>
         /// <param name="hubUrl">The URL of the SignalR hub.</param>
         public async Task StartAsync(string hubUrl)
@@ -45,10 +52,20 @@ namespace TaskManagerApp.Contexts
 
             _connection.On("TaskChanged", () =>
             {
+                // Ensure event is raised on UI thread
                 Dispatcher.CurrentDispatcher.Invoke(() =>
                 {
                     TasksChanged?.Invoke();
                     Logger.Instance.Information("SignalR event received: TaskChanged");
+                });
+            });
+
+            _connection.On("UserChanged", () =>
+            {
+                Dispatcher.CurrentDispatcher.Invoke(() =>
+                {
+                    UsersChanged?.Invoke();
+                    Logger.Instance.Information("SignalR event received: UserChanged");
                 });
             });
 
@@ -75,6 +92,25 @@ namespace TaskManagerApp.Contexts
             {
                 await _connection.SendAsync("NotifyTaskChanged");
                 Logger.Instance.Information("SignalR notification sent: NotifyTaskChanged");
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error("SignalR notify error: " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Sends a user change notification to the SignalR hub.
+        /// </summary>
+        public async Task NotifyUserChangedAsync()
+        {
+            if (_connection == null || _connection.State != HubConnectionState.Connected)
+                return;
+
+            try
+            {
+                await _connection.SendAsync("NotifyUserChanged");
+                Logger.Instance.Information("SignalR notification sent: NotifyUserChanged");
             }
             catch (Exception ex)
             {

@@ -14,7 +14,7 @@ builder.Services.AddSignalR();
 var app = builder.Build();
 
 // Map the TaskHub endpoint at /taskhub
-app.MapHub<TaskHub>("/taskhub");
+app.MapHub<NotificationHub>("/taskhub");
 
 // Start the application and listen for incoming requests
 app.Run();

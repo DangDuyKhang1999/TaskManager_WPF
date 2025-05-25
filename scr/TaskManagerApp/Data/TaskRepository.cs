@@ -18,9 +18,9 @@ public class TaskRepository
     }
 
     /// <summary>
-    /// Retrieves all tasks based on user role and application mode.
+    /// Retrieves all tasks based on user role and application mode (debug or production).
     /// </summary>
-    /// <returns>List of <see cref="TaskModel"/>.</returns>
+    /// <returns>List of <see cref="TaskModel"/> objects.</returns>
     public List<TaskModel> GetAllTasks()
     {
         var tasks = new List<TaskModel>();
@@ -37,7 +37,7 @@ public class TaskRepository
 
             if (isDebug)
             {
-                // DEBUG mode logic: determine employee code and load tasks accordingly
+                // In DEBUG mode, simulate behavior by selecting a debug employee code based on admin status
                 var userQuery = "SELECT TOP 1 EmployeeCode FROM Users WHERE IsAdmin = @IsAdmin ORDER BY EmployeeCode";
                 using var userCmd = new SqlCommand(userQuery, connection);
                 userCmd.Parameters.AddWithValue("@IsAdmin", isAdmin);
@@ -45,6 +45,7 @@ public class TaskRepository
 
                 if (!string.IsNullOrEmpty(debugEmployeeCode))
                 {
+                    // Override the session employee code for debug context
                     Logger.Instance.Information($"DEBUG mode: Setting UserSession.EmployeeCode to '{debugEmployeeCode}' based on IsAdmin = {isAdmin}");
                     UserSession.Instance.SetEmployeeForDebug(debugEmployeeCode);
                     employeeCode = debugEmployeeCode;
@@ -56,6 +57,7 @@ public class TaskRepository
 
                 if (isAdmin)
                 {
+                    // Admin in DEBUG mode retrieves all tasks
                     Logger.Instance.Information("DEBUG mode + Admin => Load ALL tasks.");
                     string query = @"
                 SELECT 
@@ -86,6 +88,7 @@ public class TaskRepository
                 }
                 else
                 {
+                    // Non-admin in DEBUG mode retrieves only their assigned tasks
                     Logger.Instance.Information("DEBUG mode + Non-admin => Load tasks assigned to the debug employee code.");
 
                     string query = @"
@@ -121,11 +124,12 @@ public class TaskRepository
             }
             else
             {
-                // Release mode logic: load tasks based on user role
+                // In production mode, behavior depends on user's role
                 Logger.Instance.Information($"Production mode - User {employeeCode}, IsAdmin = {isAdmin}");
 
                 if (isAdmin)
                 {
+                    // Admin in production loads all tasks
                     Logger.Instance.Information("Production mode + Admin => Load ALL tasks.");
                     string query = @"
                 SELECT 
@@ -156,6 +160,7 @@ public class TaskRepository
                 }
                 else
                 {
+                    // Non-admin in production retrieves only their assigned tasks
                     Logger.Instance.Information("Production mode + Non-admin => Load tasks assigned to the user's EmployeeCode.");
 
                     string query = @"
@@ -258,6 +263,7 @@ VALUES
         }
         catch (SqlException sqlEx)
         {
+            // Handle SQL-related errors
             int errorCode = sqlEx.Number;
             string errorMessage = $"SQL Error Code: {errorCode}, Message: {sqlEx.Message}{Environment.NewLine}{sqlEx.StackTrace}";
 
@@ -266,6 +272,7 @@ VALUES
         }
         catch (Exception ex)
         {
+            // Handle general errors
             string errorMessage = $"General error: {ex.Message}{Environment.NewLine}{ex.StackTrace}";
             Logger.Instance.Error(errorMessage);
             return false;
@@ -318,7 +325,7 @@ VALUES
     }
 
     /// <summary>
-    /// Checks if a task with the specified code exists.
+    /// Checks if a task with the specified code exists in the database.
     /// </summary>
     /// <param name="code">The task code.</param>
     /// <returns>True if the code exists; otherwise false.</returns>
@@ -338,7 +345,7 @@ VALUES
     }
 
     /// <summary>
-    /// Updates an existing task in the database.
+    /// Updates an existing task in the database by task Code.
     /// </summary>
     /// <param name="task">The task to update.</param>
     /// <returns>True if update succeeds; otherwise false.</returns>
@@ -375,10 +382,10 @@ VALUES
     }
 
     /// <summary>
-    /// Updates the AssigneeId and ReporterId properties of a task based on their display names.
+    /// Updates the AssigneeId and ReporterId properties of a task using their corresponding DisplayNames.
     /// </summary>
     /// <param name="task">The task to update.</param>
-    /// <returns>True if at least one ID was found and updated; otherwise false.</returns>
+    /// <returns>True if at least one ID was successfully updated; otherwise false.</returns>
     public bool UpdateTaskIdsFromDisplayNames(TaskModel task)
     {
         if (task == null) throw new ArgumentNullException(nameof(task));
@@ -391,6 +398,7 @@ VALUES
             string? assigneeId = null;
             string? reporterId = null;
 
+            // Lookup AssigneeId from DisplayName
             if (!string.IsNullOrEmpty(task.AssigneeDisplayName))
             {
                 string assigneeQuery = "SELECT TOP 1 EmployeeCode FROM Users WHERE DisplayName = @DisplayName";
@@ -400,6 +408,7 @@ VALUES
                 assigneeId = result?.ToString();
             }
 
+            // Lookup ReporterId from DisplayName
             if (!string.IsNullOrEmpty(task.ReporterDisplayName))
             {
                 string reporterQuery = "SELECT TOP 1 EmployeeCode FROM Users WHERE DisplayName = @DisplayName";
@@ -409,6 +418,7 @@ VALUES
                 reporterId = result?.ToString();
             }
 
+            // Validate that at least one value was found
             if (string.IsNullOrEmpty(assigneeId) && string.IsNullOrEmpty(reporterId))
             {
                 Logger.Instance.Warning($"No AssigneeId or ReporterId found from DisplayName. AssigneeDisplayName='{task.AssigneeDisplayName}', ReporterDisplayName='{task.ReporterDisplayName}'");

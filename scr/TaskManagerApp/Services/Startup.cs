@@ -29,7 +29,7 @@ namespace TaskManagerApp.Services
             app.UseEndpoints(endpoints =>
             {
                 // Maps the TaskHub endpoint to "/taskhub".
-                endpoints.MapHub<TaskHub>("/taskhub");
+                endpoints.MapHub<NotificationHub>("/taskhub");
             });
         }
     }

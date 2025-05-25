@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 using TaskManagerApp.Models;
@@ -28,17 +26,17 @@ namespace TaskManagerApp.ViewModels
         }
 
         /// <summary>
-        /// Collection of display names for reporters.
+        /// Collection of display names for reporters (admin users).
         /// </summary>
         public ObservableCollection<string> ReporterDisplayName { get; set; }
 
         /// <summary>
-        /// Collection of display names for assignees.
+        /// Collection of display names for assignees (normal users).
         /// </summary>
         public ObservableCollection<string> AssigneesDisplayName { get; set; }
 
         /// <summary>
-        /// Available status options for tasks.
+        /// Available status options mapped as key-value pairs (int ID to string name).
         /// </summary>
         public ObservableCollection<KeyValuePair<int, string>> AvailableStatuses { get; } =
             new()
@@ -49,7 +47,7 @@ namespace TaskManagerApp.ViewModels
             };
 
         /// <summary>
-        /// Available priority options for tasks.
+        /// Available priority options mapped as key-value pairs (int ID to string name).
         /// </summary>
         public ObservableCollection<KeyValuePair<int, string>> AvailablePriorities { get; } =
             new()
@@ -63,17 +61,17 @@ namespace TaskManagerApp.ViewModels
         private readonly UserRepository _userRepository;
 
         /// <summary>
-        /// Command to delete a task.
+        /// Command bound to task deletion action in the UI.
         /// </summary>
         public ICommand DeleteTaskCommand { get; }
 
         /// <summary>
-        /// Command to update a task.
+        /// Command bound to task update action in the UI.
         /// </summary>
         public ICommand UpdateTaskCommand { get; }
 
         /// <summary>
-        /// Initializes a new instance of <see cref="TaskScreenViewModel"/>.
+        /// Constructor. Initializes repositories, loads data, registers event handlers, and starts SignalR connection.
         /// </summary>
         public TaskScreenViewModel()
         {
@@ -82,8 +80,10 @@ namespace TaskManagerApp.ViewModels
             _taskRepository = new TaskRepository(connectionString);
             _userRepository = new UserRepository(connectionString);
 
+            // Load task list from database
             Tasks = new ObservableCollection<TaskModel>(_taskRepository.GetAllTasks());
 
+            // Load user and admin lists for use in assigning/reporting tasks
             _userRepository.GetUsersAndAdmins(out var users, out var admins);
             DatabaseContext.Instance.LoadNormalUsers(users);
             DatabaseContext.Instance.LoadAdminUsers(admins);
@@ -94,18 +94,18 @@ namespace TaskManagerApp.ViewModels
             DeleteTaskCommand = new RelayCommand(DeleteTask);
             UpdateTaskCommand = new RelayCommand(UpdateTaskFromButton);
 
+            // Automatically reload tasks when a new task is saved
             TaskEvents.TaskSaved += () =>
             {
                 Application.Current.Dispatcher.Invoke(ReloadTasks);
             };
 
+            // Start SignalR connection for real-time updates
             _ = InitSignalRAsync();
-            _ = InitSignalRAsync();
-
         }
 
         /// <summary>
-        /// Initializes the SignalR connection and subscribes to task changes.
+        /// Initializes SignalR connection and subscribes to task change events.
         /// </summary>
         private async Task InitSignalRAsync()
         {
@@ -115,7 +115,8 @@ namespace TaskManagerApp.ViewModels
         }
 
         /// <summary>
-        /// Handler for SignalR task change events.
+        /// Handler for task list changes received via SignalR.
+        /// Triggers a task list reload on the UI thread.
         /// </summary>
         private void SignalR_OnTaskChanged()
         {
@@ -123,7 +124,7 @@ namespace TaskManagerApp.ViewModels
         }
 
         /// <summary>
-        /// Reloads tasks from the repository.
+        /// Reloads the task list from the database repository.
         /// </summary>
         private void ReloadTasks()
         {
@@ -132,9 +133,9 @@ namespace TaskManagerApp.ViewModels
         }
 
         /// <summary>
-        /// Deletes a task after user confirmation.
+        /// Deletes the specified task after confirmation from the user.
         /// </summary>
-        /// <param name="parameter">The task to delete.</param>
+        /// <param name="parameter">The task to be deleted, passed as a TaskModel object.</param>
         private void DeleteTask(object? parameter)
         {
             if (parameter is not TaskModel task || string.IsNullOrWhiteSpace(task.Code)) return;
@@ -152,8 +153,8 @@ namespace TaskManagerApp.ViewModels
 
             if (isDeleted)
             {
-                Tasks.Remove(task);
-                _ = SignalRService.Instance.NotifyTaskChangedAsync();
+                Tasks.Remove(task); // Remove task from UI collection
+                _ = SignalRService.Instance.NotifyTaskChangedAsync(); // Notify other clients
             }
             else
             {
@@ -162,13 +163,14 @@ namespace TaskManagerApp.ViewModels
         }
 
         /// <summary>
-        /// Updates a task in the repository after mapping display names to IDs.
+        /// Updates the specified task after mapping display names to user IDs.
         /// </summary>
         /// <param name="task">The task to update.</param>
         public void UpdateTask(TaskModel task)
         {
             if (task == null || string.IsNullOrWhiteSpace(task.Code)) return;
 
+            // Ensure the Assignee and Reporter names are correctly mapped to their respective IDs
             bool idsUpdated = _taskRepository.UpdateTaskIdsFromDisplayNames(task);
 
             if (!idsUpdated)
@@ -181,7 +183,7 @@ namespace TaskManagerApp.ViewModels
 
             if (isUpdated)
             {
-                _ = SignalRService.Instance.NotifyTaskChangedAsync();
+                _ = SignalRService.Instance.NotifyTaskChangedAsync(); // Notify clients of change
             }
             else
             {
@@ -190,9 +192,9 @@ namespace TaskManagerApp.ViewModels
         }
 
         /// <summary>
-        /// Handles update command triggered from UI with confirmation.
+        /// Invoked from the UI to update a task after confirmation from the user.
         /// </summary>
-        /// <param name="parameter">The task to update.</param>
+        /// <param name="parameter">The task to update, passed as a TaskModel object.</param>
         private void UpdateTaskFromButton(object? parameter)
         {
             if (parameter is not TaskModel task) return;
@@ -205,7 +207,7 @@ namespace TaskManagerApp.ViewModels
 
             if (result == MessageBoxResult.Yes)
             {
-                UpdateTask(task);
+                UpdateTask(task); // Perform update logic
                 MessageBox.Show($"Task '{task.Title}' updated successfully.", "Update Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }

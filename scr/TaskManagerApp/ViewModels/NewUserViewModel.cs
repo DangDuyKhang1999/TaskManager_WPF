@@ -10,7 +10,8 @@ using TaskManagerApp.Contexts;
 namespace TaskManagerApp.ViewModels
 {
     /// <summary>
-    /// ViewModel for creating a new user with validation support.
+    /// ViewModel responsible for creating a new user with input validation.
+    /// Implements IDataErrorInfo for validation feedback.
     /// </summary>
     public class NewUserViewModel : BaseViewModel, IDataErrorInfo
     {
@@ -18,7 +19,7 @@ namespace TaskManagerApp.ViewModels
 
         private string _employeeCode = string.Empty;
         /// <summary>
-        /// Gets or sets the unique employee code.
+        /// Unique employee code identifier for the new user.
         /// </summary>
         public string EmployeeCode
         {
@@ -28,7 +29,7 @@ namespace TaskManagerApp.ViewModels
 
         private string _username = string.Empty;
         /// <summary>
-        /// Gets or sets the username for login.
+        /// Username used for user login.
         /// </summary>
         public string Username
         {
@@ -38,7 +39,7 @@ namespace TaskManagerApp.ViewModels
 
         private string _password = string.Empty;
         /// <summary>
-        /// Gets or sets the password entered by the user.
+        /// User's password input. Will be hashed on save.
         /// </summary>
         public string Password
         {
@@ -48,7 +49,7 @@ namespace TaskManagerApp.ViewModels
 
         private string _displayName = string.Empty;
         /// <summary>
-        /// Gets or sets the display name.
+        /// Display name shown in the application.
         /// </summary>
         public string DisplayName
         {
@@ -58,7 +59,7 @@ namespace TaskManagerApp.ViewModels
 
         private string _email = string.Empty;
         /// <summary>
-        /// Gets or sets the email address.
+        /// Email address of the new user.
         /// </summary>
         public string Email
         {
@@ -68,7 +69,7 @@ namespace TaskManagerApp.ViewModels
 
         private bool _isAdmin;
         /// <summary>
-        /// Gets or sets a value indicating whether the user has admin rights.
+        /// Flag indicating if the user has administrative privileges.
         /// </summary>
         public bool IsAdmin
         {
@@ -77,17 +78,17 @@ namespace TaskManagerApp.ViewModels
         }
 
         /// <summary>
-        /// Command to save the new user.
+        /// Command to trigger saving the new user.
         /// </summary>
         public ICommand SaveCommand { get; }
 
         /// <summary>
-        /// Command to clear all input fields.
+        /// Command to clear all input fields in the form.
         /// </summary>
         public ICommand ClearCommand { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NewUserViewModel"/> class.
+        /// Constructor initializing commands and clearing fields.
         /// </summary>
         public NewUserViewModel()
         {
@@ -97,7 +98,8 @@ namespace TaskManagerApp.ViewModels
         }
 
         /// <summary>
-        /// Gets validation error for a specific property.
+        /// Provides validation error messages for individual properties.
+        /// Only performs validation after an attempt to save has been made.
         /// </summary>
         public string this[string columnName]
         {
@@ -137,12 +139,13 @@ namespace TaskManagerApp.ViewModels
         }
 
         /// <summary>
-        /// Gets an object-level validation error. Always returns null.
+        /// Returns a general validation error for the entire object.
+        /// Not used here, always returns empty.
         /// </summary>
         public string Error => string.Empty;
 
         /// <summary>
-        /// Indicates whether all required fields are valid.
+        /// Indicates whether all required fields pass validation.
         /// </summary>
         public bool IsValid =>
             string.IsNullOrEmpty(this[nameof(EmployeeCode)]) &&
@@ -151,12 +154,15 @@ namespace TaskManagerApp.ViewModels
             string.IsNullOrEmpty(this[nameof(DisplayName)]);
 
         /// <summary>
-        /// Executes the save operation: validates input, inserts the user, and notifies the user.
+        /// Executes the user save operation:
+        /// Validates inputs, inserts user into repository, 
+        /// and triggers notifications or error messages accordingly.
         /// </summary>
         private void SaveExecute()
         {
             _hasAttemptedSave = true;
 
+            // Notify UI to re-evaluate validation for these properties.
             OnPropertyChanged(nameof(EmployeeCode));
             OnPropertyChanged(nameof(Username));
             OnPropertyChanged(nameof(Password));
@@ -165,11 +171,12 @@ namespace TaskManagerApp.ViewModels
             if (!IsValid)
                 return;
 
+            // Prepare a new UserModel instance for insertion.
             var user = new UserModel
             {
                 EmployeeCode = EmployeeCode,
                 Username = Username,
-                PasswordHash = Password,
+                PasswordHash = Password, // Password hashing should be done in repository/service.
                 DisplayName = DisplayName,
                 Email = Email,
                 IsAdmin = IsAdmin,
@@ -184,8 +191,8 @@ namespace TaskManagerApp.ViewModels
                 if (inserted)
                 {
                     MessageBox.Show(AppConstants.AppText.Message_UserSaveSuccess, AppConstants.ExecutionStatus.Success);
-                    _ = SignalRService.Instance.NotifyTaskChangedAsync();
-                    TaskEvents.RaiseTaskSaved();
+                    _ = SignalRService.Instance.NotifyUserChangedAsync(); // Notify other parts of app about user change.
+                    TaskEvents.RaiseTaskSaved(); // Trigger any subscribed event handlers for saved tasks.
                 }
                 else
                 {
@@ -197,11 +204,12 @@ namespace TaskManagerApp.ViewModels
                 Logger.Instance.Error(AppConstants.AppText.Message_UnexpectedError + ex.Message);
             }
 
+            // Reset form fields after save attempt.
             ClearFields();
         }
 
         /// <summary>
-        /// Clears all input fields and resets validation state.
+        /// Clears all user input fields and resets validation state.
         /// </summary>
         private void ClearFields()
         {
@@ -214,6 +222,7 @@ namespace TaskManagerApp.ViewModels
             Email = string.Empty;
             IsAdmin = false;
 
+            // Notify UI of cleared fields.
             OnPropertyChanged(nameof(EmployeeCode));
             OnPropertyChanged(nameof(Username));
             OnPropertyChanged(nameof(Password));
@@ -223,7 +232,8 @@ namespace TaskManagerApp.ViewModels
         }
 
         /// <summary>
-        /// Checks if the specified employee code already exists.
+        /// Checks if the given employee code already exists in the database.
+        /// Logs and returns false if an error occurs during check.
         /// </summary>
         private bool IsEmployeeCodeDuplicate(string employeeCode)
         {
@@ -240,7 +250,8 @@ namespace TaskManagerApp.ViewModels
         }
 
         /// <summary>
-        /// Checks if the specified username already exists.
+        /// Checks if the given username already exists in the database.
+        /// Logs and returns false if an error occurs during check.
         /// </summary>
         private bool IsUsernameDuplicate(string username)
         {
